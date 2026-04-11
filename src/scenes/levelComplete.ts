@@ -6,6 +6,7 @@ export interface LevelCompleteData {
   sequins: number
   lives: number
   time: number
+  nextLevel?: string | null
 }
 
 export default function levelComplete(data: LevelCompleteData) {
@@ -49,8 +50,12 @@ export default function levelComplete(data: LevelCompleteData) {
     color(255, 105, 180),
   ])
 
+  const nextLabel = data.nextLevel
+    ? "Press SPACE for next level  |  ESC for level select"
+    : "Press SPACE to continue"
+
   const prompt = add([
-    text("Press SPACE to continue", { size: 22 }),
+    text(nextLabel, { size: 20 }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 100),
     anchor("center"),
     color(255, 255, 255),
@@ -63,6 +68,15 @@ export default function levelComplete(data: LevelCompleteData) {
     prompt.opacity = Math.sin(blinkTimer * 3) > 0 ? 1 : 0.2
   })
 
-  onKeyPress("space", () => go("levelSelect"))
-  onKeyPress("enter", () => go("levelSelect"))
+  function advance() {
+    if (data.nextLevel) {
+      go("game", data.nextLevel)
+    } else {
+      go("levelSelect")
+    }
+  }
+
+  onKeyPress("space", advance)
+  onKeyPress("enter", advance)
+  onKeyPress("escape", () => go("levelSelect"))
 }

@@ -41,11 +41,7 @@ export default function gameOver(data: GameOverData) {
   ])
 
   onKeyPress("space", () => {
-    if (data.levelId === "boss") {
-      go("game", "boss")
-    } else {
-      go("game")
-    }
+    go("game", data.levelId)
   })
 
   onKeyPress("escape", () => go("levelSelect"))

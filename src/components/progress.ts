@@ -1,5 +1,7 @@
 const STORAGE_KEY = "ninja-ballerina-progress"
 
+const LEVEL_ORDER = ["level1", "level2", "level3", "level4", "level5", "level6", "boss"]
+
 export interface GameProgress {
   levelsCompleted: string[]
   bestSequins: Record<string, number>
@@ -43,9 +45,9 @@ export function markLevelComplete(levelId: string, sequins: number, ribbons: num
 
 export function isLevelUnlocked(levelId: string): boolean {
   if (levelId === "level1") return true
-  if (levelId === "boss") {
-    const p = loadProgress()
-    return p.levelsCompleted.includes("level1")
-  }
-  return false
+  const idx = LEVEL_ORDER.indexOf(levelId)
+  if (idx <= 0) return false
+  const prev = LEVEL_ORDER[idx - 1]
+  const p = loadProgress()
+  return p.levelsCompleted.includes(prev)
 }

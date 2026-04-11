@@ -1,15 +1,38 @@
 import loadLevel from "../levels/loader"
 import level1 from "../levels/level1"
+import level2 from "../levels/level2"
+import level3 from "../levels/level3"
+import level4 from "../levels/level4"
+import level5 from "../levels/level5"
+import level6 from "../levels/level6"
 import bossArena from "../levels/bossArena"
 import type { LevelData } from "../levels/level1"
 import type { PlayerHealth } from "../components/health"
 import { runBossFight } from "../entities/soggyWaffle"
 import { SCREEN } from "../config"
 
+const LEVEL_MAP: Record<string, LevelData> = {
+  level1,
+  level2,
+  level3,
+  level4,
+  level5,
+  level6,
+  boss: bossArena,
+}
+
+const LEVEL_ORDER = ["level1", "level2", "level3", "level4", "level5", "level6", "boss"]
+
+function getNextLevel(current: string): string | null {
+  const idx = LEVEL_ORDER.indexOf(current)
+  if (idx < 0 || idx >= LEVEL_ORDER.length - 1) return null
+  return LEVEL_ORDER[idx + 1]
+}
+
 export default function game(levelName?: string) {
-  const isBoss = levelName === "boss"
-  const levelId = isBoss ? "boss" : "level1"
-  const levelData: LevelData = isBoss ? bossArena : level1
+  const levelId = levelName ?? "level1"
+  const isBoss = levelId === "boss"
+  const levelData: LevelData = LEVEL_MAP[levelId] ?? level1
   const { player } = loadLevel(levelData)
 
   let levelTime = 0
@@ -118,7 +141,7 @@ export default function game(levelName?: string) {
     }
   })
 
-  // Game over check — patched into player update
+  // Game over check
   player.onUpdate(() => {
     const h = player.health as PlayerHealth
     if (h.lives <= 0) {
@@ -129,17 +152,20 @@ export default function game(levelName?: string) {
   if (isBoss) {
     runBossFight(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
   } else {
-    // Transition to level complete when player reaches end of level1
+    // Transition to level complete when player reaches end of level
+    const endX = levelData.width - 100
     let triggered = false
     player.onUpdate(() => {
-      if (!triggered && player.pos.x > 3100) {
+      if (!triggered && player.pos.x > endX) {
         triggered = true
         const h = player.health as PlayerHealth
+        const next = getNextLevel(levelId)
         go("levelComplete", {
-          levelId: "level1",
+          levelId,
           sequins: h.sequins,
           lives: h.lives,
           time: levelTime,
+          nextLevel: next,
         } as any)
       }
     })

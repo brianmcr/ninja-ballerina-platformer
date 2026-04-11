@@ -8,6 +8,11 @@ interface LevelEntry {
 
 const LEVELS: LevelEntry[] = [
   { id: "level1", name: "1. Welcome to the Studio" },
+  { id: "level2", name: "2. Silk & Shadows" },
+  { id: "level3", name: "3. The Training Grounds" },
+  { id: "level4", name: "4. The Sticky Kitchen" },
+  { id: "level5", name: "5. Above the Rafters" },
+  { id: "level6", name: "6. The Gauntlet" },
   { id: "boss", name: "BOSS: Soggy Waffle Showdown" },
 ]
 
@@ -23,14 +28,14 @@ export default function levelSelect() {
 
   add([
     text("SELECT LEVEL", { size: 48 }),
-    pos(SCREEN.WIDTH / 2, 80),
+    pos(SCREEN.WIDTH / 2, 60),
     anchor("center"),
     color(255, 105, 180),
   ])
 
   const entries: any[] = []
-  const startY = 200
-  const gap = 70
+  const startY = 140
+  const gap = 56
 
   for (let i = 0; i < LEVELS.length; i++) {
     const lv = LEVELS[i]
@@ -42,7 +47,7 @@ export default function levelSelect() {
     const statusText = completed ? `  ✓  Best: ${bestSeq} sequins` : ""
 
     const entry = add([
-      text(label + statusText, { size: 24 }),
+      text(label + statusText, { size: 22 }),
       pos(SCREEN.WIDTH / 2, startY + i * gap),
       anchor("center"),
       color(unlocked ? 255 : 100, unlocked ? 255 : 100, unlocked ? 255 : 100),
@@ -51,7 +56,7 @@ export default function levelSelect() {
   }
 
   const cursor = add([
-    text("▶", { size: 28 }),
+    text("▶", { size: 26 }),
     pos(0, 0),
     anchor("center"),
     color(255, 215, 0),
@@ -65,7 +70,7 @@ export default function levelSelect() {
 
   add([
     text("↑↓ Select   SPACE/ENTER Play   ESC Back", { size: 16 }),
-    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 50),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 40),
     anchor("center"),
     color(150, 150, 150),
   ])
@@ -83,11 +88,7 @@ export default function levelSelect() {
   function play() {
     const lv = LEVELS[selected]
     if (!isLevelUnlocked(lv.id)) return
-    if (lv.id === "boss") {
-      go("game", "boss")
-    } else {
-      go("game")
-    }
+    go("game", lv.id)
   }
 
   onKeyPress("space", play)
