@@ -12,7 +12,7 @@ type PlayerState = "idle" | "run" | "jump" | "float" | "spin" | "dash" | "whip"
 export default function createPlayer(x: number, y: number) {
   const player = add([
     sprite("ballerina-idle"),
-    scale(PLAYER.WIDTH / 1024),
+    scale(0.08),
     pos(x, y),
     area({ shape: new Rect(vec2(0), PLAYER.WIDTH, PLAYER.HEIGHT) }),
     body(),

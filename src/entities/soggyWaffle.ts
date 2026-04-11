@@ -7,7 +7,7 @@ import { playBossHit } from "../components/audio"
 export function createSoggyWaffle(x: number, y: number) {
   const boss = add([
     sprite("soggy-waffle"),
-    scale(BOSS.WIDTH / 1024),
+    scale(0.1),
     pos(x, y),
     area({ shape: new Rect(vec2(0), BOSS.WIDTH, BOSS.HEIGHT) }),
     body(),

@@ -10,7 +10,7 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
 
   const enemy = add([
     sprite("butter-pat"),
-    scale(e.WIDTH / 1024),
+    scale(0.06),
     pos(x, y),
     area({ shape: new Rect(vec2(0), e.WIDTH, e.HEIGHT) }),
     body(),
@@ -63,7 +63,7 @@ export function createGlutenBlob(x: number, y: number) {
 
   const enemy = add([
     sprite("gluten-blob"),
-    scale(e.SIZE / 1024),
+    scale(0.06),
     pos(x, y),
     area({ shape: new Rect(vec2(0), e.SIZE, e.SIZE) }),
     body(),
@@ -136,7 +136,7 @@ export function createSyrupDripper(x: number, y: number) {
 
   const enemy = add([
     sprite("syrup-dripper"),
-    scale(e.SIZE / 1024),
+    scale(0.06),
     pos(x, y),
     area({ shape: new Rect(vec2(0), e.SIZE, e.SIZE) }),
     anchor("center"),
@@ -233,7 +233,7 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
 
   const enemy = add([
     sprite("milk-carton"),
-    scale(e.WIDTH / 1024),
+    scale(0.06),
     pos(x, y),
     area({ shape: new Rect(vec2(0), e.WIDTH, e.HEIGHT) }),
     body(),
