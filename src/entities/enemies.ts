@@ -118,10 +118,30 @@ export function createSyrupDripper(x: number, y: number) {
     },
   ])
 
+  let telegraphing = false
   enemy.onUpdate(() => {
     dropTimer -= dt()
+    if (dropTimer <= 0.5 && !telegraphing) {
+      telegraphing = true
+      const origR = e.COLOR[0]
+      const origG = e.COLOR[1]
+      const origB = e.COLOR[2]
+      let flashT = 0
+      const flashEv = onUpdate(() => {
+        flashT += dt()
+        const pulse = Math.sin(flashT * 20) > 0
+        if (enemy.exists()) {
+          enemy.color = pulse ? rgb(255, 100, 100) : rgb(origR, origG, origB)
+        }
+        if (flashT >= 0.5 || !enemy.exists()) {
+          if (enemy.exists()) enemy.color = rgb(origR, origG, origB)
+          flashEv.cancel()
+        }
+      })
+    }
     if (dropTimer <= 0) {
       dropTimer = e.DROP_INTERVAL
+      telegraphing = false
       dropSyrup(enemy.pos.x, enemy.pos.y + e.SIZE / 2)
     }
   })

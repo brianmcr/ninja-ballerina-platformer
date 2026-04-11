@@ -61,8 +61,9 @@ const level2: LevelData = {
     { type: "butterPat", x: 3250, y: FLOOR_Y, patrolRange: 100 },
   ],
   pickups: [
-    // Ninja powerup — visible early
+    // Ninja powerups — one early, one mid-level
     { type: "ninjaPowerup", x: 350, y: FLOOR_Y - 400 },
+    { type: "ninjaPowerup", x: 1760, y: FLOOR_Y - 400 },
 
     // Sequins along first floor
     { type: "sequin", x: 240, y: FLOOR_Y - 20 },
@@ -109,10 +110,10 @@ const level2: LevelData = {
     { type: "sequin", x: 3350, y: FLOOR_Y - 20 },
     { type: "sequin", x: 3420, y: FLOOR_Y - 20 },
 
-    // Hidden ribbons
-    { type: "sequin", x: 450, y: FLOOR_Y - 450 },
-    { type: "sequin", x: 2050, y: FLOOR_Y - 460 },
-    { type: "sequin", x: 3000, y: FLOOR_Y - 400 },
+    // Ribbons (hard-to-reach collectibles)
+    { type: "ribbon", x: 450, y: FLOOR_Y - 450 },
+    { type: "ribbon", x: 2050, y: FLOOR_Y - 460 },
+    { type: "ribbon", x: 3000, y: FLOOR_Y - 400 },
   ],
   destructibles: [
     { x: 1400, y: FLOOR_Y - 48, width: 48, height: 48 },

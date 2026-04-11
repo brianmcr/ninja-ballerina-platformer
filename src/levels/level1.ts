@@ -18,7 +18,7 @@ export interface EnemySpawn {
 }
 
 export interface PickupSpawn {
-  type: "ninjaPowerup" | "sequin" | "katana" | "sais"
+  type: "ninjaPowerup" | "sequin" | "katana" | "sais" | "ribbon"
   x: number
   y: number
 }
@@ -84,8 +84,9 @@ const level1: LevelData = {
     { type: "butterPat", x: 2700, y: FLOOR_Y, patrolRange: 80 },
   ],
   pickups: [
-    // Ninja powerup — visible, accessible early
+    // Ninja powerups — one early, one mid-level
     { type: "ninjaPowerup", x: 540, y: FLOOR_Y - 270 },
+    { type: "ninjaPowerup", x: 1960, y: FLOOR_Y - 230 },
 
     // Sequins along floor path (section 1)
     { type: "sequin", x: 260, y: FLOOR_Y - 20 },
@@ -130,10 +131,10 @@ const level1: LevelData = {
     { type: "sequin", x: 2870, y: FLOOR_Y - 205 },
     { type: "sequin", x: 2990, y: FLOOR_Y - 285 },
 
-    // Hidden ribbons (hard-to-reach sequins)
-    { type: "sequin", x: 800, y: FLOOR_Y - 350 },
-    { type: "sequin", x: 1540, y: FLOOR_Y - 380 },
-    { type: "sequin", x: 3050, y: FLOOR_Y - 350 },
+    // Ribbons (hard-to-reach collectibles)
+    { type: "ribbon", x: 800, y: FLOOR_Y - 350 },
+    { type: "ribbon", x: 1540, y: FLOOR_Y - 380 },
+    { type: "ribbon", x: 3050, y: FLOOR_Y - 350 },
   ],
   destructibles: [
     { x: 1550, y: FLOOR_Y - 48, width: 48, height: 48 },

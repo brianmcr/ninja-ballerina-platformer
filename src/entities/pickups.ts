@@ -1,5 +1,5 @@
 import { PICKUP, WEAPON } from "../config"
-import { collectSequin, collectNinjaPowerup } from "../components/health"
+import { collectSequin, collectNinjaPowerup, collectRibbon } from "../components/health"
 import { sequinCollectPop } from "../components/effects"
 import type { PlayerHealth } from "../components/health"
 import type { WeaponType } from "../components/weapons"
@@ -60,6 +60,39 @@ export function createSequin(x: number, y: number) {
   })
 
   return seq
+}
+
+export function createRibbon(x: number, y: number) {
+  const originY = y
+  let elapsed = Math.random() * 6
+
+  const ribbon = add([
+    rect(PICKUP.RIBBON_SIZE, PICKUP.RIBBON_SIZE),
+    pos(x, y),
+    area(),
+    anchor("center"),
+    color(PICKUP.RIBBON_COLOR[0], PICKUP.RIBBON_COLOR[1], PICKUP.RIBBON_COLOR[2]),
+    rotate(0),
+    opacity(1),
+    "pickup",
+    "ribbon",
+  ])
+
+  ribbon.onUpdate(() => {
+    elapsed += dt()
+    ribbon.pos.y = originY + Math.sin(elapsed * PICKUP.RIBBON_BOB_SPEED) * PICKUP.RIBBON_BOB_RANGE
+    ribbon.angle = elapsed * PICKUP.RIBBON_ROTATE_SPEED * 60
+    ribbon.opacity = 0.7 + 0.3 * Math.sin(elapsed * 2)
+  })
+
+  ribbon.onCollide("player", (p: any) => {
+    sequinCollectPop(ribbon.pos.x, ribbon.pos.y)
+    collectRibbon(p)
+    debug.log("Ribbon collected!")
+    destroy(ribbon)
+  })
+
+  return ribbon
 }
 
 export function createWeaponPickup(x: number, y: number, weaponType: "katana" | "sais") {

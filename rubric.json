@@ -1,0 +1,68 @@
+{
+  "domain": "2d_platformer_gameplay",
+  "domain_description": "Evaluates a 2D Super Mario Bros-style platformer targeting ages 8-12 for gameplay quality across level design, controls, enemy design, progression, and overall fun factor.",
+  "dimensions": [
+    {
+      "name": "level_design_and_pacing",
+      "weight": 0.25,
+      "description": "Quality of platform placement, difficulty progression, use of space, and pacing within and across levels. Evaluates whether new mechanics are introduced safely before being tested, whether difficulty ramps smoothly, and whether levels have distinct identities.",
+      "anchors": {
+        "1-3": "Levels feel random — platforms placed without purpose, no difficulty curve, mechanics introduced and immediately punished, gaps and enemy placement feel arbitrary. Player gets stuck or bored within the first 30 seconds.",
+        "4-6": "Levels have a basic structure with some intentional challenge placement, but difficulty is inconsistent — sudden spikes followed by trivial sections. Some dead zones with nothing to do. Mechanics are used but not taught.",
+        "7-8": "Each level has a clear identity and teaches mechanics before testing them. Difficulty ramps smoothly with brief relief sections. Platform placement creates interesting traversal choices. Multiple paths reward exploration.",
+        "9-10": "Levels flow like music — rhythm groups of challenge-relief-challenge create momentum. Every platform, gap, and enemy serves a purpose. Secrets feel discoverable, not hidden. Difficulty curve matches the Mario gold standard: gentle start, satisfying crescendo."
+      }
+    },
+    {
+      "name": "controls_and_game_feel",
+      "weight": 0.25,
+      "description": "Responsiveness of player movement, jump physics, attack feedback, and whether the character feels good to control. Includes coyote time, input buffering, and whether gravity/speed constants create satisfying arcs.",
+      "anchors": {
+        "1-3": "Movement feels floaty or rigid. Jumps don't land where expected. Attacks have no feedback. Player fights the controls instead of the level. Missing basic assists (no coyote time, no input buffer).",
+        "4-6": "Basic movement works but lacks polish — jumps feel slightly off, attacks lack punch, state transitions feel abrupt. Some abilities are useful, others feel like they're never the right choice.",
+        "7-8": "Character is responsive and predictable. Jump arcs feel natural. Each ability has a distinct use case and satisfying feedback. Player can execute intended maneuvers reliably. Float, dash, and attacks all feel meaningfully different.",
+        "9-10": "Controls are invisible — the player thinks about what to do, not how to do it. Movement has weight without sluggishness. Every ability creates a 'that felt awesome' moment. Hidden assists (generous hitboxes, coyote time) make the player feel more skilled than they are."
+      }
+    },
+    {
+      "name": "enemy_and_combat_design",
+      "weight": 0.2,
+      "description": "Whether enemies have distinct behaviors that create interesting player decisions, whether combat encounters feel fair and readable, and whether the enemy roster creates variety across levels.",
+      "anchors": {
+        "1-3": "Enemies are damage obstacles with no readable behavior. Player can't tell how to defeat them without dying first. All enemies feel the same. Combat is either trivially easy or unfairly hard.",
+        "4-6": "Enemies have basic behaviors but encounters feel repetitive. Some enemies are interesting but underused. Shield/flanking mechanics exist but aren't well-telegraphed. Damage feels arbitrary.",
+        "7-8": "Each enemy type demands a different approach. Behaviors are readable — player can observe and strategize before engaging. Enemy combinations create interesting decision points. Boss phases are distinct and escalating.",
+        "9-10": "Enemy encounters feel like puzzles. Each new type teaches the player something about the mechanics. Combinations force creative ability use. The boss fight is a culmination that tests everything learned. Defeat feels earned, never cheap."
+      }
+    },
+    {
+      "name": "progression_and_reward",
+      "weight": 0.15,
+      "description": "Powerup distribution, collectible placement, hit/life system fairness, and whether the player feels a sense of growing mastery. Includes how the ninja powerup transforms gameplay and whether weapons feel meaningfully different.",
+      "anchors": {
+        "1-3": "Powerups are placed randomly or are impossible to find. Collectibles don't reward exploration. Hit system feels punishing — losing ninja form means replaying large sections with no way to recover. Weapons feel identical.",
+        "4-6": "Powerups exist on the critical path but don't transform gameplay much. Some collectibles reward exploration. Weapons have different stats but similar feel. Losing ninja form is frustrating but survivable.",
+        "7-8": "Ninja powerup meaningfully changes traversal options. Each weapon type enables different strategies against different enemies. Collectibles guide the player toward good routes. Recovering from hits feels fair with accessible re-powerup opportunities.",
+        "9-10": "The base-to-ninja transformation is a genuine 'power fantasy' moment. Weapons create distinct playstyles (ranged vs. melee vs. rapid). Sequin placement teaches optimal routes. The risk/reward of exploring for hidden ribbons vs. playing safe creates engaging tension."
+      }
+    },
+    {
+      "name": "visual_clarity_and_flow",
+      "weight": 0.15,
+      "description": "Whether the player can instantly understand what things are and what they do, even with placeholder art. Includes UI readability, scene transitions, and whether the game flow from title to victory feels complete and polished.",
+      "anchors": {
+        "1-3": "Player can't distinguish platforms from backgrounds, enemies from pickups, or hazards from decoration. HUD is cluttered or missing critical info. Scene transitions are jarring or broken. Game flow has dead ends.",
+        "4-6": "Basic elements are distinguishable by color/shape but some confusion remains (which platforms are one-way? what's a hazard?). HUD shows essential info but is plain. Scene flow works but feels utilitarian.",
+        "7-8": "Every game element is instantly readable — enemies, platforms, pickups, and hazards are clearly distinct. HUD is clean and informative. Title → cutscene → gameplay → boss → victory flows smoothly. Level names and transitions add context.",
+        "9-10": "Visual language is so clear a player could understand the game without any tutorial. Placeholder art has personality through color and animation choices. UI anticipates player questions. The complete flow tells a story from opening cutscene to final victory."
+      }
+    }
+  ],
+  "overall_scoring": "weighted_average",
+  "critical_failures": [
+    "Game crashes, fails to load, or has a broken scene transition that prevents completing the full flow",
+    "Player can get permanently stuck with no way to die or progress",
+    "Controls are non-functional — key abilities don't work or have no effect",
+    "Boss fight is unwinnable due to broken collision, invincibility, or unreachable phases"
+  ]
+}

@@ -1,7 +1,7 @@
 import { SCREEN, PLATFORM, CAMERA, ENEMY, PICKUP, DESTRUCTIBLE } from "../config"
 import createPlayer from "../entities/player"
 import { createButterPat, createGlutenBlob, createSyrupDripper, createMilkCartonGuard } from "../entities/enemies"
-import { createNinjaPowerup, createSequin, createWeaponPickup } from "../entities/pickups"
+import { createNinjaPowerup, createSequin, createWeaponPickup, createRibbon } from "../entities/pickups"
 import { hitPlayer } from "../components/health"
 import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData } from "./level1"
 
@@ -152,6 +152,29 @@ export default function loadLevel(levelData: LevelData) {
     }
   }
 
+  // Goal marker at end of level
+  const goalX = levelData.width - 200
+  const goalY = SCREEN.HEIGHT - 48 - 96
+  const goal = add([
+    rect(16, 96),
+    pos(goalX, goalY),
+    area(),
+    anchor("bot"),
+    color(255, 215, 0),
+    opacity(1),
+    "goal",
+  ])
+  let goalElapsed = 0
+  goal.onUpdate(() => {
+    goalElapsed += dt()
+    goal.opacity = 0.6 + 0.4 * Math.sin(goalElapsed * 3)
+    goal.color = rgb(
+      255,
+      215 + Math.floor(40 * Math.sin(goalElapsed * 2)),
+      Math.floor(80 * Math.abs(Math.sin(goalElapsed * 1.5))),
+    )
+  })
+
   // Player-enemy collision: stomp or take damage
   player.onCollide("enemy", (e: any, col: any) => {
     // Stomp: player is falling and lands on top of enemy
@@ -201,6 +224,7 @@ function spawnPickup(p: PickupSpawn) {
   switch (p.type) {
     case "ninjaPowerup": return createNinjaPowerup(p.x, p.y)
     case "sequin": return createSequin(p.x, p.y)
+    case "ribbon": return createRibbon(p.x, p.y)
     case "katana": return createWeaponPickup(p.x, p.y, "katana")
     case "sais": return createWeaponPickup(p.x, p.y, "sais")
   }

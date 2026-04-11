@@ -4,13 +4,14 @@ import { markLevelComplete } from "../components/progress"
 export interface LevelCompleteData {
   levelId: string
   sequins: number
+  ribbons: number
   lives: number
   time: number
   nextLevel?: string | null
 }
 
 export default function levelComplete(data: LevelCompleteData) {
-  markLevelComplete(data.levelId, data.sequins, 0)
+  markLevelComplete(data.levelId, data.sequins, data.ribbons ?? 0)
 
   add([
     rect(SCREEN.WIDTH, SCREEN.HEIGHT),
@@ -44,8 +45,15 @@ export default function levelComplete(data: LevelCompleteData) {
   ])
 
   add([
-    text(`Lives Remaining: ${data.lives}`, { size: 28 }),
+    text(`Ribbons: ${data.ribbons ?? 0}/3`, { size: 28 }),
     pos(SCREEN.WIDTH / 2, 340),
+    anchor("center"),
+    color(200, 100, 200),
+  ])
+
+  add([
+    text(`Lives Remaining: ${data.lives}`, { size: 28 }),
+    pos(SCREEN.WIDTH / 2, 390),
     anchor("center"),
     color(255, 105, 180),
   ])

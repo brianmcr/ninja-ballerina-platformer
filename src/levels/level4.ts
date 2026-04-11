@@ -73,8 +73,9 @@ const level4: LevelData = {
     { type: "milkCarton", x: 3400, y: FLOOR_Y, patrolRange: 80 },
   ],
   pickups: [
-    // Ninja powerup early
+    // Ninja powerups — one early, one mid-level
     { type: "ninjaPowerup", x: 600, y: FLOOR_Y - 310 },
+    { type: "ninjaPowerup", x: 2450, y: FLOOR_Y - 270 },
 
     // Sais pickup — new weapon
     { type: "sais", x: 2050, y: FLOOR_Y - 230 },
@@ -128,10 +129,10 @@ const level4: LevelData = {
     { type: "sequin", x: 3650, y: FLOOR_Y - 205 },
     { type: "sequin", x: 3800, y: FLOOR_Y - 325 },
 
-    // Hidden ribbons
-    { type: "sequin", x: 600, y: FLOOR_Y - 420 },
-    { type: "sequin", x: 1100, y: FLOOR_Y - 430 },
-    { type: "sequin", x: 3800, y: FLOOR_Y - 430 },
+    // Ribbons (hard-to-reach collectibles)
+    { type: "ribbon", x: 600, y: FLOOR_Y - 420 },
+    { type: "ribbon", x: 1100, y: FLOOR_Y - 430 },
+    { type: "ribbon", x: 3800, y: FLOOR_Y - 430 },
   ],
   destructibles: [
     { x: 680, y: FLOOR_Y - 48, width: 48, height: 48 },

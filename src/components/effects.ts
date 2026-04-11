@@ -1,20 +1,37 @@
 import { FEEL, PLAYER, PICKUP } from "../config"
 
+let shakeOffsetX = 0
+let shakeOffsetY = 0
+let shakeIntensity = 0
+let shakeTimeLeft = 0
+let shakeDuration = 0
+let shakeActive = false
+
 export function screenShake(intensity: number, duration: number) {
-  const origPos = getCamPos()
-  let elapsed = 0
-  const ev = onUpdate(() => {
-    elapsed += dt()
-    if (elapsed >= duration) {
-      ev.cancel()
-      return
-    }
-    const fade = 1 - elapsed / duration
-    const ox = (Math.random() * 2 - 1) * intensity * fade
-    const oy = (Math.random() * 2 - 1) * intensity * fade
-    const cur = getCamPos()
-    setCamPos(cur.x + ox, cur.y + oy)
-  })
+  shakeIntensity = Math.max(shakeIntensity, intensity)
+  shakeTimeLeft = Math.max(shakeTimeLeft, duration)
+  shakeDuration = shakeTimeLeft
+  if (!shakeActive) {
+    shakeActive = true
+    const ev = onUpdate(() => {
+      const cp = getCamPos()
+      setCamPos(cp.x - shakeOffsetX, cp.y - shakeOffsetY)
+      shakeTimeLeft -= dt()
+      if (shakeTimeLeft <= 0) {
+        shakeOffsetX = 0
+        shakeOffsetY = 0
+        shakeIntensity = 0
+        shakeActive = false
+        ev.cancel()
+        return
+      }
+      const fade = Math.max(0, shakeTimeLeft / shakeDuration)
+      shakeOffsetX = (Math.random() * 2 - 1) * shakeIntensity * fade
+      shakeOffsetY = (Math.random() * 2 - 1) * shakeIntensity * fade
+      const cp2 = getCamPos()
+      setCamPos(cp2.x + shakeOffsetX, cp2.y + shakeOffsetY)
+    })
+  }
 }
 
 export function shakeOnHit() {

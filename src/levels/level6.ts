@@ -158,10 +158,10 @@ const level6: LevelData = {
     { type: "sequin", x: 4400, y: FLOOR_Y - 185 },
     { type: "sequin", x: 4550, y: FLOOR_Y - 265 },
 
-    // Hidden ribbons
-    { type: "sequin", x: 470, y: FLOOR_Y - 490 },
-    { type: "sequin", x: 1500, y: FLOOR_Y - 470 },
-    { type: "sequin", x: 3850, y: FLOOR_Y - 460 },
+    // Ribbons (hard-to-reach collectibles)
+    { type: "ribbon", x: 470, y: FLOOR_Y - 490 },
+    { type: "ribbon", x: 1500, y: FLOOR_Y - 470 },
+    { type: "ribbon", x: 3850, y: FLOOR_Y - 460 },
   ],
   destructibles: [
     { x: 580, y: FLOOR_Y - 48, width: 48, height: 48 },

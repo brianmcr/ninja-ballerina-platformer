@@ -72,8 +72,9 @@ const level3: LevelData = {
     { type: "butterPat", x: 3550, y: FLOOR_Y, patrolRange: 60 },
   ],
   pickups: [
-    // Ninja powerup early
+    // Ninja powerups — one early, one mid-level
     { type: "ninjaPowerup", x: 500, y: FLOOR_Y - 270 },
+    { type: "ninjaPowerup", x: 1850, y: FLOOR_Y - 170 },
 
     // Katana pickup — new weapon
     { type: "katana", x: 1200, y: FLOOR_Y - 190 },
@@ -125,10 +126,10 @@ const level3: LevelData = {
     { type: "sequin", x: 3450, y: FLOOR_Y - 205 },
     { type: "sequin", x: 3600, y: FLOOR_Y - 325 },
 
-    // Hidden ribbons
-    { type: "sequin", x: 360, y: FLOOR_Y - 430 },
-    { type: "sequin", x: 1100, y: FLOOR_Y - 430 },
-    { type: "sequin", x: 3600, y: FLOOR_Y - 420 },
+    // Ribbons (hard-to-reach collectibles)
+    { type: "ribbon", x: 360, y: FLOOR_Y - 430 },
+    { type: "ribbon", x: 1100, y: FLOOR_Y - 430 },
+    { type: "ribbon", x: 3600, y: FLOOR_Y - 420 },
   ],
   destructibles: [
     // Barriers requiring katana to break through

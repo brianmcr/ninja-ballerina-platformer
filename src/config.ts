@@ -68,6 +68,11 @@ export const PICKUP = {
   SEQUIN_COLOR: [255, 215, 0] as const,
   SEQUIN_BOB_SPEED: 3,
   SEQUIN_BOB_RANGE: 4,
+  RIBBON_SIZE: 16,
+  RIBBON_COLOR: [200, 100, 200] as const,
+  RIBBON_BOB_SPEED: 1.5,
+  RIBBON_BOB_RANGE: 5,
+  RIBBON_ROTATE_SPEED: 1.2,
   STOMP_BOUNCE: 400,
 } as const
 
@@ -140,7 +145,7 @@ export const BOSS = {
 } as const
 
 export const FEEL = {
-  COYOTE_TIME: 0.1,
+  COYOTE_TIME: 0.12,
   JUMP_BUFFER: 0.1,
   JUMP_CUT_MULTIPLIER: 0.5,
   FALL_GRAVITY_MULT: 1.5,

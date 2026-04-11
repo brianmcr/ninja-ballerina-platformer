@@ -66,10 +66,19 @@ export default function game(levelName?: string) {
     z(100),
   ])
 
+  // HUD: ribbons
+  const ribbonLabel = add([
+    text("", { size: 18 }),
+    pos(12, 64),
+    fixed(),
+    color(200, 100, 200),
+    z(100),
+  ])
+
   // HUD: weapon
   const weaponLabel = add([
     text("", { size: 16 }),
-    pos(12, 64),
+    pos(12, 86),
     fixed(),
     color(180, 200, 255),
     z(100),
@@ -78,7 +87,7 @@ export default function game(levelName?: string) {
   // Debug state label (toggled with F1)
   const stateLabel = add([
     text("", { size: 14 }),
-    pos(12, 86),
+    pos(12, 108),
     fixed(),
     color(200, 200, 200),
     opacity(0),
@@ -135,6 +144,7 @@ export default function game(levelName?: string) {
     livesLabel.text = "♥".repeat(h.lives)
     sequinLabel.text = `✦ ${h.sequins}`
     ninjaLabel.text = h.isNinja ? "🥷 NINJA" : ""
+    ribbonLabel.text = h.ribbons > 0 ? `🎀 ${h.ribbons}/3` : ""
     weaponLabel.text = player.currentWeapon !== "none" ? `⚔ ${player.currentWeapon}` : ""
     if (showDebug) {
       stateLabel.text = `State: ${player.state}`
@@ -152,17 +162,17 @@ export default function game(levelName?: string) {
   if (isBoss) {
     runBossFight(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
   } else {
-    // Transition to level complete when player reaches end of level
-    const endX = levelData.width - 100
+    // Transition to level complete when player touches goal marker
     let triggered = false
-    player.onUpdate(() => {
-      if (!triggered && player.pos.x > endX) {
+    player.onCollide("goal", () => {
+      if (!triggered) {
         triggered = true
         const h = player.health as PlayerHealth
         const next = getNextLevel(levelId)
         go("levelComplete", {
           levelId,
           sequins: h.sequins,
+          ribbons: h.ribbons,
           lives: h.lives,
           time: levelTime,
           nextLevel: next,

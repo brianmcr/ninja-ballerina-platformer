@@ -5,6 +5,7 @@ export interface PlayerHealth {
   lives: number
   isNinja: boolean
   sequins: number
+  ribbons: number
   invincibleTimer: number
 }
 
@@ -13,6 +14,7 @@ export function initHealth(player: any) {
     lives: PLAYER.STARTING_LIVES,
     isNinja: false,
     sequins: 0,
+    ribbons: 0,
     invincibleTimer: 0,
   } as PlayerHealth
 }
@@ -35,12 +37,36 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
     if (h.lives <= 0) {
       return
     }
-    player.pos.x = spawnX
-    player.pos.y = spawnY
-    player.vel.x = 0
-    player.vel.y = 0
-    startInvincibility(player)
+    playDeathAnimation(player, spawnX, spawnY)
   }
+}
+
+function playDeathAnimation(player: any, spawnX: number, spawnY: number) {
+  player.isInvincible = true
+  const origWidth = PLAYER.WIDTH
+  const origHeight = PLAYER.HEIGHT
+  let elapsed = 0
+  const duration = 0.3
+  const ev = onUpdate(() => {
+    elapsed += dt()
+    const t = Math.min(1, elapsed / duration)
+    player.width = origWidth * (1 - t * 0.8)
+    player.height = origHeight * (1 - t * 0.8)
+    player.opacity = 1 - t
+    player.angle += dt() * 720
+    if (t >= 1) {
+      ev.cancel()
+      player.width = origWidth
+      player.height = origHeight
+      player.opacity = 1
+      player.angle = 0
+      player.pos.x = spawnX
+      player.pos.y = spawnY
+      player.vel.x = 0
+      player.vel.y = 0
+      startInvincibility(player)
+    }
+  })
 }
 
 function startInvincibility(player: any) {
@@ -75,6 +101,11 @@ export function collectSequin(player: any): boolean {
     return true
   }
   return false
+}
+
+export function collectRibbon(player: any) {
+  const h = player.health as PlayerHealth
+  h.ribbons++
 }
 
 export function collectNinjaPowerup(player: any) {
