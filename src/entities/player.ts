@@ -24,6 +24,7 @@ export default function createPlayer(x: number, y: number) {
       isInvincible: false,
       isSticky: false,
       isSlippery: false,
+      isSyrupy: false,
       health: null as PlayerHealth | null,
     },
   ])
@@ -45,6 +46,7 @@ export default function createPlayer(x: number, y: number) {
   function moveSpeed() {
     let s = PLAYER.RUN_SPEED
     if (player.isSticky) s *= ENEMY.GLUTEN_BLOB.STICKY_SPEED_MULT
+    if (player.isSyrupy) s *= ENEMY.SYRUP_DRIPPER.PUDDLE_SPEED_MULT
     if (player.isSlippery) s *= ENEMY.BUTTER_PAT.SLIPPERY_SPEED_MULT
     return s
   }
@@ -148,7 +150,7 @@ export default function createPlayer(x: number, y: number) {
     ])
 
     player.whipHitbox.onCollide("enemy", (e: any) => {
-      const fromDir = player.facing
+      const fromDir = player.pos.x < e.pos.x ? -1 : 1
       if (e.hurt?.length >= 2) {
         e.hurt(1, fromDir)
       } else {

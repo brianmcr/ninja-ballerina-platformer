@@ -1,0 +1,40 @@
+<h2>Tech Approach for Ninja Ballerina</h2>
+<p class="subtitle">Pick the engine/framework that fits best</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Vanilla Canvas + TypeScript</h3>
+      <p>Hand-roll everything — game loop, physics, rendering, sprite system. Maximum learning, maximum control, but slow to get to "fun."</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Zero dependencies</li><li>Learn how engines work</li><li>Total control</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Weeks before it feels like a game</li><li>Camera, collision, tilemaps all from scratch</li><li>Sprite animation system is non-trivial</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Kaplay (formerly Kaboom.js)</h3>
+      <p>Lightweight 2D game library designed for platformers. Handles physics, sprites, scenes, tilemaps. Still browser-based, still TypeScript. <strong>Recommended.</strong></p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Built for exactly this kind of game</li><li>Platformer physics out of the box</li><li>Tilemap + sprite + scene management</li><li>Active community, good docs</li><li>~15KB gzipped</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Less "from scratch" learning</li><li>API opinions you might disagree with</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Phaser 3</h3>
+      <p>The heavyweight champion of browser 2D engines. Massive feature set — physics (Arcade + Matter.js), tilemaps, particles, tweens, audio, input.</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>Pros</h4><ul><li>Battle-tested, huge ecosystem</li><li>Tiled map editor integration</li><li>Every feature you could want</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>~1MB bundle, heavier API surface</li><li>More complex setup</li><li>Overkill for a single-world platformer</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

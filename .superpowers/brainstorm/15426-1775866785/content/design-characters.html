@@ -1,0 +1,83 @@
+<h2>Design: Characters & Mechanics</h2>
+<p class="subtitle">Section 2 of 5 — confirm before we move on</p>
+
+<div class="section">
+  <h3>Player Character: Ninja Ballerina</h3>
+  <div style="display:flex; gap:24px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:250px; background:#1e1e2e; border-radius:8px; padding:16px; border:1px solid #3a3a4a;">
+      <h4 style="color:#f0abfc; margin-top:0;">Base Form: Ballerina</h4>
+      <p style="color:#ccc; font-size:13px;">Caucasian girl, black pigtails, pink/white leotard and tutu</p>
+      <ul style="color:#ccc; font-size:13px;">
+        <li><strong>Run / Jump</strong> — standard platformer movement</li>
+        <li><strong>Pirouette Spin</strong> — close-range attack, damages enemies on contact</li>
+        <li><strong>Graceful Float</strong> — hold jump to descend slowly (like Peach)</li>
+        <li><strong>Cartwheel Dash</strong> — quick horizontal burst, passes through enemies</li>
+        <li><strong>Ribbon Whip</strong> — short-range directional attack</li>
+      </ul>
+    </div>
+    <div style="flex:1; min-width:250px; background:#1e1e2e; border-radius:8px; padding:16px; border:1px solid #3a3a4a;">
+      <h4 style="color:#fb923c; margin-top:0;">Powered Up: Ninja Ballerina</h4>
+      <p style="color:#ccc; font-size:13px;">Outfit adds black ninja wrap over leotard, headband, arm wraps</p>
+      <ul style="color:#ccc; font-size:13px;">
+        <li><strong>All base moves retained</strong></li>
+        <li><strong>+ Shuriken Throw</strong> — ranged projectile attack</li>
+        <li><strong>+ Wall-Cling</strong> — grab walls, slide slowly</li>
+        <li><strong>+ Wall-Jump</strong> — jump off walls to reach new areas</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Hit System (Mario Model)</h3>
+  <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-family:monospace; font-size:14px; padding:16px;">
+    <div style="background:#2a2a3a; padding:10px 16px; border-radius:8px; border:2px solid #fb923c;">Ninja Ballerina</div>
+    <span style="color:#ef4444;">—hit→</span>
+    <div style="background:#2a2a3a; padding:10px 16px; border-radius:8px; border:2px solid #f0abfc;">Base Ballerina</div>
+    <span style="color:#ef4444;">—hit→</span>
+    <div style="background:#2a2a3a; padding:10px 16px; border-radius:8px; border:2px solid #ef4444;">Lose Life</div>
+  </div>
+  <p style="color:#9ca3af; font-size:13px;">Brief invincibility frames after each hit. 3 lives per level, extra lives from collectibles.</p>
+</div>
+
+<div class="section">
+  <h3>Soggy Waffle (Villain)</h3>
+  <div style="background:#1e1e2e; border-radius:8px; padding:16px; border:1px solid #3a3a4a;">
+    <p style="color:#ccc; font-size:13px;"><strong>Appearance:</strong> Humanoid soggy waffle wearing a ninja headband. Syrup dripping, menacing but cartoonish. Moves with exaggerated martial arts poses.</p>
+    <h4 style="color:#fbbf24; margin-bottom:8px;">Appearances Before Boss Fight</h4>
+    <ul style="color:#ccc; font-size:13px;">
+      <li><strong>Level 1:</strong> Cutscene intro — Soggy Waffle crashes the studio, steals something precious (golden ballet slippers?), taunts and flees</li>
+      <li><strong>Level 2:</strong> Appears in background, sends butter goons, escapes through a door you can't reach yet</li>
+      <li><strong>Level 4:</strong> Brief mid-level encounter — throws syrup traps, you chase him but he escapes</li>
+      <li><strong>Level 6:</strong> Taunts from behind barriers as you fight through his gauntlet</li>
+      <li><strong>Boss:</strong> Full multi-phase fight in the main dojo hall</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Enemies</h3>
+  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+    <div style="background:#1e1e2e; border-radius:8px; padding:12px; border:1px solid #3a3a4a;">
+      <h4 style="color:#fbbf24; margin:0 0 4px;">Butter Pats</h4>
+      <p style="color:#ccc; font-size:12px;">Basic patrol enemy. Slides back and forth. One hit to defeat. Leaves a slippery patch on death.</p>
+    </div>
+    <div style="background:#1e1e2e; border-radius:8px; padding:12px; border:1px solid #3a3a4a;">
+      <h4 style="color:#fbbf24; margin:0 0 4px;">Gluten Blobs</h4>
+      <p style="color:#ccc; font-size:12px;">Sticky enemies that cling to platforms. Jump on them and they stretch — takes two hits. Can trap player briefly.</p>
+    </div>
+    <div style="background:#1e1e2e; border-radius:8px; padding:12px; border:1px solid #3a3a4a;">
+      <h4 style="color:#fbbf24; margin:0 0 4px;">Syrup Drippers</h4>
+      <p style="color:#ccc; font-size:12px;">Ceiling-mounted. Drop syrup puddles that slow movement. Shuriken to destroy from range.</p>
+    </div>
+    <div style="background:#1e1e2e; border-radius:8px; padding:12px; border:1px solid #3a3a4a;">
+      <h4 style="color:#fbbf24; margin:0 0 4px;">Milk Carton Guards</h4>
+      <p style="color:#ccc; font-size:12px;">Taller enemies with a shield. Must cartwheel-dash behind them or hit with shuriken. Block frontal attacks.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>Ninja Powerup Placement</h3>
+  <p style="color:#ccc; font-size:13px;">Every level contains at least one ninja powerup pickup (glowing shuriken star). Some are in plain sight, some reward exploration. Wall-jump sections exist in every level — accessible only in ninja form, always optional but rewarding (bonus collectibles, shortcuts).</p>
+</div>

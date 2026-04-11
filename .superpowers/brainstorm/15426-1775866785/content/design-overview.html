@@ -1,0 +1,51 @@
+<h2>Design: Game Overview & Structure</h2>
+<p class="subtitle">Section 1 of 5 — confirm before we move on</p>
+
+<div class="section">
+  <h3>Concept</h3>
+  <p><strong>Ninja Ballerina</strong> — a 2D side-scrolling platformer where a pigtailed ballerina fights through a dojo/dance studio hybrid overrun by Soggy Waffle and his breakfast goons. Aimed at ages 8-12, family-friendly, forgiving difficulty.</p>
+</div>
+
+<div class="section">
+  <h3>Tech Stack</h3>
+  <ul>
+    <li><strong>Engine:</strong> Kaplay (TypeScript)</li>
+    <li><strong>Build:</strong> Vite</li>
+    <li><strong>Art:</strong> Pixel art sprite sheets (generated/placeholder to start)</li>
+    <li><strong>Level design:</strong> Tiled map editor → JSON import</li>
+    <li><strong>Audio:</strong> Kaplay built-in audio (add later)</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h3>Game Structure</h3>
+  <div class="mockup">
+    <div class="mockup-header">Scene Flow</div>
+    <div class="mockup-body" style="text-align:center; padding:30px; font-family:monospace; font-size:14px;">
+      <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+        <div style="background:#2a2a3a; padding:12px 20px; border-radius:8px; border:2px solid #6366f1;">Title Screen</div>
+        <span style="color:#6366f1; font-size:20px;">→</span>
+        <div style="background:#2a2a3a; padding:12px 20px; border-radius:8px; border:2px solid #6366f1;">Level Select</div>
+        <span style="color:#6366f1; font-size:20px;">→</span>
+        <div style="background:#2a2a3a; padding:12px 20px; border-radius:8px; border:2px solid #f59e0b;">Gameplay</div>
+        <span style="color:#6366f1; font-size:20px;">→</span>
+        <div style="background:#2a2a3a; padding:12px 20px; border-radius:8px; border:2px solid #6366f1;">Level Complete</div>
+      </div>
+      <div style="margin-top:16px; color:#9ca3af;">
+        Gameplay scene loops back to Level Select on completion or Game Over
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>World 1: Dojo Studio</h3>
+  <p>6 levels + 1 boss fight against Soggy Waffle</p>
+  <ul>
+    <li><strong>Levels 1-2:</strong> Tutorial — running, jumping, spin attack. Balance beams, hanging silks as platforms.</li>
+    <li><strong>Levels 3-4:</strong> Introduce enemies — butter packet goons, gluten blobs. Ribbon whip, cartwheel dash needed.</li>
+    <li><strong>Level 5:</strong> Ninja powerup introduced — wall-jump sections, shuriken targets unlock new paths.</li>
+    <li><strong>Level 6:</strong> Gauntlet combining all mechanics.</li>
+    <li><strong>Boss:</strong> Soggy Waffle — headband-wearing waffle sensei. Multi-phase fight in the main dojo hall.</li>
+  </ul>
+</div>

@@ -165,20 +165,20 @@ export default function loadLevel(levelData: LevelData) {
     hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
   })
 
-  // Slippery patch effect
-  player.onCollide("slippery", () => {
-    if (!(player as any).isSlippery) {
-      (player as any).isSlippery = true
-      wait(0.5, () => { (player as any).isSlippery = false })
-    }
+  // Slippery patch effect: active while overlapping
+  ;(player as any).onCollideUpdate("slippery", () => {
+    player.isSlippery = true
+  })
+  ;(player as any).onCollideEnd("slippery", () => {
+    player.isSlippery = false
   })
 
-  // Syrup puddle effect
-  player.onCollide("syrup-puddle", () => {
-    if (!(player as any).isSticky) {
-      (player as any).isSticky = true
-      wait(0.5, () => { (player as any).isSticky = false })
-    }
+  // Syrup puddle effect: active while overlapping
+  ;(player as any).onCollideUpdate("syrup-puddle", () => {
+    (player as any).isSyrupy = true
+  })
+  ;(player as any).onCollideEnd("syrup-puddle", () => {
+    (player as any).isSyrupy = false
   })
 
   return { player, platforms, enemies }
