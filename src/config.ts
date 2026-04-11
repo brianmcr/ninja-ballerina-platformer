@@ -23,6 +23,18 @@ export const PLAYER = {
   HEIGHT: 48,
 } as const
 
+export const PLATFORM = {
+  BOUNCY_FORCE: 900,
+  SWING_DEFAULT_RANGE: 100,
+  SWING_DEFAULT_SPEED: 1.5,
+} as const
+
+export const CAMERA = {
+  LERP_SPEED: 0.1,
+  VERTICAL_LERP: 0.05,
+  VERTICAL_OFFSET: -100,
+} as const
+
 export const COLORS = {
   idle: [255, 105, 180] as const,
   run: [255, 20, 147] as const,
