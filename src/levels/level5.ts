@@ -93,6 +93,7 @@ const level5: LevelData = {
   pickups: [
     // Ninja powerup early
     { type: "ninjaPowerup", x: 400, y: FLOOR_Y - 330 },
+    { type: "ninjaPowerup", x: 2800, y: FLOOR_Y - 280 },
 
     // Katana pickup
     { type: "katana", x: 1550, y: FLOOR_Y - 270 },
