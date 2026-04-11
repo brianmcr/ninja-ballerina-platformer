@@ -1,6 +1,7 @@
 import { BOSS, SCREEN, ENEMY } from "../config"
 import { hitPlayer } from "../components/health"
 import { createButterPat } from "./enemies"
+import { shakeOnBossPhase, screenShake, flashWhite, enemyDefeatPop } from "../components/effects"
 
 export function createSoggyWaffle(x: number, y: number) {
   const boss = add([
@@ -158,6 +159,7 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
       }
     })
 
+    shakeOnBossPhase()
     showPhaseText(`Phase ${newPhase}!`)
     phaseLabel.text = `Phase ${newPhase}`
 
@@ -323,7 +325,8 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
   function victory() {
     defeated = true
     boss.isInvincible = true
-    shake(12)
+    screenShake(12, 0.5)
+    enemyDefeatPop(boss.pos.x, boss.pos.y - BOSS.HEIGHT / 2)
 
     // Shrink and fade
     let shrinkTimer = 0

@@ -1,4 +1,5 @@
 import { PLAYER } from "../config"
+import { shakeOnHit } from "./effects"
 
 export interface PlayerHealth {
   lives: number
@@ -22,6 +23,8 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
 
   const h = player.health as PlayerHealth
 
+  shakeOnHit()
+
   if (h.isNinja) {
     h.isNinja = false
     player.currentWeapon = "none"
@@ -30,7 +33,6 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
   } else {
     h.lives--
     if (h.lives <= 0) {
-      // Game over is handled by the scene's onUpdate checking lives <= 0
       return
     }
     player.pos.x = spawnX

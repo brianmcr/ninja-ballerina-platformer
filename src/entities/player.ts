@@ -1,7 +1,8 @@
-import { PLAYER, COLORS, NINJA_COLORS, ENEMY } from "../config"
+import { PLAYER, COLORS, NINJA_COLORS, ENEMY, GRAVITY, FEEL } from "../config"
 import { applyFloat, startDash, updateDash } from "../components/movement"
 import { initHealth, updateHealth } from "../components/health"
 import { fireShuriken, swingKatana, stabSais, updateWeaponCooldown } from "../components/weapons"
+import { landSquash, shakeOnLand, spawnDashTrail } from "../components/effects"
 import type { PlayerHealth } from "../components/health"
 import type { WeaponType } from "../components/weapons"
 
@@ -30,6 +31,11 @@ export default function createPlayer(x: number, y: number) {
       health: null as PlayerHealth | null,
       currentWeapon: "none" as WeaponType,
       weaponCooldown: 0,
+      lastGroundedTime: 0,
+      lastJumpPressTime: -1,
+      lastFallY: 0,
+      wasGrounded: true,
+      dashTrailTimer: 0,
     },
   ])
 
@@ -84,16 +90,42 @@ export default function createPlayer(x: number, y: number) {
     if (player.isGrounded() && player.state !== "whip") setState("run")
   })
 
-  // Jump (space and W)
+  // Jump with coyote time and input buffering
   function tryJump() {
-    if (player.isGrounded() && canAct()) {
+    if (!canAct()) return
+    const grounded = player.isGrounded()
+    const coyote = time() - player.lastGroundedTime < FEEL.COYOTE_TIME
+
+    if (grounded || coyote) {
       player.jump(PLAYER.JUMP_FORCE)
       setState("jump")
+      player.lastJumpPressTime = -1
+      player.lastGroundedTime = -1 // prevent double coyote jump
+    } else {
+      // Buffer the jump input
+      player.lastJumpPressTime = time()
     }
   }
 
   onKeyPress("space", tryJump)
   onKeyPress("w", tryJump)
+
+  // Variable jump height: release space/w early to cut jump short
+  function jumpCut() {
+    if (!player.isGrounded() && player.vel.y < 0 && player.state === "jump") {
+      player.vel.y *= FEEL.JUMP_CUT_MULTIPLIER
+    }
+  }
+
+  onKeyRelease("space", () => {
+    if (player.state === "float") {
+      setState("jump")
+    } else {
+      jumpCut()
+    }
+  })
+
+  onKeyRelease("w", jumpCut)
 
   // Float (hold space while airborne and falling)
   onKeyDown("space", () => {
@@ -103,17 +135,12 @@ export default function createPlayer(x: number, y: number) {
     }
   })
 
-  onKeyRelease("space", () => {
-    if (player.state === "float") setState("jump")
-  })
-
   // Pirouette Spin (Z)
   onKeyPress("z", () => {
     if (!canAct()) return
     setState("spin")
     player.spinTimer = PLAYER.SPIN_DURATION
 
-    // Damage enemies in range
     const enemies = get("enemy")
     for (const e of enemies) {
       if (player.pos.dist(e.pos) < PLAYER.SPIN_RADIUS) {
@@ -132,6 +159,7 @@ export default function createPlayer(x: number, y: number) {
     if (!canAct()) return
     setState("dash")
     player.dashState = startDash(player)
+    player.dashTrailTimer = 0
   })
 
   // Ribbon Whip (C)
@@ -140,7 +168,6 @@ export default function createPlayer(x: number, y: number) {
     setState("whip")
     player.whipTimer = PLAYER.WHIP_DURATION
 
-    // Create temporary hitbox in front of player
     const whipX = player.pos.x + player.facing * (PLAYER.WIDTH / 2 + PLAYER.WHIP_RANGE / 2)
     const whipY = player.pos.y - PLAYER.HEIGHT / 2
     player.whipHitbox = add([
@@ -176,17 +203,43 @@ export default function createPlayer(x: number, y: number) {
 
   // Main update loop
   player.onUpdate(() => {
+    // Track grounded time for coyote time
+    if (player.isGrounded()) {
+      player.lastGroundedTime = time()
+      // Track fall start position when we leave ground
+      player.lastFallY = player.pos.y
+    }
+
+    // Track when player leaves the ground to measure fall distance
+    if (!player.isGrounded() && player.wasGrounded) {
+      player.lastFallY = player.pos.y
+    }
+    player.wasGrounded = player.isGrounded()
+
+    // Fall gravity multiplier: snappier falling
+    if (!player.isGrounded() && player.vel.y > 0 && player.state !== "float" && player.state !== "dash") {
+      const extraGrav = GRAVITY * (FEEL.FALL_GRAVITY_MULT - 1) * dt()
+      player.vel.y += extraGrav
+    }
+
     // Spin timer
     if (player.state === "spin") {
       player.spinTimer -= dt()
       if (player.spinTimer <= 0) {
         setState(player.isGrounded() ? "idle" : "jump")
       }
-      return // can't move during spin
+      return
     }
 
-    // Dash update
+    // Dash update with trail
     if (player.state === "dash" && player.dashState) {
+      player.dashTrailTimer -= dt()
+      if (player.dashTrailTimer <= 0) {
+        player.dashTrailTimer = FEEL.DASH_TRAIL_INTERVAL
+        const palette = (player.health as PlayerHealth)?.isNinja ? NINJA_COLORS : COLORS
+        const c = palette.dash
+        spawnDashTrail(player.pos.x, player.pos.y, PLAYER.WIDTH, PLAYER.HEIGHT, [c[0], c[1], c[2]])
+      }
       const active = updateDash(player, player.dashState)
       if (!active) {
         player.dashState = null
@@ -226,8 +279,23 @@ export default function createPlayer(x: number, y: number) {
     updateWeaponCooldown(player)
   })
 
-  // Landing detection
+  // Landing detection with squash and jump buffer
   player.onGround(() => {
+    // Landing squash if fell far enough
+    const fallDist = player.pos.y - player.lastFallY
+    if (fallDist > FEEL.LAND_SQUASH_THRESHOLD) {
+      landSquash(player)
+      shakeOnLand()
+    }
+
+    // Jump buffer: if player pressed jump recently, auto-execute
+    if (player.lastJumpPressTime > 0 && time() - player.lastJumpPressTime < FEEL.JUMP_BUFFER) {
+      player.lastJumpPressTime = -1
+      player.jump(PLAYER.JUMP_FORCE)
+      setState("jump")
+      return
+    }
+
     if (player.state === "jump" || player.state === "float") {
       setState("idle")
     }

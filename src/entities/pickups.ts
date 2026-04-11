@@ -1,5 +1,6 @@
 import { PICKUP, WEAPON } from "../config"
 import { collectSequin, collectNinjaPowerup } from "../components/health"
+import { sequinCollectPop } from "../components/effects"
 import type { PlayerHealth } from "../components/health"
 import type { WeaponType } from "../components/weapons"
 
@@ -53,6 +54,7 @@ export function createSequin(x: number, y: number) {
   })
 
   seq.onCollide("player", (p: any) => {
+    sequinCollectPop(seq.pos.x, seq.pos.y)
     collectSequin(p)
     destroy(seq)
   })

@@ -1,4 +1,5 @@
 import { ENEMY } from "../config"
+import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite } from "../components/effects"
 
 export function createButterPat(x: number, y: number, patrolRange = 100) {
   const e = ENEMY.BUTTER_PAT
@@ -19,8 +20,11 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
       hurt(dmg: number) {
         hp -= dmg
         if (hp <= 0) {
+          flashWhite(enemy, 0.08)
+          shakeOnEnemyDefeat()
+          enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.HEIGHT / 2)
           spawnSlipperyPatch(enemy.pos.x, enemy.pos.y)
-          destroy(enemy)
+          wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         }
       },
     },
@@ -67,7 +71,10 @@ export function createGlutenBlob(x: number, y: number) {
       hurt(dmg: number) {
         hp -= dmg
         if (hp <= 0) {
-          destroy(enemy)
+          flashWhite(enemy, 0.08)
+          shakeOnEnemyDefeat()
+          enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.SIZE / 2)
+          wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         } else {
           enemy.color = rgb(e.HIT_COLOR[0], e.HIT_COLOR[1], e.HIT_COLOR[2])
         }
@@ -102,7 +109,10 @@ export function createSyrupDripper(x: number, y: number) {
     {
       hurt(_dmg: number, type?: string) {
         if (type === "ranged") {
-          destroy(enemy)
+          flashWhite(enemy, 0.08)
+          shakeOnEnemyDefeat()
+          enemyDefeatPop(enemy.pos.x, enemy.pos.y)
+          wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         }
       },
     },
@@ -177,7 +187,10 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
         }
         hp -= dmg
         if (hp <= 0) {
-          destroy(enemy)
+          flashWhite(enemy, 0.08)
+          shakeOnEnemyDefeat()
+          enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.HEIGHT / 2)
+          wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         }
       },
     },

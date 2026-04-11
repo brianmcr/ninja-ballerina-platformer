@@ -139,6 +139,21 @@ export const BOSS = {
   ARENA_WIDTH: 1600,
 } as const
 
+export const FEEL = {
+  COYOTE_TIME: 0.1,
+  JUMP_BUFFER: 0.1,
+  JUMP_CUT_MULTIPLIER: 0.5,
+  FALL_GRAVITY_MULT: 1.5,
+  SHAKE_HIT: { intensity: 4, duration: 0.15 },
+  SHAKE_ENEMY_DEFEAT: { intensity: 2, duration: 0.08 },
+  SHAKE_BOSS_PHASE: { intensity: 8, duration: 0.3 },
+  SHAKE_LAND: { intensity: 2, duration: 0.06 },
+  LAND_SQUASH_THRESHOLD: 200,
+  LAND_SQUASH_DURATION: 0.1,
+  DASH_TRAIL_INTERVAL: 0.03,
+  DASH_TRAIL_FADE: 0.2,
+} as const
+
 export const NINJA_COLORS = {
   idle: [90, 60, 90] as const,
   run: [110, 40, 80] as const,
