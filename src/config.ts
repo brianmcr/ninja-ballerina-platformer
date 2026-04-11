@@ -114,6 +114,31 @@ export const DESTRUCTIBLE = {
   COLOR: [139, 100, 60] as const,
 } as const
 
+export const BOSS = {
+  WIDTH: 48,
+  HEIGHT: 56,
+  COLOR: [180, 140, 60] as const,
+  HEADBAND_COLOR: [100, 70, 30] as const,
+  SPEED: 120,
+  ENRAGED_SPEED_MULT: 1.5,
+  TOTAL_HP: 9,
+  HITS_PER_PHASE: 3,
+  SYRUP_BOMB_INTERVAL: 2,
+  SYRUP_BOMB_INTERVAL_ENRAGED: 1.2,
+  SYRUP_BOMB_SPEED: 300,
+  SYRUP_BOMB_SIZE: 12,
+  SYRUP_BOMB_COLOR: [100, 50, 10] as const,
+  SYRUP_PUDDLE_COLOR: [80, 40, 5] as const,
+  SYRUP_PUDDLE_WIDTH: 60,
+  SYRUP_PUDDLE_SLOW: 0.3,
+  GLUTEN_BLOB_SPEED: 250,
+  GLUTEN_BLOB_SIZE: 16,
+  GLUTEN_BLOB_COLOR: [210, 180, 140] as const,
+  INVINCIBLE_DURATION: 1.5,
+  TAUNT_INTERVAL: 4,
+  ARENA_WIDTH: 1600,
+} as const
+
 export const NINJA_COLORS = {
   idle: [90, 60, 90] as const,
   run: [110, 40, 80] as const,

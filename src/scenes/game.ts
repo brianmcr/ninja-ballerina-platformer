@@ -1,9 +1,14 @@
 import loadLevel from "../levels/loader"
 import level1 from "../levels/level1"
+import bossArena from "../levels/bossArena"
+import type { LevelData } from "../levels/level1"
 import type { PlayerHealth } from "../components/health"
+import { runBossFight } from "../entities/soggyWaffle"
 
-export default function game() {
-  const { player } = loadLevel(level1)
+export default function game(levelName?: string) {
+  const isBoss = levelName === "boss"
+  const levelData: LevelData = isBoss ? bossArena : level1
+  const { player } = loadLevel(levelData)
 
   const stateLabel = add([
     text("State: idle", { size: 16 }),
@@ -56,4 +61,17 @@ export default function game() {
     ninjaLabel.text = h.isNinja ? "NINJA" : ""
     weaponLabel.text = player.currentWeapon !== "none" ? `Weapon: ${player.currentWeapon}` : ""
   })
+
+  if (isBoss) {
+    runBossFight(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
+  } else {
+    // Transition to boss fight when player reaches end of level1
+    let triggered = false
+    player.onUpdate(() => {
+      if (!triggered && player.pos.x > 3100) {
+        triggered = true
+        go("game", "boss")
+      }
+    })
+  }
 }
