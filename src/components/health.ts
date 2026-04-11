@@ -30,18 +30,14 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
   } else {
     h.lives--
     if (h.lives <= 0) {
-      debug.log("GAME OVER")
-      h.lives = PLAYER.STARTING_LIVES
-      h.isNinja = false
-      h.sequins = 0
-      player.currentWeapon = "none"
+      // Game over is handled by the scene's onUpdate checking lives <= 0
+      return
     }
     player.pos.x = spawnX
     player.pos.y = spawnY
     player.vel.x = 0
     player.vel.y = 0
     startInvincibility(player)
-    debug.log(`Lives: ${h.lives}`)
   }
 }
 

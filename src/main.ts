@@ -2,6 +2,13 @@ import kaplay from "kaplay"
 import { SCREEN, GRAVITY } from "./config"
 import game from "./scenes/game"
 import cutscene, { level1Intro } from "./scenes/cutscene"
+import title from "./scenes/title"
+import levelSelect from "./scenes/levelSelect"
+import levelComplete from "./scenes/levelComplete"
+import type { LevelCompleteData } from "./scenes/levelComplete"
+import gameOver from "./scenes/gameOver"
+import type { GameOverData } from "./scenes/gameOver"
+import { saveProgress, loadProgress } from "./components/progress"
 
 kaplay({
   width: SCREEN.WIDTH,
@@ -12,9 +19,26 @@ kaplay({
 
 setGravity(GRAVITY)
 
-scene("cutscene", () => cutscene(level1Intro))
+scene("title", () => title())
+scene("cutscene", () => {
+  cutscene({
+    ...level1Intro,
+    nextScene: "game",
+  })
+})
 scene("game", (levelName?: string) => game(levelName))
+scene("levelSelect", () => levelSelect())
+scene("levelComplete", (data: LevelCompleteData) => levelComplete(data))
+scene("gameOver", (data: GameOverData) => gameOver(data))
 scene("victory", () => {
+  // Mark boss complete
+  const p = loadProgress()
+  if (!p.levelsCompleted.includes("boss")) {
+    p.levelsCompleted.push("boss")
+  }
+  p.firstPlayDone = true
+  saveProgress(p)
+
   add([
     rect(SCREEN.WIDTH, SCREEN.HEIGHT),
     pos(0, 0),
@@ -27,12 +51,12 @@ scene("victory", () => {
     color(255, 215, 0),
   ])
   add([
-    text("The golden ballet slippers have been recovered.\nPress SPACE to play again.", { size: 20 }),
+    text("The golden ballet slippers have been recovered.\nPress SPACE to continue.", { size: 20 }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 + 40),
     anchor("center"),
     color(200, 200, 200),
   ])
-  onKeyPress("space", () => go("cutscene"))
+  onKeyPress("space", () => go("title"))
 })
 
-go("cutscene")
+go("title")

@@ -1,3 +1,60 @@
+import { SCREEN } from "../config"
+import { loadProgress } from "../components/progress"
+
 export default function title() {
-  // TODO: title screen
+  add([
+    rect(SCREEN.WIDTH, SCREEN.HEIGHT),
+    pos(0, 0),
+    color(20, 20, 50),
+  ])
+
+  // Decorative player silhouette
+  add([
+    rect(32, 48),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 - 120),
+    anchor("center"),
+    color(255, 105, 180),
+    opacity(0.3),
+  ])
+
+  add([
+    text("NINJA BALLERINA", { size: 64 }),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 - 40),
+    anchor("center"),
+    color(255, 105, 180),
+  ])
+
+  add([
+    text("A Platformer Adventure", { size: 24 }),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 + 20),
+    anchor("center"),
+    color(200, 180, 220),
+  ])
+
+  const prompt = add([
+    text("Press SPACE to Start", { size: 20 }),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 100),
+    anchor("center"),
+    color(255, 255, 255),
+    opacity(1),
+  ])
+
+  // Blink effect
+  let blinkTimer = 0
+  onUpdate(() => {
+    blinkTimer += dt()
+    prompt.opacity = Math.sin(blinkTimer * 3) > 0 ? 1 : 0.2
+  })
+
+  function start() {
+    const progress = loadProgress()
+    if (progress.firstPlayDone) {
+      go("levelSelect")
+    } else {
+      go("cutscene")
+    }
+  }
+
+  onKeyPress("space", start)
+  onKeyPress("enter", start)
 }
