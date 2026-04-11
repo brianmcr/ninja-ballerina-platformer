@@ -81,6 +81,39 @@ export const COLORS = {
   whip: [255, 50, 50] as const,
 } as const
 
+export const WEAPON = {
+  SHURIKEN: {
+    SIZE: 8,
+    SPEED: 500,
+    COOLDOWN: 0.4,
+    COLOR: [255, 215, 0] as const,
+  },
+  KATANA: {
+    WIDTH: 120,
+    HEIGHT: 24,
+    DURATION: 0.35,
+    COLOR: [180, 200, 255] as const,
+  },
+  SAIS: {
+    WIDTH: 60,
+    HEIGHT: 20,
+    DURATION: 0.2,
+    COOLDOWN: 0.15,
+    COLOR: [255, 80, 80] as const,
+  },
+  PICKUP_KATANA_COLOR: [100, 140, 255] as const,
+  PICKUP_SAIS_COLOR: [255, 80, 80] as const,
+  PICKUP_SIZE: 24,
+  PICKUP_BOB_SPEED: 2.5,
+  PICKUP_BOB_RANGE: 5,
+} as const
+
+export const DESTRUCTIBLE = {
+  WIDTH: 48,
+  HEIGHT: 48,
+  COLOR: [139, 100, 60] as const,
+} as const
+
 export const NINJA_COLORS = {
   idle: [90, 60, 90] as const,
   run: [110, 40, 80] as const,

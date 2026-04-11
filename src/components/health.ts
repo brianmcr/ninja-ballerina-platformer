@@ -24,6 +24,7 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
 
   if (h.isNinja) {
     h.isNinja = false
+    player.currentWeapon = "none"
     startInvincibility(player)
     debug.log("Lost ninja form!")
   } else {
@@ -33,6 +34,7 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
       h.lives = PLAYER.STARTING_LIVES
       h.isNinja = false
       h.sequins = 0
+      player.currentWeapon = "none"
     }
     player.pos.x = spawnX
     player.pos.y = spawnY
@@ -80,5 +82,6 @@ export function collectSequin(player: any): boolean {
 export function collectNinjaPowerup(player: any) {
   const h = player.health as PlayerHealth
   h.isNinja = true
-  debug.log("Ninja form!")
+  player.currentWeapon = "shuriken"
+  debug.log("Ninja form! Shuriken equipped.")
 }

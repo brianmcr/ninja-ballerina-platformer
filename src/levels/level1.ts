@@ -18,9 +18,16 @@ export interface EnemySpawn {
 }
 
 export interface PickupSpawn {
-  type: "ninjaPowerup" | "sequin"
+  type: "ninjaPowerup" | "sequin" | "katana" | "sais"
   x: number
   y: number
+}
+
+export interface DestructibleData {
+  x: number
+  y: number
+  width: number
+  height: number
 }
 
 export interface LevelData {
@@ -30,6 +37,7 @@ export interface LevelData {
   platforms: PlatformData[]
   enemies?: EnemySpawn[]
   pickups?: PickupSpawn[]
+  destructibles?: DestructibleData[]
 }
 
 const FLOOR_Y = SCREEN.HEIGHT - 48
@@ -139,6 +147,15 @@ const level1: LevelData = {
     { type: "sequin", x: 2750, y: FLOOR_Y - 145 },
     { type: "sequin", x: 2870, y: FLOOR_Y - 225 },
     { type: "sequin", x: 2990, y: FLOOR_Y - 305 },
+
+    // Weapon pickups
+    { type: "katana", x: 1200, y: FLOOR_Y - 170 },
+    { type: "sais", x: 2200, y: FLOOR_Y - 210 },
+  ],
+  destructibles: [
+    { x: 1550, y: FLOOR_Y - 48, width: 48, height: 48 },
+    { x: 1900, y: FLOOR_Y - 48, width: 48, height: 48 },
+    { x: 2350, y: FLOOR_Y - 48, width: 48, height: 48 },
   ],
 }
 

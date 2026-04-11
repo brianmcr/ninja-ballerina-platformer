@@ -34,9 +34,16 @@ export default function game() {
     color(255, 165, 0),
   ])
 
-  add([
-    text("Arrows/WASD: Move | Space: Jump/Float | Z: Spin | X: Dash | C: Whip", { size: 14 }),
+  const weaponLabel = add([
+    text("", { size: 16 }),
     pos(12, 80),
+    fixed(),
+    color(180, 200, 255),
+  ])
+
+  add([
+    text("Arrows/WASD: Move | Space: Jump/Float | Z: Spin | X: Dash | C: Whip | V: Weapon", { size: 14 }),
+    pos(12, 102),
     fixed(),
     color(200, 200, 200),
   ])
@@ -47,5 +54,6 @@ export default function game() {
     livesLabel.text = `Lives: ${h.lives}`
     sequinLabel.text = `Sequins: ${h.sequins}`
     ninjaLabel.text = h.isNinja ? "NINJA" : ""
+    weaponLabel.text = player.currentWeapon !== "none" ? `Weapon: ${player.currentWeapon}` : ""
   })
 }

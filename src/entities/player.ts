@@ -1,7 +1,9 @@
 import { PLAYER, COLORS, NINJA_COLORS, ENEMY } from "../config"
 import { applyFloat, startDash, updateDash } from "../components/movement"
 import { initHealth, updateHealth } from "../components/health"
+import { fireShuriken, swingKatana, stabSais, updateWeaponCooldown } from "../components/weapons"
 import type { PlayerHealth } from "../components/health"
+import type { WeaponType } from "../components/weapons"
 
 type PlayerState = "idle" | "run" | "jump" | "float" | "spin" | "dash" | "whip"
 
@@ -26,6 +28,8 @@ export default function createPlayer(x: number, y: number) {
       isSlippery: false,
       isSyrupy: false,
       health: null as PlayerHealth | null,
+      currentWeapon: "none" as WeaponType,
+      weaponCooldown: 0,
     },
   ])
 
@@ -159,6 +163,17 @@ export default function createPlayer(x: number, y: number) {
     })
   })
 
+  // Weapon attack (V)
+  onKeyPress("v", () => {
+    const h = player.health as PlayerHealth
+    if (!h.isNinja || player.currentWeapon === "none") return
+    switch (player.currentWeapon) {
+      case "shuriken": fireShuriken(player); break
+      case "katana": swingKatana(player); break
+      case "sais": stabSais(player); break
+    }
+  })
+
   // Main update loop
   player.onUpdate(() => {
     // Spin timer
@@ -208,6 +223,7 @@ export default function createPlayer(x: number, y: number) {
     }
 
     updateHealth(player)
+    updateWeaponCooldown(player)
   })
 
   // Landing detection

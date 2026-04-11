@@ -1,9 +1,9 @@
-import { SCREEN, PLATFORM, CAMERA, ENEMY, PICKUP } from "../config"
+import { SCREEN, PLATFORM, CAMERA, ENEMY, PICKUP, DESTRUCTIBLE } from "../config"
 import createPlayer from "../entities/player"
 import { createButterPat, createGlutenBlob, createSyrupDripper, createMilkCartonGuard } from "../entities/enemies"
-import { createNinjaPowerup, createSequin } from "../entities/pickups"
+import { createNinjaPowerup, createSequin, createWeaponPickup } from "../entities/pickups"
 import { hitPlayer } from "../components/health"
-import type { LevelData, PlatformData, EnemySpawn, PickupSpawn } from "./level1"
+import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
   const colors: Record<PlatformData["type"], [number, number, number]> = {
@@ -148,6 +148,13 @@ export default function loadLevel(levelData: LevelData) {
     }
   }
 
+  // Spawn destructibles
+  if (levelData.destructibles) {
+    for (const d of levelData.destructibles) {
+      spawnDestructible(d)
+    }
+  }
+
   // Player-enemy collision: stomp or take damage
   player.onCollide("enemy", (e: any, col: any) => {
     // Stomp: player is falling and lands on top of enemy
@@ -197,5 +204,19 @@ function spawnPickup(p: PickupSpawn) {
   switch (p.type) {
     case "ninjaPowerup": return createNinjaPowerup(p.x, p.y)
     case "sequin": return createSequin(p.x, p.y)
+    case "katana": return createWeaponPickup(p.x, p.y, "katana")
+    case "sais": return createWeaponPickup(p.x, p.y, "sais")
   }
+}
+
+function spawnDestructible(d: DestructibleData) {
+  add([
+    rect(d.width, d.height),
+    pos(d.x, d.y),
+    area(),
+    body({ isStatic: true }),
+    anchor("bot"),
+    color(DESTRUCTIBLE.COLOR[0], DESTRUCTIBLE.COLOR[1], DESTRUCTIBLE.COLOR[2]),
+    "destructible",
+  ])
 }
