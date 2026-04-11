@@ -67,15 +67,12 @@ export function swingKatana(player: any) {
     if (hit.has(e)) return
     hit.add(e)
     if (e.hurt) {
-      if (e.is("syrupDripper")) {
-        e.hurt(1, "ranged")
+      if (e.is("syrupDripper")) return // katana can't kill syrup drippers
+      const fromDir = player.pos.x < e.pos.x ? -1 : 1
+      if (e.hurt.length >= 2) {
+        e.hurt(1, fromDir)
       } else {
-        const fromDir = player.pos.x < e.pos.x ? -1 : 1
-        if (e.hurt.length >= 2) {
-          e.hurt(1, fromDir)
-        } else {
-          e.hurt(1)
-        }
+        e.hurt(1)
       }
     }
   })
@@ -120,15 +117,12 @@ export function stabSais(player: any) {
     if (hit.has(e)) return
     hit.add(e)
     if (e.hurt) {
-      if (e.is("syrupDripper")) {
-        e.hurt(1, "ranged")
+      if (e.is("syrupDripper")) return // sais can't kill syrup drippers directly (use deflected drops)
+      const fromDir = player.pos.x < e.pos.x ? -1 : 1
+      if (e.hurt.length >= 2) {
+        e.hurt(1, fromDir)
       } else {
-        const fromDir = player.pos.x < e.pos.x ? -1 : 1
-        if (e.hurt.length >= 2) {
-          e.hurt(1, fromDir)
-        } else {
-          e.hurt(1)
-        }
+        e.hurt(1)
       }
     }
   })

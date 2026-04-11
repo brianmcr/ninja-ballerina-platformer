@@ -123,13 +123,10 @@ export default function loadLevel(levelData: LevelData) {
     )
   })
 
-  // Kill zone: reset player if they fall off
+  // Kill zone: falling off costs a life
   player.onUpdate(() => {
     if (player.pos.y > SCREEN.HEIGHT + 200) {
-      player.pos.x = levelData.playerSpawn.x
-      player.pos.y = levelData.playerSpawn.y
-      player.vel.x = 0
-      player.vel.y = 0
+      hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
     }
   })
 
