@@ -9,8 +9,26 @@ export const PLAYER = {
   RUN_SPEED: 300,
   JUMP_FORCE: 600,
   DASH_SPEED: 500,
+  DASH_DURATION: 0.3,
   FLOAT_GRAVITY: 400,
+  SPIN_DURATION: 0.4,
+  SPIN_RADIUS: 60,
+  WHIP_DURATION: 0.3,
+  WHIP_RANGE: 80,
+  WHIP_WIDTH: 16,
   INVINCIBILITY_DURATION: 2,
   STARTING_LIVES: 3,
   SEQUINS_FOR_EXTRA_LIFE: 100,
+  WIDTH: 32,
+  HEIGHT: 48,
+} as const
+
+export const COLORS = {
+  idle: [255, 105, 180] as const,
+  run: [255, 20, 147] as const,
+  jump: [255, 182, 193] as const,
+  float: [200, 162, 255] as const,
+  spin: [255, 215, 0] as const,
+  dash: [0, 255, 255] as const,
+  whip: [255, 50, 50] as const,
 } as const
