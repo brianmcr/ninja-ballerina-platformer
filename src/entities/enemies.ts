@@ -1,5 +1,6 @@
 import { ENEMY } from "../config"
 import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText } from "../components/effects"
+import { playCoin, playHit } from "../components/audio"
 
 export function createButterPat(x: number, y: number, patrolRange = 100) {
   const e = ENEMY.BUTTER_PAT
@@ -23,6 +24,7 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
           flashWhite(enemy, 0.08)
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.HEIGHT / 2)
+          playCoin()
           spawnSlipperyPatch(enemy.pos.x, enemy.pos.y)
           wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         }
@@ -74,8 +76,10 @@ export function createGlutenBlob(x: number, y: number) {
           flashWhite(enemy, 0.08)
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.SIZE / 2)
+          playCoin()
           wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         } else {
+          playHit()
           enemy.color = rgb(e.HIT_COLOR[0], e.HIT_COLOR[1], e.HIT_COLOR[2])
         }
       },
@@ -83,16 +87,32 @@ export function createGlutenBlob(x: number, y: number) {
   ])
 
   let hopTimer = 2.5
+  let telegraphing = false
+  let telegraphTimer = 0
   enemy.onUpdate(() => {
+    if (telegraphing) {
+      telegraphTimer -= dt()
+      const t = 1 - Math.max(0, telegraphTimer / 0.3)
+      enemy.width = e.SIZE * (1 + t * 0.3)
+      enemy.height = e.SIZE * (1 - t * 0.25)
+      if (telegraphTimer <= 0) {
+        telegraphing = false
+        enemy.width = e.SIZE
+        enemy.height = e.SIZE
+        const players = get("player")
+        if (players.length > 0) {
+          const dir = players[0].pos.x > enemy.pos.x ? 1 : -1
+          enemy.vel.x = dir * 80
+          enemy.jump(200)
+        }
+      }
+      return
+    }
     hopTimer -= dt()
     if (hopTimer <= 0 && enemy.isGrounded()) {
       hopTimer = 2 + Math.random()
-      const players = get("player")
-      if (players.length > 0) {
-        const dir = players[0].pos.x > enemy.pos.x ? 1 : -1
-        enemy.vel.x = dir * 80
-        enemy.jump(200)
-      }
+      telegraphing = true
+      telegraphTimer = 0.3
     }
   })
 
@@ -121,14 +141,22 @@ export function createSyrupDripper(x: number, y: number) {
     "enemy",
     "syrupDripper",
     {
-      hurt(_dmg: number, type?: string) {
+      hurt(_dmg: number, type?: string | number) {
         if (type === "ranged") {
           flashWhite(enemy, 0.08)
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y)
+          playCoin()
           wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         } else {
+          playHit()
           floatingText(enemy.pos.x, enemy.pos.y - e.SIZE / 2, "Ranged only!", [255, 100, 100])
+          const players = get("player")
+          if (players.length > 0) {
+            const p = players[0]
+            const kb = p.pos.x < enemy.pos.x ? -1 : 1
+            p.vel.x = kb * 300
+          }
         }
       },
     },
@@ -226,6 +254,7 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
           flashWhite(enemy, 0.08)
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.HEIGHT / 2)
+          playCoin()
           wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         }
       },

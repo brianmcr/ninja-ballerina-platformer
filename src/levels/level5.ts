@@ -33,6 +33,9 @@ const level5: LevelData = {
     { type: "solid", x: 1000, y: FLOOR_Y - 160, width: 140, height: 16 },
     { type: "one-way", x: 1100, y: FLOOR_Y - 320, width: 100, height: 12 },
 
+    // Relief zone 1 (~1/3 mark)
+    { type: "solid", x: 1400, y: FLOOR_Y, width: 300, height: FLOOR_H },
+
     // Tight corridor section
     { type: "solid", x: 1350, y: FLOOR_Y - 140, width: 100, height: 16 },
     { type: "solid", x: 1500, y: FLOOR_Y - 240, width: 100, height: 16 },
@@ -54,6 +57,9 @@ const level5: LevelData = {
     // Bouncy platforms for vertical traversal
     { type: "bouncy", x: 950, y: FLOOR_Y - 16, width: 60, height: 16 },
     { type: "bouncy", x: 2850, y: FLOOR_Y - 16, width: 60, height: 16 },
+
+    // Relief zone 2 (~2/3 mark)
+    { type: "solid", x: 2900, y: FLOOR_Y, width: 300, height: FLOOR_H },
 
     // High platforms
     { type: "solid", x: 2900, y: FLOOR_Y - 380, width: 120, height: 16 },
@@ -123,6 +129,11 @@ const level5: LevelData = {
     { type: "sequin", x: 1330, y: FLOOR_Y - 20 },
     { type: "sequin", x: 1400, y: FLOOR_Y - 165 },
 
+    // Relief zone 1 sequins
+    { type: "sequin", x: 1460, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1530, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1600, y: FLOOR_Y - 20 },
+
     // Tight corridor
     { type: "sequin", x: 1550, y: FLOOR_Y - 265 },
     { type: "sequin", x: 1700, y: FLOOR_Y - 185 },
@@ -132,6 +143,11 @@ const level5: LevelData = {
     { type: "sequin", x: 2050, y: FLOOR_Y - 225 },
     { type: "sequin", x: 2300, y: FLOOR_Y - 345 },
     { type: "sequin", x: 2150, y: FLOOR_Y - 205 },
+
+    // Relief zone 2 sequins
+    { type: "sequin", x: 2960, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 3030, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 3100, y: FLOOR_Y - 20 },
 
     // Floor 5-6
     { type: "sequin", x: 2560, y: FLOOR_Y - 20 },

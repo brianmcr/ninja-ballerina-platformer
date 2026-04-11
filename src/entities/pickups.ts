@@ -1,6 +1,7 @@
 import { PICKUP, WEAPON } from "../config"
 import { collectSequin, collectNinjaPowerup, collectRibbon } from "../components/health"
 import { sequinCollectPop } from "../components/effects"
+import { playCoin, playPowerup } from "../components/audio"
 import type { PlayerHealth } from "../components/health"
 import type { WeaponType } from "../components/weapons"
 
@@ -27,6 +28,7 @@ export function createNinjaPowerup(x: number, y: number) {
 
   pickup.onCollide("player", (p: any) => {
     collectNinjaPowerup(p)
+    playPowerup()
     destroy(pickup)
   })
 
@@ -56,6 +58,7 @@ export function createSequin(x: number, y: number) {
   seq.onCollide("player", (p: any) => {
     sequinCollectPop(seq.pos.x, seq.pos.y)
     collectSequin(p)
+    playCoin()
     destroy(seq)
   })
 
@@ -88,6 +91,7 @@ export function createRibbon(x: number, y: number) {
   ribbon.onCollide("player", (p: any) => {
     sequinCollectPop(ribbon.pos.x, ribbon.pos.y)
     collectRibbon(p)
+    playPowerup()
     debug.log("Ribbon collected!")
     destroy(ribbon)
   })
@@ -134,6 +138,7 @@ export function createWeaponPickup(x: number, y: number, weaponType: "katana" | 
       return
     }
     p.currentWeapon = weaponType
+    playPowerup()
     debug.log(`${weaponType} equipped!`)
     destroy(txt)
     destroy(pickup)

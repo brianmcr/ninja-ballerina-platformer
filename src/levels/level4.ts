@@ -24,6 +24,9 @@ const level4: LevelData = {
     { type: "solid", x: 800, y: FLOOR_Y - 180, width: 180, height: 16 },
     { type: "solid", x: 1100, y: FLOOR_Y - 240, width: 160, height: 16 },
 
+    // Relief zone 1 (~1/3 mark)
+    { type: "solid", x: 1100, y: FLOOR_Y, width: 300, height: FLOOR_H },
+
     // One-way shelves
     { type: "one-way", x: 1400, y: FLOOR_Y - 140, width: 140, height: 12 },
     { type: "one-way", x: 1600, y: FLOOR_Y - 260, width: 120, height: 12 },
@@ -33,6 +36,9 @@ const level4: LevelData = {
     { type: "solid", x: 2000, y: FLOOR_Y - 200, width: 120, height: 16 },
     { type: "one-way", x: 2200, y: FLOOR_Y - 320, width: 100, height: 12 },
     { type: "solid", x: 2400, y: FLOOR_Y - 240, width: 120, height: 16 },
+
+    // Relief zone 2 (~2/3 mark)
+    { type: "solid", x: 2650, y: FLOOR_Y, width: 300, height: FLOOR_H },
 
     // Swing platforms
     { type: "swing", x: 1050, y: FLOOR_Y - 380, width: 90, height: 12, swingRange: 100, swingSpeed: 1.6 },
@@ -97,6 +103,11 @@ const level4: LevelData = {
     { type: "sequin", x: 830, y: FLOOR_Y - 20 },
     { type: "sequin", x: 1000, y: FLOOR_Y - 20 },
 
+    // Relief zone 1 sequins
+    { type: "sequin", x: 1160, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1230, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1300, y: FLOOR_Y - 20 },
+
     // Sequins on shelves
     { type: "sequin", x: 1150, y: FLOOR_Y - 265 },
     { type: "sequin", x: 1440, y: FLOOR_Y - 165 },
@@ -117,6 +128,11 @@ const level4: LevelData = {
     { type: "sequin", x: 2100, y: FLOOR_Y - 20 },
     { type: "sequin", x: 2620, y: FLOOR_Y - 20 },
     { type: "sequin", x: 2750, y: FLOOR_Y - 20 },
+
+    // Relief zone 2 sequins
+    { type: "sequin", x: 2710, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2780, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2850, y: FLOOR_Y - 20 },
 
     // Swing path sequins
     { type: "sequin", x: 2750, y: FLOOR_Y - 225 },

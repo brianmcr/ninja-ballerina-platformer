@@ -1,10 +1,12 @@
 import { WEAPON } from "../config"
+import { playShuriken, playWhip } from "./audio"
 
 export type WeaponType = "none" | "shuriken" | "katana" | "sais"
 
 export function fireShuriken(player: any) {
   if (player.weaponCooldown > 0) return
   player.weaponCooldown = WEAPON.SHURIKEN.COOLDOWN
+  playShuriken()
 
   const projX = player.pos.x + player.facing * (32 / 2 + 4)
   const projY = player.pos.y - 24
@@ -47,6 +49,7 @@ export function fireShuriken(player: any) {
 export function swingKatana(player: any) {
   if (player.weaponCooldown > 0) return
   player.weaponCooldown = WEAPON.KATANA.DURATION
+  playWhip()
 
   const hitX = player.pos.x + player.facing * (32 / 2 + WEAPON.KATANA.WIDTH / 2)
   const hitY = player.pos.y - 24
@@ -97,6 +100,7 @@ export function swingKatana(player: any) {
 export function stabSais(player: any) {
   if (player.weaponCooldown > 0) return
   player.weaponCooldown = WEAPON.SAIS.COOLDOWN
+  playShuriken()
 
   const hitX = player.pos.x + player.facing * (32 / 2 + WEAPON.SAIS.WIDTH / 2)
   const hitY = player.pos.y - 24

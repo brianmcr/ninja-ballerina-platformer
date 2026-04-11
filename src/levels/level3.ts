@@ -27,6 +27,9 @@ const level3: LevelData = {
     { type: "solid", x: 900, y: FLOOR_Y - 260, width: 160, height: 16 },
     { type: "solid", x: 1150, y: FLOOR_Y - 160, width: 180, height: 16 },
 
+    // Relief zone 1 (~1/3 mark)
+    { type: "solid", x: 1180, y: FLOOR_Y, width: 300, height: FLOOR_H },
+
     // Dash corridor — tight platforms requiring cartwheel
     { type: "solid", x: 1400, y: FLOOR_Y - 120, width: 120, height: 16 },
     { type: "solid", x: 1600, y: FLOOR_Y - 200, width: 140, height: 16 },
@@ -40,6 +43,9 @@ const level3: LevelData = {
     { type: "one-way", x: 2000, y: FLOOR_Y - 280, width: 140, height: 12 },
     { type: "one-way", x: 2250, y: FLOOR_Y - 200, width: 160, height: 12 },
     { type: "solid", x: 2450, y: FLOOR_Y - 300, width: 140, height: 16 },
+
+    // Relief zone 2 (~2/3 mark)
+    { type: "solid", x: 2500, y: FLOOR_Y, width: 300, height: FLOOR_H },
 
     // Bouncy
     { type: "bouncy", x: 2100, y: FLOOR_Y - 16, width: 80, height: 16 },
@@ -101,6 +107,11 @@ const level3: LevelData = {
     { type: "sequin", x: 1060, y: FLOOR_Y - 20 },
     { type: "sequin", x: 1200, y: FLOOR_Y - 20 },
 
+    // Relief zone 1 sequins
+    { type: "sequin", x: 1240, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1310, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1380, y: FLOOR_Y - 20 },
+
     // Dash corridor sequins
     { type: "sequin", x: 1440, y: FLOOR_Y - 145 },
     { type: "sequin", x: 1650, y: FLOOR_Y - 225 },
@@ -113,6 +124,11 @@ const level3: LevelData = {
     // Upper section
     { type: "sequin", x: 2050, y: FLOOR_Y - 305 },
     { type: "sequin", x: 2300, y: FLOOR_Y - 225 },
+
+    // Relief zone 2 sequins
+    { type: "sequin", x: 2560, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2630, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2700, y: FLOOR_Y - 20 },
 
     // Sequins floor 4
     { type: "sequin", x: 2280, y: FLOOR_Y - 20 },

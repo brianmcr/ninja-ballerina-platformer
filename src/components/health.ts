@@ -1,5 +1,6 @@
 import { PLAYER } from "../config"
 import { shakeOnHit } from "./effects"
+import { playHit, playDefeat } from "./audio"
 
 export interface PlayerHealth {
   lives: number
@@ -30,13 +31,16 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
   if (h.isNinja) {
     h.isNinja = false
     player.currentWeapon = "none"
+    playHit()
     startInvincibility(player)
     debug.log("Lost ninja form!")
   } else {
     h.lives--
     if (h.lives <= 0) {
+      playDefeat()
       return
     }
+    playHit()
     playDeathAnimation(player, spawnX, spawnY)
   }
 }

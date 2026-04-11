@@ -3,6 +3,7 @@ import { applyFloat, startDash, updateDash } from "../components/movement"
 import { initHealth, updateHealth } from "../components/health"
 import { fireShuriken, swingKatana, stabSais, updateWeaponCooldown } from "../components/weapons"
 import { landSquash, shakeOnLand, spawnDashTrail } from "../components/effects"
+import { playJump, playLand, playSpin, playDash, playWhip } from "../components/audio"
 import type { PlayerHealth } from "../components/health"
 import type { WeaponType } from "../components/weapons"
 
@@ -73,6 +74,7 @@ export default function createPlayer(x: number, y: number) {
     if (grounded || coyote) {
       player.jump(PLAYER.JUMP_FORCE)
       setState("jump")
+      playJump()
       player.lastJumpPressTime = -1
       player.lastGroundedTime = -1 // prevent double coyote jump
     } else {
@@ -113,6 +115,7 @@ export default function createPlayer(x: number, y: number) {
   onKeyPress("z", () => {
     if (!canAct()) return
     setState("spin")
+    playSpin()
     player.spinTimer = PLAYER.SPIN_DURATION
 
     const enemies = get("enemy")
@@ -132,6 +135,7 @@ export default function createPlayer(x: number, y: number) {
   onKeyPress("x", () => {
     if (!canAct()) return
     setState("dash")
+    playDash()
     player.dashState = startDash(player)
     player.dashTrailTimer = 0
   })
@@ -140,6 +144,7 @@ export default function createPlayer(x: number, y: number) {
   onKeyPress("c", () => {
     if (!canAct()) return
     setState("whip")
+    playWhip()
     player.whipTimer = PLAYER.WHIP_DURATION
 
     const whipX = player.pos.x + player.facing * (PLAYER.WIDTH / 2 + PLAYER.WHIP_RANGE / 2)
@@ -195,7 +200,8 @@ export default function createPlayer(x: number, y: number) {
     } else {
       targetVelX = 0
     }
-    const lerpFactor = targetVelX !== 0 ? FEEL.ACCEL : FEEL.DECEL
+    const rawFactor = targetVelX !== 0 ? FEEL.ACCEL : FEEL.DECEL
+    const lerpFactor = 1 - Math.pow(1 - rawFactor, dt() * 60)
     player.vel.x = player.vel.x + (targetVelX - player.vel.x) * lerpFactor
 
     // Track grounded time for coyote time
@@ -279,6 +285,7 @@ export default function createPlayer(x: number, y: number) {
     if (fallDist > FEEL.LAND_SQUASH_THRESHOLD) {
       landSquash(player)
       shakeOnLand()
+      playLand()
     }
 
     // Jump buffer: if player pressed jump recently, auto-execute
@@ -286,6 +293,7 @@ export default function createPlayer(x: number, y: number) {
       player.lastJumpPressTime = -1
       player.jump(PLAYER.JUMP_FORCE)
       setState("jump")
+      playJump()
       return
     }
 

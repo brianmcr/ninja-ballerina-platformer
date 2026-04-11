@@ -37,6 +37,12 @@ const level2: LevelData = {
     { type: "one-way", x: 2000, y: FLOOR_Y - 400, width: 120, height: 12 },
     { type: "solid", x: 2300, y: FLOOR_Y - 200, width: 160, height: 16 },
 
+    // Relief zone 1 (~1/3 mark)
+    { type: "solid", x: 1100, y: FLOOR_Y, width: 300, height: FLOOR_H },
+
+    // Relief zone 2 (~2/3 mark)
+    { type: "solid", x: 2200, y: FLOOR_Y, width: 300, height: FLOOR_H },
+
     // Bouncy for fun
     { type: "bouncy", x: 2500, y: FLOOR_Y - 16, width: 80, height: 16 },
 
@@ -87,6 +93,16 @@ const level2: LevelData = {
     { type: "sequin", x: 1010, y: FLOOR_Y - 20 },
     { type: "sequin", x: 1100, y: FLOOR_Y - 265 },
     { type: "sequin", x: 1170, y: FLOOR_Y - 265 },
+
+    // Relief zone 1 sequins
+    { type: "sequin", x: 1160, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1230, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1300, y: FLOOR_Y - 20 },
+
+    // Relief zone 2 sequins
+    { type: "sequin", x: 2260, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2330, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2400, y: FLOOR_Y - 20 },
 
     // Sequins along mid section
     { type: "sequin", x: 1660, y: FLOOR_Y - 20 },
