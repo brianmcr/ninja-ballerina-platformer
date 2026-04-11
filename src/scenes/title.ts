@@ -8,20 +8,12 @@ export default function title() {
     color(20, 20, 50),
   ])
 
-  // Decorative player silhouette
+  // Title logo sprite
   add([
-    rect(32, 48),
-    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 - 120),
+    sprite("title-logo"),
+    scale(600 / 1792),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 - 60),
     anchor("center"),
-    color(255, 105, 180),
-    opacity(0.3),
-  ])
-
-  add([
-    text("NINJA BALLERINA", { size: 64 }),
-    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 - 40),
-    anchor("center"),
-    color(255, 105, 180),
   ])
 
   add([

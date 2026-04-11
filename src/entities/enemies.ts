@@ -9,9 +9,10 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
   const spawnX = x
 
   const enemy = add([
-    rect(e.WIDTH, e.HEIGHT),
+    sprite("butter-pat"),
+    scale(e.WIDTH / 1024),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(0), e.WIDTH, e.HEIGHT) }),
     body(),
     anchor("bot"),
     color(e.COLOR[0], e.COLOR[1], e.COLOR[2]),
@@ -61,9 +62,10 @@ export function createGlutenBlob(x: number, y: number) {
   let hp = e.HP
 
   const enemy = add([
-    rect(e.SIZE, e.SIZE),
+    sprite("gluten-blob"),
+    scale(e.SIZE / 1024),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(0), e.SIZE, e.SIZE) }),
     body(),
     anchor("bot"),
     color(e.COLOR[0], e.COLOR[1], e.COLOR[2]),
@@ -133,9 +135,10 @@ export function createSyrupDripper(x: number, y: number) {
   let dropTimer = e.DROP_INTERVAL
 
   const enemy = add([
-    rect(e.SIZE, e.SIZE),
+    sprite("syrup-dripper"),
+    scale(e.SIZE / 1024),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(0), e.SIZE, e.SIZE) }),
     anchor("center"),
     color(e.COLOR[0], e.COLOR[1], e.COLOR[2]),
     "enemy",
@@ -229,9 +232,10 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
   const spawnX = x
 
   const enemy = add([
-    rect(e.WIDTH, e.HEIGHT),
+    sprite("milk-carton"),
+    scale(e.WIDTH / 1024),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(0), e.WIDTH, e.HEIGHT) }),
     body(),
     anchor("bot"),
     color(e.COLOR[0], e.COLOR[1], e.COLOR[2]),

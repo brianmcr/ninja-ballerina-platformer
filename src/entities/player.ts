@@ -11,9 +11,10 @@ type PlayerState = "idle" | "run" | "jump" | "float" | "spin" | "dash" | "whip"
 
 export default function createPlayer(x: number, y: number) {
   const player = add([
-    rect(PLAYER.WIDTH, PLAYER.HEIGHT),
+    sprite("ballerina-idle"),
+    scale(PLAYER.WIDTH / 1024),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(0), PLAYER.WIDTH, PLAYER.HEIGHT) }),
     body(),
     anchor("bot"),
     color(...COLORS.idle),
@@ -42,12 +43,36 @@ export default function createPlayer(x: number, y: number) {
 
   initHealth(player)
 
+  const BALLERINA_SPRITES: Record<string, string> = {
+    idle: "ballerina-idle",
+    run: "ballerina-run",
+    jump: "ballerina-jump",
+    float: "ballerina-jump",
+    spin: "ballerina-spin",
+    dash: "ballerina-run",
+    whip: "ballerina-whip",
+  }
+  const NINJA_SPRITES: Record<string, string> = {
+    idle: "ninja-idle",
+    run: "ninja-idle",
+    jump: "ninja-idle",
+    float: "ninja-idle",
+    spin: "ninja-idle",
+    dash: "ninja-idle",
+    whip: "ninja-idle",
+  }
+
   function setState(s: PlayerState) {
     player.state = s
     if (s === "dash") player.isInvincible = true
-    const palette = (player.health as PlayerHealth)?.isNinja ? NINJA_COLORS : COLORS
+    const isNinja = (player.health as PlayerHealth)?.isNinja
+    const palette = isNinja ? NINJA_COLORS : COLORS
     const c = palette[s]
     player.color = rgb(c[0], c[1], c[2])
+    const spriteMap = isNinja ? NINJA_SPRITES : BALLERINA_SPRITES
+    const spriteName = spriteMap[s] || (isNinja ? "ninja-idle" : "ballerina-idle")
+    player.use(sprite(spriteName))
+    player.flipX = player.facing < 0
   }
 
   function canAct() {
@@ -173,6 +198,13 @@ export default function createPlayer(x: number, y: number) {
   onKeyPress("v", () => {
     const h = player.health as PlayerHealth
     if (!h.isNinja || player.currentWeapon === "none") return
+    const weaponSprites: Record<string, string> = {
+      shuriken: "ninja-shuriken",
+      katana: "ninja-katana",
+      sais: "ninja-sais",
+    }
+    const ws = weaponSprites[player.currentWeapon]
+    if (ws) player.use(sprite(ws))
     switch (player.currentWeapon) {
       case "shuriken": fireShuriken(player); break
       case "katana": swingKatana(player); break
@@ -189,10 +221,12 @@ export default function createPlayer(x: number, y: number) {
       if (left && !right) {
         targetVelX = -moveSpeed()
         player.facing = -1
+        player.flipX = true
         if (player.isGrounded() && player.state !== "whip") setState("run")
       } else if (right && !left) {
         targetVelX = moveSpeed()
         player.facing = 1
+        player.flipX = false
         if (player.isGrounded() && player.state !== "whip") setState("run")
       } else {
         targetVelX = 0

@@ -19,6 +19,29 @@ kaplay({
 
 setGravity(GRAVITY)
 
+// Character sprites - Ballerina
+loadSprite("ballerina-idle", "sprites/ballerina-idle.png")
+loadSprite("ballerina-run", "sprites/ballerina-run.png")
+loadSprite("ballerina-jump", "sprites/ballerina-jump.png")
+loadSprite("ballerina-spin", "sprites/ballerina-spin.png")
+loadSprite("ballerina-whip", "sprites/ballerina-whip.png")
+
+// Character sprites - Ninja
+loadSprite("ninja-idle", "sprites/ninja-idle.png")
+loadSprite("ninja-shuriken", "sprites/ninja-shuriken.png")
+loadSprite("ninja-katana", "sprites/ninja-katana.png")
+loadSprite("ninja-sais", "sprites/ninja-sais.png")
+
+// Enemy sprites
+loadSprite("soggy-waffle", "sprites/soggy-waffle.png")
+loadSprite("butter-pat", "sprites/butter-pat.png")
+loadSprite("gluten-blob", "sprites/gluten-blob.png")
+loadSprite("syrup-dripper", "sprites/syrup-dripper.png")
+loadSprite("milk-carton", "sprites/milk-carton.png")
+
+// Other
+loadSprite("title-logo", "sprites/title-logo.png")
+
 scene("title", () => title())
 scene("cutscene", () => {
   cutscene({
