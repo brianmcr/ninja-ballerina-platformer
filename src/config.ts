@@ -35,6 +35,30 @@ export const CAMERA = {
   VERTICAL_OFFSET: -100,
 } as const
 
+export const ENEMY = {
+  BUTTER_PAT: {
+    WIDTH: 28, HEIGHT: 16, SPEED: 80, HP: 1,
+    COLOR: [255, 200, 50] as const,
+    SLIPPERY_DURATION: 3, SLIPPERY_SPEED_MULT: 1.8,
+  },
+  GLUTEN_BLOB: {
+    SIZE: 24, HP: 2, STICKY_DURATION: 0.5, STICKY_SPEED_MULT: 0.4,
+    COLOR: [210, 180, 140] as const,
+    HIT_COLOR: [235, 215, 180] as const,
+  },
+  SYRUP_DRIPPER: {
+    SIZE: 20, DROP_INTERVAL: 3,
+    COLOR: [139, 69, 19] as const,
+    PUDDLE_SIZE: 16, PUDDLE_DURATION: 5, PUDDLE_SPEED_MULT: 0.3,
+    PUDDLE_COLOR: [100, 50, 10] as const,
+  },
+  MILK_CARTON: {
+    WIDTH: 32, HEIGHT: 48, SPEED: 40, HP: 1,
+    COLOR: [200, 220, 255] as const,
+    SHIELD_COLOR: [150, 170, 220] as const,
+  },
+} as const
+
 export const COLORS = {
   idle: [255, 105, 180] as const,
   run: [255, 20, 147] as const,

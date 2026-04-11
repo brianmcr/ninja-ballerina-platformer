@@ -1,6 +1,7 @@
-import { SCREEN, PLATFORM, CAMERA } from "../config"
+import { SCREEN, PLATFORM, CAMERA, ENEMY } from "../config"
 import createPlayer from "../entities/player"
-import type { LevelData, PlatformData } from "./level1"
+import { createButterPat, createGlutenBlob, createSyrupDripper, createMilkCartonGuard } from "../entities/enemies"
+import type { LevelData, PlatformData, EnemySpawn } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
   const colors: Record<PlatformData["type"], [number, number, number]> = {
@@ -130,5 +131,45 @@ export default function loadLevel(levelData: LevelData) {
     }
   })
 
-  return { player, platforms }
+  // Spawn enemies
+  const enemies: any[] = []
+  if (levelData.enemies) {
+    for (const e of levelData.enemies) {
+      enemies.push(spawnEnemy(e))
+    }
+  }
+
+  // Player-enemy collision (placeholder until hit system in Step 5)
+  player.onCollide("enemy", (_e: any) => {
+    if (player.state !== "spin" && player.state !== "dash" && player.state !== "whip" && !player.isInvincible) {
+      debug.log("Player hit!")
+    }
+  })
+
+  // Slippery patch effect
+  player.onCollide("slippery", () => {
+    if (!(player as any).isSlippery) {
+      (player as any).isSlippery = true
+      wait(0.5, () => { (player as any).isSlippery = false })
+    }
+  })
+
+  // Syrup puddle effect
+  player.onCollide("syrup-puddle", () => {
+    if (!(player as any).isSticky) {
+      (player as any).isSticky = true
+      wait(0.5, () => { (player as any).isSticky = false })
+    }
+  })
+
+  return { player, platforms, enemies }
+}
+
+function spawnEnemy(e: EnemySpawn) {
+  switch (e.type) {
+    case "butterPat": return createButterPat(e.x, e.y, e.patrolRange)
+    case "glutenBlob": return createGlutenBlob(e.x, e.y)
+    case "syrupDripper": return createSyrupDripper(e.x, e.y)
+    case "milkCarton": return createMilkCartonGuard(e.x, e.y, e.patrolRange)
+  }
 }

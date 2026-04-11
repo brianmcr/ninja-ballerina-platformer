@@ -10,11 +10,19 @@ export interface PlatformData {
   swingSpeed?: number
 }
 
+export interface EnemySpawn {
+  type: "butterPat" | "glutenBlob" | "syrupDripper" | "milkCarton"
+  x: number
+  y: number
+  patrolRange?: number
+}
+
 export interface LevelData {
   name: string
   width: number
   playerSpawn: { x: number; y: number }
   platforms: PlatformData[]
+  enemies?: EnemySpawn[]
 }
 
 const FLOOR_Y = SCREEN.HEIGHT - 48
@@ -57,6 +65,23 @@ const level1: LevelData = {
 
     // Swinging platform (hanging silk)
     { type: "swing", x: 2000, y: FLOOR_Y - 380, width: 100, height: 12, swingRange: 120, swingSpeed: 1.8 },
+  ],
+  enemies: [
+    // Butter Pats on floor segments
+    { type: "butterPat", x: 400, y: FLOOR_Y, patrolRange: 120 },
+    { type: "butterPat", x: 1100, y: FLOOR_Y, patrolRange: 100 },
+
+    // Gluten Blobs on platforms
+    { type: "glutenBlob", x: 350, y: FLOOR_Y - 120 },
+    { type: "glutenBlob", x: 1150, y: FLOOR_Y - 140 },
+
+    // Syrup Drippers on ceiling above gaps
+    { type: "syrupDripper", x: 880, y: 60 },
+    { type: "syrupDripper", x: 1650, y: 60 },
+
+    // Milk Carton Guards on wider floor segments
+    { type: "milkCarton", x: 2000, y: FLOOR_Y, patrolRange: 80 },
+    { type: "milkCarton", x: 2600, y: FLOOR_Y, patrolRange: 100 },
   ],
 }
 

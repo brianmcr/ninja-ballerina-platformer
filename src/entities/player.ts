@@ -1,4 +1,4 @@
-import { PLAYER, COLORS } from "../config"
+import { PLAYER, COLORS, ENEMY } from "../config"
 import { applyFloat, startDash, updateDash } from "../components/movement"
 
 type PlayerState = "idle" | "run" | "jump" | "float" | "spin" | "dash" | "whip"
@@ -20,6 +20,8 @@ export default function createPlayer(x: number, y: number) {
       whipTimer: 0,
       whipHitbox: null as any,
       isInvincible: false,
+      isSticky: false,
+      isSlippery: false,
     },
   ])
 
@@ -34,31 +36,38 @@ export default function createPlayer(x: number, y: number) {
     return player.state !== "spin" && player.state !== "dash"
   }
 
+  function moveSpeed() {
+    let s = PLAYER.RUN_SPEED
+    if (player.isSticky) s *= ENEMY.GLUTEN_BLOB.STICKY_SPEED_MULT
+    if (player.isSlippery) s *= ENEMY.BUTTER_PAT.SLIPPERY_SPEED_MULT
+    return s
+  }
+
   // Movement
   onKeyDown("left", () => {
     if (!canAct()) return
-    player.move(-PLAYER.RUN_SPEED, 0)
+    player.move(-moveSpeed(), 0)
     player.facing = -1
     if (player.isGrounded() && player.state !== "whip") setState("run")
   })
 
   onKeyDown("right", () => {
     if (!canAct()) return
-    player.move(PLAYER.RUN_SPEED, 0)
+    player.move(moveSpeed(), 0)
     player.facing = 1
     if (player.isGrounded() && player.state !== "whip") setState("run")
   })
 
   onKeyDown("a", () => {
     if (!canAct()) return
-    player.move(-PLAYER.RUN_SPEED, 0)
+    player.move(-moveSpeed(), 0)
     player.facing = -1
     if (player.isGrounded() && player.state !== "whip") setState("run")
   })
 
   onKeyDown("d", () => {
     if (!canAct()) return
-    player.move(PLAYER.RUN_SPEED, 0)
+    player.move(moveSpeed(), 0)
     player.facing = 1
     if (player.isGrounded() && player.state !== "whip") setState("run")
   })
@@ -96,7 +105,12 @@ export default function createPlayer(x: number, y: number) {
     const enemies = get("enemy")
     for (const e of enemies) {
       if (player.pos.dist(e.pos) < PLAYER.SPIN_RADIUS) {
-        e.hurt?.(1)
+        const fromDir = player.pos.x < e.pos.x ? -1 : 1
+        if (e.hurt?.length >= 2) {
+          e.hurt(1, fromDir)
+        } else {
+          e.hurt?.(1)
+        }
       }
     }
   })
@@ -128,7 +142,12 @@ export default function createPlayer(x: number, y: number) {
     ])
 
     player.whipHitbox.onCollide("enemy", (e: any) => {
-      e.hurt?.(1)
+      const fromDir = player.facing
+      if (e.hurt?.length >= 2) {
+        e.hurt(1, fromDir)
+      } else {
+        e.hurt?.(1)
+      }
     })
   })
 
