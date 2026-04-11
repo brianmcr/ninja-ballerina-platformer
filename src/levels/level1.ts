@@ -17,12 +17,19 @@ export interface EnemySpawn {
   patrolRange?: number
 }
 
+export interface PickupSpawn {
+  type: "ninjaPowerup" | "sequin"
+  x: number
+  y: number
+}
+
 export interface LevelData {
   name: string
   width: number
   playerSpawn: { x: number; y: number }
   platforms: PlatformData[]
   enemies?: EnemySpawn[]
+  pickups?: PickupSpawn[]
 }
 
 const FLOOR_Y = SCREEN.HEIGHT - 48
@@ -82,6 +89,56 @@ const level1: LevelData = {
     // Milk Carton Guards on wider floor segments
     { type: "milkCarton", x: 2000, y: FLOOR_Y, patrolRange: 80 },
     { type: "milkCarton", x: 2600, y: FLOOR_Y, patrolRange: 100 },
+  ],
+  pickups: [
+    // Ninja powerups
+    { type: "ninjaPowerup", x: 860, y: FLOOR_Y - 350 },
+    { type: "ninjaPowerup", x: 2500, y: FLOOR_Y - 340 },
+
+    // Sequins along floor paths
+    { type: "sequin", x: 250, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 320, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 390, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 460, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 530, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 600, y: FLOOR_Y - 20 },
+
+    // Sequins on low platforms
+    { type: "sequin", x: 350, y: FLOOR_Y - 145 },
+    { type: "sequin", x: 420, y: FLOOR_Y - 145 },
+    { type: "sequin", x: 750, y: FLOOR_Y - 225 },
+    { type: "sequin", x: 800, y: FLOOR_Y - 225 },
+
+    // Sequins along second floor segment
+    { type: "sequin", x: 1000, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1070, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1200, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1270, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1340, y: FLOOR_Y - 20 },
+
+    // Sequins on one-way platforms
+    { type: "sequin", x: 540, y: FLOOR_Y - 285 },
+    { type: "sequin", x: 590, y: FLOOR_Y - 285 },
+    { type: "sequin", x: 890, y: FLOOR_Y - 345 },
+    { type: "sequin", x: 1350, y: FLOOR_Y - 305 },
+    { type: "sequin", x: 1640, y: FLOOR_Y - 225 },
+
+    // Sequins along third floor segment
+    { type: "sequin", x: 1850, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1920, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1990, y: FLOOR_Y - 20 },
+
+    // Sequins on higher platforms
+    { type: "sequin", x: 1860, y: FLOOR_Y - 275 },
+    { type: "sequin", x: 1930, y: FLOOR_Y - 275 },
+    { type: "sequin", x: 2150, y: FLOOR_Y - 205 },
+
+    // Sequins along final floor + staircase
+    { type: "sequin", x: 2550, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2620, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2750, y: FLOOR_Y - 145 },
+    { type: "sequin", x: 2870, y: FLOOR_Y - 225 },
+    { type: "sequin", x: 2990, y: FLOOR_Y - 305 },
   ],
 }
 

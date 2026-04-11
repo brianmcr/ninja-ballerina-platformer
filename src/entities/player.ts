@@ -1,5 +1,7 @@
-import { PLAYER, COLORS, ENEMY } from "../config"
+import { PLAYER, COLORS, NINJA_COLORS, ENEMY } from "../config"
 import { applyFloat, startDash, updateDash } from "../components/movement"
+import { initHealth, updateHealth } from "../components/health"
+import type { PlayerHealth } from "../components/health"
 
 type PlayerState = "idle" | "run" | "jump" | "float" | "spin" | "dash" | "whip"
 
@@ -22,13 +24,17 @@ export default function createPlayer(x: number, y: number) {
       isInvincible: false,
       isSticky: false,
       isSlippery: false,
+      health: null as PlayerHealth | null,
     },
   ])
 
+  initHealth(player)
+
   function setState(s: PlayerState) {
     player.state = s
-    player.isInvincible = s === "dash"
-    const c = COLORS[s]
+    if (s === "dash") player.isInvincible = true
+    const palette = (player.health as PlayerHealth)?.isNinja ? NINJA_COLORS : COLORS
+    const c = palette[s]
     player.color = rgb(c[0], c[1], c[2])
   }
 
@@ -198,6 +204,8 @@ export default function createPlayer(x: number, y: number) {
     if (!player.isGrounded() && player.state !== "float" && player.state !== "whip") {
       if (player.state !== "jump") setState("jump")
     }
+
+    updateHealth(player)
   })
 
   // Landing detection

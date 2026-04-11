@@ -1,7 +1,9 @@
-import { SCREEN, PLATFORM, CAMERA, ENEMY } from "../config"
+import { SCREEN, PLATFORM, CAMERA, ENEMY, PICKUP } from "../config"
 import createPlayer from "../entities/player"
 import { createButterPat, createGlutenBlob, createSyrupDripper, createMilkCartonGuard } from "../entities/enemies"
-import type { LevelData, PlatformData, EnemySpawn } from "./level1"
+import { createNinjaPowerup, createSequin } from "../entities/pickups"
+import { hitPlayer } from "../components/health"
+import type { LevelData, PlatformData, EnemySpawn, PickupSpawn } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
   const colors: Record<PlatformData["type"], [number, number, number]> = {
@@ -139,11 +141,28 @@ export default function loadLevel(levelData: LevelData) {
     }
   }
 
-  // Player-enemy collision (placeholder until hit system in Step 5)
-  player.onCollide("enemy", (_e: any) => {
-    if (player.state !== "spin" && player.state !== "dash" && player.state !== "whip" && !player.isInvincible) {
-      debug.log("Player hit!")
+  // Spawn pickups
+  if (levelData.pickups) {
+    for (const p of levelData.pickups) {
+      spawnPickup(p)
     }
+  }
+
+  // Player-enemy collision: stomp or take damage
+  player.onCollide("enemy", (e: any, col: any) => {
+    // Stomp: player is falling and lands on top of enemy
+    if (player.vel.y > 0 && col.isBottom()) {
+      player.jump(PICKUP.STOMP_BOUNCE)
+      const fromDir = player.pos.x < e.pos.x ? -1 : 1
+      if (e.hurt?.length >= 2) {
+        e.hurt(1, fromDir)
+      } else {
+        e.hurt?.(1)
+      }
+      return
+    }
+    // Otherwise take damage
+    hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
   })
 
   // Slippery patch effect
@@ -171,5 +190,12 @@ function spawnEnemy(e: EnemySpawn) {
     case "glutenBlob": return createGlutenBlob(e.x, e.y)
     case "syrupDripper": return createSyrupDripper(e.x, e.y)
     case "milkCarton": return createMilkCartonGuard(e.x, e.y, e.patrolRange)
+  }
+}
+
+function spawnPickup(p: PickupSpawn) {
+  switch (p.type) {
+    case "ninjaPowerup": return createNinjaPowerup(p.x, p.y)
+    case "sequin": return createSequin(p.x, p.y)
   }
 }

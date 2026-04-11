@@ -59,6 +59,18 @@ export const ENEMY = {
   },
 } as const
 
+export const PICKUP = {
+  NINJA_SIZE: 32,
+  NINJA_COLOR: [255, 165, 0] as const,
+  NINJA_BOB_SPEED: 2,
+  NINJA_BOB_RANGE: 6,
+  SEQUIN_SIZE: 12,
+  SEQUIN_COLOR: [255, 215, 0] as const,
+  SEQUIN_BOB_SPEED: 3,
+  SEQUIN_BOB_RANGE: 4,
+  STOMP_BOUNCE: 400,
+} as const
+
 export const COLORS = {
   idle: [255, 105, 180] as const,
   run: [255, 20, 147] as const,
@@ -67,4 +79,14 @@ export const COLORS = {
   spin: [255, 215, 0] as const,
   dash: [0, 255, 255] as const,
   whip: [255, 50, 50] as const,
+} as const
+
+export const NINJA_COLORS = {
+  idle: [90, 60, 90] as const,
+  run: [110, 40, 80] as const,
+  jump: [100, 80, 110] as const,
+  float: [80, 60, 120] as const,
+  spin: [180, 150, 0] as const,
+  dash: [0, 180, 180] as const,
+  whip: [180, 30, 30] as const,
 } as const
