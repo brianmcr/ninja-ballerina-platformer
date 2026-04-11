@@ -12,6 +12,7 @@
     "kaplay": "^3001.0.19"
   },
   "devDependencies": {
+    "openai": "^6.34.0",
     "typescript": "^6.0.2",
     "vite": "^8.0.8"
   }
