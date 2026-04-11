@@ -1,0 +1,16 @@
+export const SCREEN = {
+  WIDTH: 1280,
+  HEIGHT: 720,
+} as const
+
+export const GRAVITY = 1600
+
+export const PLAYER = {
+  RUN_SPEED: 300,
+  JUMP_FORCE: 600,
+  DASH_SPEED: 500,
+  FLOAT_GRAVITY: 400,
+  INVINCIBILITY_DURATION: 2,
+  STARTING_LIVES: 3,
+  SEQUINS_FOR_EXTRA_LIFE: 100,
+} as const
