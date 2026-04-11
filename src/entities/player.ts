@@ -19,11 +19,13 @@ export default function createPlayer(x: number, y: number) {
       spinTimer: 0,
       whipTimer: 0,
       whipHitbox: null as any,
+      isInvincible: false,
     },
   ])
 
   function setState(s: PlayerState) {
     player.state = s
+    player.isInvincible = s === "dash"
     const c = COLORS[s]
     player.color = rgb(c[0], c[1], c[2])
   }
@@ -61,13 +63,16 @@ export default function createPlayer(x: number, y: number) {
     if (player.isGrounded() && player.state !== "whip") setState("run")
   })
 
-  // Jump
-  onKeyPress("space", () => {
+  // Jump (space and W)
+  function tryJump() {
     if (player.isGrounded() && canAct()) {
       player.jump(PLAYER.JUMP_FORCE)
       setState("jump")
     }
-  })
+  }
+
+  onKeyPress("space", tryJump)
+  onKeyPress("w", tryJump)
 
   // Float (hold space while airborne and falling)
   onKeyDown("space", () => {
@@ -148,7 +153,7 @@ export default function createPlayer(x: number, y: number) {
       return
     }
 
-    // Whip timer
+    // Whip timer + follow player
     if (player.state === "whip") {
       player.whipTimer -= dt()
       if (player.whipTimer <= 0) {
@@ -157,6 +162,9 @@ export default function createPlayer(x: number, y: number) {
           player.whipHitbox = null
         }
         setState(player.isGrounded() ? "idle" : "jump")
+      } else if (player.whipHitbox) {
+        player.whipHitbox.pos.x = player.pos.x + player.facing * (PLAYER.WIDTH / 2 + PLAYER.WHIP_RANGE / 2)
+        player.whipHitbox.pos.y = player.pos.y - PLAYER.HEIGHT / 2
       }
     }
 
