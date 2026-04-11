@@ -61,34 +61,8 @@ export default function createPlayer(x: number, y: number) {
     return s
   }
 
-  // Movement
-  onKeyDown("left", () => {
-    if (!canAct()) return
-    player.move(-moveSpeed(), 0)
-    player.facing = -1
-    if (player.isGrounded() && player.state !== "whip") setState("run")
-  })
-
-  onKeyDown("right", () => {
-    if (!canAct()) return
-    player.move(moveSpeed(), 0)
-    player.facing = 1
-    if (player.isGrounded() && player.state !== "whip") setState("run")
-  })
-
-  onKeyDown("a", () => {
-    if (!canAct()) return
-    player.move(-moveSpeed(), 0)
-    player.facing = -1
-    if (player.isGrounded() && player.state !== "whip") setState("run")
-  })
-
-  onKeyDown("d", () => {
-    if (!canAct()) return
-    player.move(moveSpeed(), 0)
-    player.facing = 1
-    if (player.isGrounded() && player.state !== "whip") setState("run")
-  })
+  // Movement: track target velocity, lerp in onUpdate
+  let targetVelX = 0
 
   // Jump with coyote time and input buffering
   function tryJump() {
@@ -203,6 +177,27 @@ export default function createPlayer(x: number, y: number) {
 
   // Main update loop
   player.onUpdate(() => {
+    // Horizontal acceleration/deceleration
+    const left = isKeyDown("left") || isKeyDown("a")
+    const right = isKeyDown("right") || isKeyDown("d")
+    if (canAct()) {
+      if (left && !right) {
+        targetVelX = -moveSpeed()
+        player.facing = -1
+        if (player.isGrounded() && player.state !== "whip") setState("run")
+      } else if (right && !left) {
+        targetVelX = moveSpeed()
+        player.facing = 1
+        if (player.isGrounded() && player.state !== "whip") setState("run")
+      } else {
+        targetVelX = 0
+      }
+    } else {
+      targetVelX = 0
+    }
+    const lerpFactor = targetVelX !== 0 ? FEEL.ACCEL : FEEL.DECEL
+    player.vel.x = player.vel.x + (targetVelX - player.vel.x) * lerpFactor
+
     // Track grounded time for coyote time
     if (player.isGrounded()) {
       player.lastGroundedTime = time()
@@ -265,9 +260,7 @@ export default function createPlayer(x: number, y: number) {
 
     // Idle detection when grounded and no keys held
     if (player.isGrounded() && player.state !== "whip") {
-      if (!isKeyDown("left") && !isKeyDown("right") && !isKeyDown("a") && !isKeyDown("d")) {
-        if (player.state === "run") setState("idle")
-      }
+      if (targetVelX === 0 && player.state === "run") setState("idle")
     }
 
     // Airborne state (if not floating/whipping)

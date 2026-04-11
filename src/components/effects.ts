@@ -158,6 +158,24 @@ export function freezeFrame(duration: number): Promise<void> {
   })
 }
 
+export function floatingText(x: number, y: number, msg: string, c: [number, number, number]) {
+  const label = add([
+    text(msg, { size: 14 }),
+    pos(x, y - 10),
+    anchor("center"),
+    color(c[0], c[1], c[2]),
+    opacity(1),
+    z(51),
+  ])
+  let t = 0
+  label.onUpdate(() => {
+    t += dt()
+    label.pos.y -= 40 * dt()
+    label.opacity = Math.max(0, 1 - t * 1.5)
+    if (label.opacity <= 0) destroy(label)
+  })
+}
+
 export function flashWhite(entity: any, duration = 0.1) {
   const origColor = entity.color?.clone()
   entity.color = rgb(255, 255, 255)

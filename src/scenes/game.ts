@@ -116,11 +116,33 @@ export default function game(levelName?: string) {
     z(100),
   ])
 
+  const LEVEL_HINTS: Record<string, string> = {
+    level1: "Run and jump! Z to spin, C to whip",
+    level2: "Hold SPACE to float! Time your swings!",
+    level3: "X to dash through barriers!",
+    level4: "Watch for syrup floors! V for weapons!",
+    level5: "Use everything you've learned!",
+    level6: "The final test...",
+    boss: "Defeat Soggy Waffle!",
+  }
+
+  const hintMsg = LEVEL_HINTS[levelId] ?? ""
+  const hintLabel = add([
+    text(hintMsg, { size: 18 }),
+    pos(SCREEN.WIDTH / 2, 100),
+    anchor("center"),
+    fixed(),
+    color(200, 200, 255),
+    opacity(1),
+    z(100),
+  ])
+
   let bannerTimer = 0
   onUpdate(() => {
     bannerTimer += dt()
     if (bannerTimer > 2) {
       levelBanner.opacity = Math.max(0, levelBanner.opacity - dt() * 2)
+      hintLabel.opacity = Math.max(0, hintLabel.opacity - dt() * 2)
     }
     // Fade controls hint after 5s
     if (bannerTimer > 5) {

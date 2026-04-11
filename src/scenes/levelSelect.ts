@@ -44,7 +44,9 @@ export default function levelSelect() {
     const bestSeq = progress.bestSequins[lv.id] ?? 0
 
     const label = unlocked ? lv.name : `🔒 ${lv.name}`
-    const statusText = completed ? `  ✓  Best: ${bestSeq} sequins` : ""
+    const ribbons = progress.ribbonsFound[lv.id] ?? 0
+    const ribbonText = completed ? (ribbons >= 3 ? "  🎀 3/3 ✓" : `  🎀 ${ribbons}/3`) : ""
+    const statusText = completed ? `  ✓  Best: ${bestSeq} sequins${ribbonText}` : ""
 
     const entry = add([
       text(label + statusText, { size: 22 }),

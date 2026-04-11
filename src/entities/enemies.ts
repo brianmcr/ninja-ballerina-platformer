@@ -1,5 +1,5 @@
 import { ENEMY } from "../config"
-import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite } from "../components/effects"
+import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText } from "../components/effects"
 
 export function createButterPat(x: number, y: number, patrolRange = 100) {
   const e = ENEMY.BUTTER_PAT
@@ -82,6 +82,20 @@ export function createGlutenBlob(x: number, y: number) {
     },
   ])
 
+  let hopTimer = 2.5
+  enemy.onUpdate(() => {
+    hopTimer -= dt()
+    if (hopTimer <= 0 && enemy.isGrounded()) {
+      hopTimer = 2 + Math.random()
+      const players = get("player")
+      if (players.length > 0) {
+        const dir = players[0].pos.x > enemy.pos.x ? 1 : -1
+        enemy.vel.x = dir * 80
+        enemy.jump(200)
+      }
+    }
+  })
+
   enemy.onCollide("player", (p: any) => {
     if (p.state !== "spin" && p.state !== "dash" && p.state !== "whip") {
       if (!p.isSticky) {
@@ -113,6 +127,8 @@ export function createSyrupDripper(x: number, y: number) {
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y)
           wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
+        } else {
+          floatingText(enemy.pos.x, enemy.pos.y - e.SIZE / 2, "Ranged only!", [255, 100, 100])
         }
       },
     },

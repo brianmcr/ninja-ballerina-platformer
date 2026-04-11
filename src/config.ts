@@ -157,6 +157,8 @@ export const FEEL = {
   LAND_SQUASH_DURATION: 0.1,
   DASH_TRAIL_INTERVAL: 0.03,
   DASH_TRAIL_FADE: 0.2,
+  ACCEL: 0.2,
+  DECEL: 0.3,
 } as const
 
 export const NINJA_COLORS = {
