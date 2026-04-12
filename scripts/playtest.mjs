@@ -223,6 +223,125 @@ async function main() {
     )
 
     // ------------------------------------------------------------------
+    // Combat check: spin attack kills enemies in range
+    // ------------------------------------------------------------------
+    // Teleport player next to the first enemy and run spin
+    const spinKilled = await evalInGame(page, async () => {
+      const p = get("player")[0]
+      const enemies = get("enemy")
+      if (enemies.length === 0) return { error: "no enemies" }
+      const target = enemies[0]
+      const before = get("enemy").length
+      p.pos.x = target.pos.x - 30
+      p.pos.y = target.pos.y
+      // Simulate pressing Z by calling the spin directly via the player state.
+      // The onKeyPress("z") handler is bound; we trigger it by dispatching a key.
+      return { before, targetX: target.pos.x }
+    })
+    if (!spinKilled.error) {
+      await sleep(50)
+      await page.keyboard.press("z")
+      await sleep(300)
+      const after = await evalInGame(page, () => get("enemy").length)
+      const killed = spinKilled.before - after
+      record(
+        "Spin (Z) kills nearby enemies",
+        killed > 0,
+        `enemies ${spinKilled.before} → ${after} (killed ${killed})`,
+      )
+    }
+    await shoot(page, "06-after-spin")
+
+    // ------------------------------------------------------------------
+    // Combat check: stomp kills an enemy when falling from above
+    // Reset player state/invincibility so the stomp path is reached.
+    // ------------------------------------------------------------------
+    const stompSetup = await evalInGame(page, () => {
+      const enemies = get("enemy")
+      if (enemies.length === 0) return { error: "no enemies" }
+      const target = enemies[0]
+      const p = get("player")[0]
+      p.state = "idle"
+      p.isInvincible = false
+      p.spinTimer = 0
+      p.pos.x = target.pos.x
+      p.pos.y = target.pos.y - 80
+      p.vel.y = 100
+      return {
+        before: enemies.length,
+        targetX: target.pos.x,
+        targetY: target.pos.y,
+      }
+    })
+    if (!stompSetup.error) {
+      await sleep(800)
+      const stompResult = await evalInGame(page, () => {
+        const p = get("player")[0]
+        return { count: get("enemy").length, state: p.state, inv: p.isInvincible, py: p.pos.y, vy: p.vel.y }
+      })
+      const killed = stompSetup.before - stompResult.count
+      record(
+        "Stomp kills enemy from above",
+        killed > 0,
+        `enemies ${stompSetup.before} → ${stompResult.count}  playerY=${stompResult.py.toFixed(0)} state=${stompResult.state} inv=${stompResult.inv}`,
+      )
+    }
+
+    // ------------------------------------------------------------------
+    // Combat check: touching enemy without attacking damages player
+    // ------------------------------------------------------------------
+    const dmgSetup = await evalInGame(page, () => {
+      const enemies = get("enemy")
+      if (enemies.length === 0) return { error: "no enemies left" }
+      const target = enemies[0]
+      const p = get("player")[0]
+      const h = p.health
+      // Clear invincibility
+      p.isInvincible = false
+      p.state = "idle"
+      // Place player next to enemy horizontally
+      p.pos.x = target.pos.x - 10
+      p.pos.y = target.pos.y
+      p.vel.y = 0
+      return { livesBefore: h?.lives ?? 0 }
+    })
+    if (!dmgSetup.error) {
+      await sleep(500)
+      const dmgAfter = await evalInGame(page, () => {
+        const p = get("player")[0]
+        return { lives: p.health?.lives ?? 0, isNinja: p.health?.isNinja ?? false }
+      })
+      const tookDmg =
+        dmgSetup.livesBefore > dmgAfter.lives || dmgAfter.isNinja === false
+      record(
+        "Touching enemy (not attacking) damages player",
+        tookDmg,
+        `lives ${dmgSetup.livesBefore} → ${dmgAfter.lives}  ninja=${dmgAfter.isNinja}`,
+      )
+    }
+
+    // ------------------------------------------------------------------
+    // Ninja overlay check: spawning ninja gear on powerup
+    // ------------------------------------------------------------------
+    const overlayCheck = await evalInGame(page, () => {
+      const p = get("player")[0]
+      const h = p.health
+      if (!h) return { error: "no health" }
+      h.isNinja = true
+      return { ok: true }
+    })
+    if (!overlayCheck.error) {
+      await sleep(200)
+      const hasOverlay = await evalInGame(page, () => get("ninja-gear").length)
+      record(
+        "Ninja overlay spawns when isNinja=true",
+        hasOverlay > 0,
+        `ninja-gear entities: ${hasOverlay}`,
+      )
+      await shoot(page, "07-ninja-overlay")
+    }
+
+    // ------------------------------------------------------------------
     // Dump all entity hitboxes for reference
     // ------------------------------------------------------------------
     const allHitboxes = await evalInGame(page, () => {

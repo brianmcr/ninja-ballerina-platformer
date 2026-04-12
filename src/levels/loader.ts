@@ -301,17 +301,37 @@ export default function loadLevel(levelData: LevelData) {
     }
   })
 
-  // Player-enemy collision: stomp or take damage
+  // Player-enemy collision — clear rules:
+  //   1. Attacking (spin/dash/whip) → always kill the enemy
+  //   2. Falling onto enemy from above → stomp (kill + bounce)
+  //   3. Invincible (post-hit frames) → no interaction
+  //   4. Otherwise → player takes damage
+  const killEnemy = (e: any, fromDir: number) => {
+    if (e.hurt?.length >= 2) e.hurt(99, fromDir)
+    else e.hurt?.(99)
+  }
   player.onCollide("enemy", (e: any, col: any) => {
-    // Stomp: player is falling and lands on top of enemy
-    if (player.vel.y > 0 && col.isBottom()) {
-      player.jump(PICKUP.STOMP_BOUNCE)
+    // Attacking states always kill on contact
+    if (
+      player.state === "spin" ||
+      player.state === "dash" ||
+      player.state === "whip"
+    ) {
       const fromDir = player.pos.x < e.pos.x ? -1 : 1
-      if (e.hurt?.length >= 2) {
-        e.hurt(1, fromDir)
-      } else {
-        e.hurt?.(1)
-      }
+      killEnemy(e, fromDir)
+      return
+    }
+    // Post-hit invincibility — no damage, no kill
+    if (player.isInvincible) return
+    // Stomp detection: either Kaplay reports collision on player's bottom,
+    // OR the player's feet are above the enemy's feet (position fallback).
+    // col.isBottom() is reliable when collision resolves; the position check
+    // catches teleport/edge cases.
+    const stompByCol = col && typeof col.isBottom === "function" && col.isBottom()
+    const stompByPos = player.pos.y <= e.pos.y - 2
+    if (stompByCol || stompByPos) {
+      player.jump(PICKUP.STOMP_BOUNCE)
+      killEnemy(e, 0) // fromDir=0 signals stomp (bypasses shields)
       return
     }
     // Otherwise take damage

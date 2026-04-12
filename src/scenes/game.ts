@@ -215,7 +215,7 @@ export default function game(levelName?: string) {
   ])
 
   const LEVEL_HINTS: Record<string, string> = {
-    level1: "Run and jump! Z to spin, C to whip | Hold SPACE while falling to float!",
+    level1: "JUMP on enemies or Z/X/C to attack. TOUCHING them hurts you!",
     level2: "Hold SPACE to float! Time your swings!",
     level3: "X to dash through barriers!",
     level4: "Watch for syrup floors! V for weapons!",

@@ -59,14 +59,72 @@ export default function createPlayer(x: number, y: number) {
     dash: "ballerina-idle",
     whip: "ballerina-idle",
   }
+  // Ninja form uses the SAME ballerina sprite — she's the same character.
+  // A headband overlay + dark tint signal the transformation visually.
   const NINJA_SPRITES: Record<string, string> = {
-    idle: "ninja-idle",
-    run: "ninja-idle",
-    jump: "ninja-idle",
-    float: "ninja-idle",
-    spin: "ninja-idle",
-    dash: "ninja-idle",
-    whip: "ninja-idle",
+    idle: "ballerina-idle",
+    run: "ballerina-idle",
+    jump: "ballerina-idle",
+    float: "ballerina-idle",
+    spin: "ballerina-idle",
+    dash: "ballerina-idle",
+    whip: "ballerina-idle",
+  }
+
+  // Ninja headband overlay — spawned on ninja form, destroyed on loss
+  let ninjaHeadband: any = null
+  let ninjaRibbonL: any = null
+  let ninjaRibbonR: any = null
+  function updateNinjaOverlay() {
+    const h = player.health as PlayerHealth
+    if (h?.isNinja && !ninjaHeadband) {
+      // Black headband across the top of the head
+      ninjaHeadband = add([
+        rect(26, 4),
+        pos(player.pos.x, player.pos.y - 44),
+        anchor("center"),
+        color(20, 20, 30),
+        z(5),
+        "ninja-gear",
+      ])
+      // Two pink ribbon tails flowing behind
+      ninjaRibbonL = add([
+        rect(14, 3),
+        pos(player.pos.x - 12, player.pos.y - 40),
+        anchor("right"),
+        color(255, 20, 147),
+        rotate(-10),
+        z(4),
+        "ninja-gear",
+      ])
+      ninjaRibbonR = add([
+        rect(14, 3),
+        pos(player.pos.x + 12, player.pos.y - 40),
+        anchor("left"),
+        color(255, 20, 147),
+        rotate(10),
+        z(4),
+        "ninja-gear",
+      ])
+    } else if (!h?.isNinja && ninjaHeadband) {
+      destroy(ninjaHeadband)
+      destroy(ninjaRibbonL)
+      destroy(ninjaRibbonR)
+      ninjaHeadband = null
+      ninjaRibbonL = null
+      ninjaRibbonR = null
+    }
+    if (ninjaHeadband) {
+      const bob = Math.sin(time() * 8) * 1
+      ninjaHeadband.pos.x = player.pos.x
+      ninjaHeadband.pos.y = player.pos.y - 44
+      ninjaRibbonL.pos.x = player.pos.x - 12
+      ninjaRibbonL.pos.y = player.pos.y - 40 + bob
+      ninjaRibbonL.angle = -10 + Math.sin(time() * 3) * 8
+      ninjaRibbonR.pos.x = player.pos.x + 12
+      ninjaRibbonR.pos.y = player.pos.y - 40 - bob
+      ninjaRibbonR.angle = 10 - Math.sin(time() * 3) * 8
+    }
   }
 
   let prevState: PlayerState | null = null
@@ -151,15 +209,13 @@ export default function createPlayer(x: number, y: number) {
     playSpin()
     player.spinTimer = PLAYER.SPIN_DURATION
 
+    // Spin always kills enemies in range
     const enemies = get("enemy")
     for (const e of enemies) {
       if (player.pos.dist(e.pos) < PLAYER.SPIN_RADIUS) {
         const fromDir = player.pos.x < e.pos.x ? -1 : 1
-        if (e.hurt?.length >= 2) {
-          e.hurt(1, fromDir)
-        } else {
-          e.hurt?.(1)
-        }
+        if (e.hurt?.length >= 2) e.hurt(99, fromDir)
+        else e.hurt?.(99)
       }
     }
   })
@@ -192,13 +248,11 @@ export default function createPlayer(x: number, y: number) {
       "whip-hitbox",
     ])
 
+    // Whip always kills enemies it touches
     player.whipHitbox.onCollide("enemy", (e: any) => {
       const fromDir = player.pos.x < e.pos.x ? -1 : 1
-      if (e.hurt?.length >= 2) {
-        e.hurt(1, fromDir)
-      } else {
-        e.hurt?.(1)
-      }
+      if (e.hurt?.length >= 2) e.hurt(99, fromDir)
+      else e.hurt?.(99)
     })
   })
 
@@ -225,6 +279,7 @@ export default function createPlayer(x: number, y: number) {
 
   // Main update loop
   player.onUpdate(() => {
+    updateNinjaOverlay()
     const baseScale = PLAYER_SCALE
 
     if (player.state === "idle") {

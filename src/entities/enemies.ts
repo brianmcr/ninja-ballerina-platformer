@@ -325,7 +325,8 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
     {
       get facing() { return facing },
       hurt(dmg: number, fromDir?: number) {
-        if (fromDir !== undefined && fromDir === facing) {
+        // fromDir=0 means stomp from above — bypasses the shield
+        if (fromDir !== undefined && fromDir !== 0 && fromDir === facing) {
           enemy.opacity = 0.5
           wait(0.15, () => {
             if (enemy.exists()) enemy.opacity = 1
