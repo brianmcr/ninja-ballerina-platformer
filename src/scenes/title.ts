@@ -1,12 +1,19 @@
 import { SCREEN } from "../config"
 import { loadProgress } from "../components/progress"
+import { fadeIn, fadeOut } from "../components/transition"
 
 export default function title() {
+  fadeIn(0.3)
+
   add([
     rect(SCREEN.WIDTH, SCREEN.HEIGHT),
     pos(0, 0),
     color(20, 20, 50),
+    z(-200),
   ])
+
+  add([sprite("bg-far"), pos(0, 0), scale(720 / 1024), fixed(), z(-100), opacity(0.6)])
+  add([sprite("bg-mid"), pos(0, 0), scale(720 / 1024), fixed(), z(-90), opacity(0.3)])
 
   // Title logo sprite
   add([
@@ -17,14 +24,14 @@ export default function title() {
   ])
 
   add([
-    text("A Platformer Adventure", { size: 24 }),
+    text("A Platformer Adventure", { size: 24, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 + 20),
     anchor("center"),
     color(200, 180, 220),
   ])
 
   const prompt = add([
-    text("Press SPACE to Start", { size: 20 }),
+    text("Press SPACE to Start", { size: 20, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 100),
     anchor("center"),
     color(255, 255, 255),
@@ -41,9 +48,9 @@ export default function title() {
   function start() {
     const progress = loadProgress()
     if (progress.firstPlayDone) {
-      go("levelSelect")
+      fadeOut(0.3, () => go("levelSelect"))
     } else {
-      go("cutscene")
+      fadeOut(0.3, () => go("cutscene"))
     }
   }
 

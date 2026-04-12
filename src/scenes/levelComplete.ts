@@ -1,5 +1,6 @@
 import { SCREEN } from "../config"
 import { markLevelComplete } from "../components/progress"
+import { fadeIn, fadeOut } from "../components/transition"
 
 export interface LevelCompleteData {
   levelId: string
@@ -11,16 +12,21 @@ export interface LevelCompleteData {
 }
 
 export default function levelComplete(data: LevelCompleteData) {
+  fadeIn(0.3)
   markLevelComplete(data.levelId, data.sequins, data.ribbons ?? 0)
 
   add([
     rect(SCREEN.WIDTH, SCREEN.HEIGHT),
     pos(0, 0),
     color(20, 30, 50),
+    z(-200),
   ])
 
+  add([sprite("bg-far"), pos(0, 0), scale(720 / 1024), fixed(), z(-100), opacity(0.6)])
+  add([sprite("bg-mid"), pos(0, 0), scale(720 / 1024), fixed(), z(-90), opacity(0.3)])
+
   add([
-    text("Level Complete!", { size: 56 }),
+    text("Level Complete!", { size: 56, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, 120),
     anchor("center"),
     color(255, 215, 0),
@@ -31,28 +37,28 @@ export default function levelComplete(data: LevelCompleteData) {
   const timeStr = `${mins}:${secs.toString().padStart(2, "0")}`
 
   add([
-    text(`Time: ${timeStr}`, { size: 28 }),
+    text(`Time: ${timeStr}`, { size: 28, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, 240),
     anchor("center"),
     color(200, 200, 200),
   ])
 
   add([
-    text(`Sequins: ${data.sequins}`, { size: 28 }),
+    text(`Sequins: ${data.sequins}`, { size: 28, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, 290),
     anchor("center"),
     color(255, 215, 0),
   ])
 
   add([
-    text(`Ribbons: ${data.ribbons ?? 0}/3`, { size: 28 }),
+    text(`Ribbons: ${data.ribbons ?? 0}/3`, { size: 28, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, 340),
     anchor("center"),
     color(200, 100, 200),
   ])
 
   add([
-    text(`Lives Remaining: ${data.lives}`, { size: 28 }),
+    text(`Lives Remaining: ${data.lives}`, { size: 28, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, 390),
     anchor("center"),
     color(255, 105, 180),
@@ -63,7 +69,7 @@ export default function levelComplete(data: LevelCompleteData) {
     : "Press SPACE to continue"
 
   const prompt = add([
-    text(nextLabel, { size: 20 }),
+    text(nextLabel, { size: 20, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 100),
     anchor("center"),
     color(255, 255, 255),
@@ -78,13 +84,13 @@ export default function levelComplete(data: LevelCompleteData) {
 
   function advance() {
     if (data.nextLevel) {
-      go("game", data.nextLevel)
+      fadeOut(0.3, () => go("game", data.nextLevel))
     } else {
-      go("levelSelect")
+      fadeOut(0.3, () => go("levelSelect"))
     }
   }
 
   onKeyPress("space", advance)
   onKeyPress("enter", advance)
-  onKeyPress("escape", () => go("levelSelect"))
+  onKeyPress("escape", () => fadeOut(0.3, () => go("levelSelect")))
 }

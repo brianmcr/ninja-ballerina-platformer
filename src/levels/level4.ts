@@ -6,6 +6,7 @@ const FLOOR_H = 48
 
 const level4: LevelData = {
   name: "The Sticky Kitchen",
+  bgTint: [220, 180, 120],
   width: 4000,
   playerSpawn: { x: 150, y: FLOOR_Y - 10 },
   platforms: [

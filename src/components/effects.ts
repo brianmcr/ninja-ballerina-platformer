@@ -51,53 +51,91 @@ export function shakeOnLand() {
 }
 
 export function enemyDefeatPop(x: number, y: number) {
-  const circle = add([
-    rect(8, 8),
-    pos(x, y),
-    anchor("center"),
-    color(255, 255, 255),
-    opacity(0.8),
-    z(50),
-  ])
-  let elapsed = 0
-  circle.onUpdate(() => {
-    elapsed += dt()
-    const scale = 1 + elapsed * 15
-    circle.width = 8 * scale
-    circle.height = 8 * scale
-    circle.opacity = Math.max(0, 0.8 - elapsed * 4)
-    if (circle.opacity <= 0) destroy(circle)
+  for (let i = 0; i < 8; i++) {
+    const angle = (i / 8) * Math.PI * 2
+    const spd = 80 + Math.random() * 60
+    const vx = Math.cos(angle) * spd
+    const vy = Math.sin(angle) * spd
+    const p = add([
+      circle(3),
+      pos(x, y),
+      anchor("center"),
+      color(255, 255, 200),
+      opacity(1),
+      z(50),
+    ])
+    let age = 0
+    p.onUpdate(() => {
+      age += dt()
+      p.pos.x += vx * dt()
+      p.pos.y += vy * dt()
+      const t = Math.min(1, age / 0.4)
+      p.color = rgb(255, Math.floor(255 - t * 100), Math.floor(200 - t * 200))
+      p.opacity = Math.max(0, 1 - age * 2.5)
+      if (p.opacity <= 0) destroy(p)
+    })
+  }
+}
+
+export function enemyHitFlash(entity: any) {
+  const origColor = entity.color?.clone()
+  entity.color = rgb(255, 255, 255)
+  let t = 0
+  const wobbleOriginX = entity.pos.x
+  const ev = onUpdate(() => {
+    t += dt()
+    if (t < 0.1 && entity.exists()) {
+      entity.color = rgb(255, 255, 255)
+    } else if (entity.exists() && origColor) {
+      entity.color = origColor
+    }
+    if (t < 0.2 && entity.exists()) {
+      entity.pos.x = wobbleOriginX + Math.sin(t * 60) * 2
+    } else if (entity.exists()) {
+      entity.pos.x = wobbleOriginX
+    }
+    if (t >= 0.2) {
+      if (entity.exists()) entity.pos.x = wobbleOriginX
+      ev.cancel()
+    }
   })
 }
 
 export function sequinCollectPop(x: number, y: number) {
   // Particle burst
-  for (let i = 0; i < 6; i++) {
-    const angle = (i / 6) * Math.PI * 2
-    const spd = 80 + Math.random() * 40
+  for (let i = 0; i < 10; i++) {
+    const angle = (i / 10) * Math.PI * 2
+    const spd = 80 + Math.random() * 60
     const vx = Math.cos(angle) * spd
     const vy = Math.sin(angle) * spd
+    const r = 2 + Math.random() * 2
     const p = add([
-      rect(4, 4),
+      circle(r),
       pos(x, y),
       anchor("center"),
-      color(PICKUP.SEQUIN_COLOR[0], PICKUP.SEQUIN_COLOR[1], PICKUP.SEQUIN_COLOR[2]),
+      color(255, 215, 0),
       opacity(1),
       z(50),
     ])
-    let t = 0
+    let age = 0
     p.onUpdate(() => {
-      t += dt()
+      age += dt()
       p.pos.x += vx * dt()
       p.pos.y += vy * dt()
-      p.opacity = Math.max(0, 1 - t * 5)
+      const t = Math.min(1, age / 0.4)
+      p.color = rgb(
+        Math.floor(255 - t * 55),
+        Math.floor(215 - t * 65),
+        Math.floor(t * 50),
+      )
+      p.opacity = Math.max(0, 1 - age * 3)
       if (p.opacity <= 0) destroy(p)
     })
   }
 
   // Floating "+1" text
   const label = add([
-    text("+1", { size: 16 }),
+    text("+1", { size: 16, font: "Bangers" }),
     pos(x, y - 10),
     anchor("center"),
     color(255, 215, 0),
@@ -125,7 +163,13 @@ export function spawnDashTrail(x: number, y: number, w: number, h: number, c: [n
   let t = 0
   trail.onUpdate(() => {
     t += dt()
-    trail.opacity = Math.max(0, 0.4 - (t / FEEL.DASH_TRAIL_FADE) * 0.4)
+    const progress = t / FEEL.DASH_TRAIL_FADE
+    trail.color = rgb(
+      Math.floor(c[0] * Math.max(0, 1 - progress * 0.5)),
+      Math.floor(c[1] * Math.max(0, 1 - progress * 0.5)),
+      Math.floor(c[2] * Math.max(0, 1 - progress * 0.5)),
+    )
+    trail.opacity = Math.max(0, 0.4 - progress * 0.4)
     if (trail.opacity <= 0) destroy(trail)
   })
 }
@@ -160,7 +204,7 @@ export function freezeFrame(duration: number): Promise<void> {
 
 export function floatingText(x: number, y: number, msg: string, c: [number, number, number]) {
   const label = add([
-    text(msg, { size: 14 }),
+    text(msg, { size: 14, font: "Bangers" }),
     pos(x, y - 10),
     anchor("center"),
     color(c[0], c[1], c[2]),
@@ -184,4 +228,55 @@ export function flashWhite(entity: any, duration = 0.1) {
       entity.color = origColor
     }
   })
+}
+
+export function flashScreen(startOpacity = 0.6, fadeDuration = 0.5) {
+  const flash = add([
+    rect(width(), height()),
+    pos(0, 0),
+    color(255, 255, 255),
+    opacity(startOpacity),
+    fixed(),
+    z(300),
+  ])
+  let t = 0
+  flash.onUpdate(() => {
+    t += dt()
+    flash.opacity = Math.max(0, startOpacity * (1 - t / fadeDuration))
+    if (flash.opacity <= 0) destroy(flash)
+  })
+}
+
+export function starburstParticles(x: number, y: number, count = 12) {
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2
+    const spd = 120 + Math.random() * 100
+    const vx = Math.cos(angle) * spd
+    const vy = Math.sin(angle) * spd
+    const r = 2 + Math.random() * 3
+    const startG = 215 + Math.floor(Math.random() * 40)
+    const startB = Math.floor(Math.random() * 100)
+    const p = add([
+      circle(r),
+      pos(x, y),
+      anchor("center"),
+      color(255, startG, startB),
+      opacity(1),
+      z(150),
+    ])
+    let age = 0
+    p.onUpdate(() => {
+      age += dt()
+      p.pos.x += vx * dt()
+      p.pos.y += vy * dt() + 100 * age * dt()
+      const t = Math.min(1, age / 0.67)
+      p.color = rgb(
+        Math.floor(255 - t * 55),
+        Math.floor(startG - t * (startG - 100)),
+        Math.floor(startB + t * (50 - startB)),
+      )
+      p.opacity = Math.max(0, 1 - age * 1.5)
+      if (p.opacity <= 0) destroy(p)
+    })
+  }
 }

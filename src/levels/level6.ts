@@ -6,6 +6,7 @@ const FLOOR_H = 48
 
 const level6: LevelData = {
   name: "The Gauntlet",
+  bgTint: [255, 140, 120],
   width: 4800,
   playerSpawn: { x: 120, y: FLOOR_Y - 10 },
   platforms: [

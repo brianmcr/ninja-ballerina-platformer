@@ -6,6 +6,7 @@ const FLOOR_H = 48
 
 const level2: LevelData = {
   name: "Silk & Shadows",
+  bgTint: [150, 150, 255],
   width: 3600,
   playerSpawn: { x: 180, y: FLOOR_Y - 10 },
   platforms: [

@@ -6,6 +6,7 @@ const FLOOR_H = 48
 
 const level5: LevelData = {
   name: "Above the Rafters",
+  bgTint: [120, 120, 200],
   width: 4400,
   playerSpawn: { x: 140, y: FLOOR_Y - 10 },
   platforms: [

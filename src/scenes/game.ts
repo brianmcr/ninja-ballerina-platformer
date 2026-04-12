@@ -10,6 +10,7 @@ import type { LevelData } from "../levels/level1"
 import type { PlayerHealth } from "../components/health"
 import { runBossFight } from "../entities/soggyWaffle"
 import { SCREEN } from "../config"
+import { fadeIn, fadeOut } from "../components/transition"
 
 const LEVEL_MAP: Record<string, LevelData> = {
   level1,
@@ -31,6 +32,8 @@ function getNextLevel(current: string): string | null {
 
 export default function game(levelName?: string) {
   const levelId = levelName ?? "level1"
+  fadeIn(0.3)
+
   const isBoss = levelId === "boss"
   const levelData: LevelData = LEVEL_MAP[levelId] ?? level1
   const { player } = loadLevel(levelData)
@@ -38,55 +41,129 @@ export default function game(levelName?: string) {
   let levelTime = 0
   let showDebug = false
 
-  // HUD: lives as hearts
-  const livesLabel = add([
-    text("♥♥♥", { size: 24 }),
-    pos(12, 12),
+  // --- HUD background panels ---
+  const hudPanelLeft = add([
+    rect(160, 90),
+    pos(4, 4),
     fixed(),
-    color(255, 80, 120),
-    z(100),
+    color(0, 0, 0),
+    opacity(0.3),
+    z(99),
   ])
 
-  // HUD: sequins
-  const sequinLabel = add([
-    text("✦ 0", { size: 20 }),
-    pos(width() - 12, 12),
-    fixed(),
+  const hudPanelRight = add([
+    rect(100, 32),
+    pos(width() - 4, 4),
     anchor("topright"),
+    fixed(),
+    color(0, 0, 0),
+    opacity(0.3),
+    z(99),
+  ])
+
+  // --- HUD: lives as red diamonds ---
+  const MAX_HEARTS = 5
+  const heartIcons: any[] = []
+  for (let i = 0; i < MAX_HEARTS; i++) {
+    const h = add([
+      rect(12, 12),
+      pos(18 + i * 22, 18),
+      anchor("center"),
+      rotate(45),
+      color(220, 40, 60),
+      fixed(),
+      scale(1),
+      opacity(1),
+      z(101),
+    ])
+    heartIcons.push(h)
+  }
+
+  let prevLives = -1
+
+  // --- HUD: sequin counter (gold diamond + text) ---
+  const sequinIcon = add([
+    rect(8, 8),
+    pos(width() - 80, 20),
+    anchor("center"),
+    rotate(45),
     color(255, 215, 0),
-    z(100),
+    fixed(),
+    scale(1),
+    z(101),
   ])
 
-  // HUD: ninja indicator
-  const ninjaLabel = add([
-    text("", { size: 18 }),
-    pos(12, 42),
+  const sequinLabel = add([
+    text("0", { size: 18, font: "Bangers" }),
+    pos(width() - 66, 12),
     fixed(),
+    color(255, 255, 255),
+    z(101),
+  ])
+
+  let prevSequins = -1
+
+  // --- HUD: ninja indicator ---
+  const ninjaIcon = add([
+    rect(10, 10),
+    pos(18, 40),
+    anchor("center"),
     color(255, 165, 0),
-    z(100),
+    fixed(),
+    opacity(0),
+    z(101),
   ])
 
-  // HUD: ribbons
-  const ribbonLabel = add([
-    text("", { size: 18 }),
-    pos(12, 64),
+  const ninjaLabel = add([
+    text("", { size: 16, font: "Bangers" }),
+    pos(32, 34),
     fixed(),
+    color(255, 200, 80),
+    z(101),
+  ])
+
+  // --- HUD: ribbons ---
+  const ribbonIcon = add([
+    rect(10, 10),
+    pos(18, 58),
+    anchor("center"),
+    rotate(45),
     color(200, 100, 200),
-    z(100),
+    fixed(),
+    opacity(0),
+    z(101),
   ])
 
-  // HUD: weapon
-  const weaponLabel = add([
-    text("", { size: 16 }),
-    pos(12, 86),
+  const ribbonLabel = add([
+    text("", { size: 16, font: "Bangers" }),
+    pos(32, 52),
     fixed(),
+    color(220, 160, 220),
+    z(101),
+  ])
+
+  // --- HUD: weapon ---
+  const weaponIcon = add([
+    rect(10, 10),
+    pos(18, 76),
+    anchor("center"),
     color(180, 200, 255),
-    z(100),
+    fixed(),
+    opacity(0),
+    z(101),
+  ])
+
+  const weaponLabel = add([
+    text("", { size: 14, font: "Bangers" }),
+    pos(32, 70),
+    fixed(),
+    color(220, 230, 255),
+    z(101),
   ])
 
   // Debug state label (toggled with F1)
   const stateLabel = add([
-    text("", { size: 14 }),
+    text("", { size: 14, font: "Bangers" }),
     pos(12, 108),
     fixed(),
     color(200, 200, 200),
@@ -96,7 +173,7 @@ export default function game(levelName?: string) {
 
   // Controls hint (smaller, fades out)
   const controlsHint = add([
-    text("Arrows/WASD: Move | Space: Jump | Z: Spin | X: Dash | C: Whip | V: Weapon", { size: 12 }),
+    text("Arrows/WASD: Move | Space: Jump | Z: Spin | X: Dash | C: Whip | V: Weapon", { size: 12, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 16),
     anchor("center"),
     fixed(),
@@ -105,19 +182,40 @@ export default function game(levelName?: string) {
     z(100),
   ])
 
-  // Level name banner (fade out after 2s)
-  const levelBanner = add([
-    text(levelData.name, { size: 32 }),
-    pos(SCREEN.WIDTH / 2, 60),
+  // Level intro overlay
+  const introOverlay = add([
+    rect(SCREEN.WIDTH, SCREEN.HEIGHT),
+    pos(0, 0),
+    fixed(),
+    color(0, 0, 0),
+    opacity(0.6),
+    z(100),
+  ])
+
+  const levelIdx = LEVEL_ORDER.indexOf(levelId)
+  const levelNumStr = levelIdx >= 0 ? `Level ${levelIdx + 1}` : levelId
+  const levelBannerNum = add([
+    text(levelNumStr, { size: 64, font: "Bangers" }),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 - 30),
     anchor("center"),
     fixed(),
     color(255, 255, 255),
     opacity(1),
-    z(100),
+    z(101),
+  ])
+
+  const levelBanner = add([
+    text(levelData.name, { size: 28, font: "Bangers" }),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 + 30),
+    anchor("center"),
+    fixed(),
+    color(200, 200, 255),
+    opacity(1),
+    z(101),
   ])
 
   const LEVEL_HINTS: Record<string, string> = {
-    level1: "Run and jump! Z to spin, C to whip",
+    level1: "Run and jump! Z to spin, C to whip | Hold SPACE while falling to float!",
     level2: "Hold SPACE to float! Time your swings!",
     level3: "X to dash through barriers!",
     level4: "Watch for syrup floors! V for weapons!",
@@ -128,27 +226,44 @@ export default function game(levelName?: string) {
 
   const hintMsg = LEVEL_HINTS[levelId] ?? ""
   const hintLabel = add([
-    text(hintMsg, { size: 18 }),
-    pos(SCREEN.WIDTH / 2, 100),
+    text(hintMsg, { size: 18, font: "Bangers" }),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 + 70),
     anchor("center"),
     fixed(),
     color(200, 200, 255),
     opacity(1),
-    z(100),
+    z(101),
   ])
 
   let bannerTimer = 0
   onUpdate(() => {
     bannerTimer += dt()
-    if (bannerTimer > 2) {
-      levelBanner.opacity = Math.max(0, levelBanner.opacity - dt() * 2)
-      hintLabel.opacity = Math.max(0, hintLabel.opacity - dt() * 2)
+    // Hold for 1s, then fade out over 1.5s
+    if (bannerTimer > 1) {
+      const fadeRate = dt() / 1.5
+      introOverlay.opacity = Math.max(0, introOverlay.opacity - fadeRate * 0.6)
+      levelBannerNum.opacity = Math.max(0, levelBannerNum.opacity - fadeRate)
+      levelBanner.opacity = Math.max(0, levelBanner.opacity - fadeRate)
+      hintLabel.opacity = Math.max(0, hintLabel.opacity - fadeRate)
     }
     // Fade controls hint after 5s
-    if (bannerTimer > 5) {
+    if (bannerTimer > 15) {
       controlsHint.opacity = Math.max(0, controlsHint.opacity - dt())
     }
   })
+
+  // Goal direction arrow
+  if (!isBoss) {
+    add([
+      text("→", { size: 24, font: "Bangers" }),
+      pos(width() - 40, height() / 2),
+      anchor("center"),
+      color(255, 215, 0),
+      opacity(0.5),
+      fixed(),
+      z(90),
+    ])
+  }
 
   // F1 toggles debug
   onKeyPress("f1", () => {
@@ -163,11 +278,79 @@ export default function game(levelName?: string) {
 
   player.onUpdate(() => {
     const h = player.health as PlayerHealth
-    livesLabel.text = "♥".repeat(h.lives)
-    sequinLabel.text = `✦ ${h.sequins}`
-    ninjaLabel.text = h.isNinja ? "🥷 NINJA" : ""
-    ribbonLabel.text = h.ribbons > 0 ? `🎀 ${h.ribbons}/3` : ""
-    weaponLabel.text = player.currentWeapon !== "none" ? `⚔ ${player.currentWeapon}` : ""
+
+    // Update heart icons visibility + damage pulse
+    if (h.lives !== prevLives) {
+      for (let i = 0; i < MAX_HEARTS; i++) {
+        heartIcons[i].opacity = i < h.lives ? 1 : 0.15
+      }
+      if (prevLives > 0 && h.lives < prevLives) {
+        // Pulse remaining hearts on damage
+        for (let i = 0; i < h.lives; i++) {
+          heartIcons[i].scaleTo(1.4)
+          const icon = heartIcons[i]
+          let t = 0
+          const ev = onUpdate(() => {
+            t += dt()
+            const s = 1 + 0.4 * Math.max(0, 1 - t * 5)
+            icon.scaleTo(s)
+            if (t > 0.2) ev.cancel()
+          })
+        }
+      }
+      prevLives = h.lives
+    }
+
+    // Update sequin counter + pulse on change
+    if (h.sequins !== prevSequins) {
+      sequinLabel.text = `${h.sequins}`
+      if (prevSequins >= 0 && h.sequins > prevSequins) {
+        sequinIcon.scaleTo(1.5)
+        let t = 0
+        const ev = onUpdate(() => {
+          t += dt()
+          const s = 1 + 0.5 * Math.max(0, 1 - t * 5)
+          sequinIcon.scaleTo(s)
+          if (t > 0.2) ev.cancel()
+        })
+      }
+      prevSequins = h.sequins
+    }
+
+    // Ninja indicator
+    if (h.isNinja) {
+      ninjaIcon.opacity = 1
+      ninjaLabel.text = "NINJA"
+    } else {
+      ninjaIcon.opacity = 0
+      ninjaLabel.text = ""
+    }
+
+    // Ribbons
+    if (h.ribbons > 0) {
+      ribbonIcon.opacity = 1
+      ribbonLabel.text = `${h.ribbons}/3`
+    } else {
+      ribbonIcon.opacity = 0
+      ribbonLabel.text = ""
+    }
+
+    // Weapon
+    if (player.currentWeapon !== "none") {
+      weaponIcon.opacity = 1
+      const wColors: Record<string, [number, number, number]> = {
+        shuriken: [255, 215, 0],
+        katana: [180, 200, 255],
+        sais: [255, 80, 80],
+      }
+      const wc = wColors[player.currentWeapon] ?? [180, 200, 255]
+      weaponIcon.color = rgb(wc[0], wc[1], wc[2])
+      weaponLabel.text = player.currentWeapon
+    } else {
+      weaponIcon.opacity = 0
+      weaponLabel.text = ""
+    }
+
     if (showDebug) {
       stateLabel.text = `State: ${player.state}`
     }
@@ -177,7 +360,7 @@ export default function game(levelName?: string) {
   player.onUpdate(() => {
     const h = player.health as PlayerHealth
     if (h.lives <= 0) {
-      go("gameOver", { levelId, sequins: h.sequins } as any)
+      fadeOut(0.3, () => go("gameOver", { levelId, sequins: h.sequins } as any))
     }
   })
 
@@ -191,14 +374,14 @@ export default function game(levelName?: string) {
         triggered = true
         const h = player.health as PlayerHealth
         const next = getNextLevel(levelId)
-        go("levelComplete", {
+        fadeOut(0.3, () => go("levelComplete", {
           levelId,
           sequins: h.sequins,
           ribbons: h.ribbons,
           lives: h.lives,
           time: levelTime,
           nextLevel: next,
-        } as any)
+        } as any))
       }
     })
   }

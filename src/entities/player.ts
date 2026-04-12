@@ -12,12 +12,12 @@ type PlayerState = "idle" | "run" | "jump" | "float" | "spin" | "dash" | "whip"
 export default function createPlayer(x: number, y: number) {
   const player = add([
     sprite("ballerina-idle"),
-    scale(0.08),
+    scale(0.11),
     pos(x, y),
     area({ shape: new Rect(vec2(0), PLAYER.WIDTH, PLAYER.HEIGHT) }),
     body(),
     anchor("bot"),
-    color(...COLORS.idle),
+    rotate(0),
     "player",
     {
       state: "idle" as PlayerState,
@@ -43,14 +43,16 @@ export default function createPlayer(x: number, y: number) {
 
   initHealth(player)
 
+  // Use ONE consistent sprite for all states — DALL-E can't maintain character
+  // consistency across separate generations. Procedural animation handles state visuals.
   const BALLERINA_SPRITES: Record<string, string> = {
     idle: "ballerina-idle",
-    run: "ballerina-run",
-    jump: "ballerina-jump",
-    float: "ballerina-jump",
-    spin: "ballerina-spin",
-    dash: "ballerina-run",
-    whip: "ballerina-whip",
+    run: "ballerina-idle",
+    jump: "ballerina-idle",
+    float: "ballerina-idle",
+    spin: "ballerina-idle",
+    dash: "ballerina-idle",
+    whip: "ballerina-idle",
   }
   const NINJA_SPRITES: Record<string, string> = {
     idle: "ninja-idle",
@@ -62,13 +64,14 @@ export default function createPlayer(x: number, y: number) {
     whip: "ninja-idle",
   }
 
+  let prevState: PlayerState | null = null
+
   function setState(s: PlayerState) {
+    if (s === player.state && s === prevState) return // Don't re-trigger same state
+    prevState = s
     player.state = s
     if (s === "dash") player.isInvincible = true
     const isNinja = (player.health as PlayerHealth)?.isNinja
-    const palette = isNinja ? NINJA_COLORS : COLORS
-    const c = palette[s]
-    player.color = rgb(c[0], c[1], c[2])
     const spriteMap = isNinja ? NINJA_SPRITES : BALLERINA_SPRITES
     const spriteName = spriteMap[s] || (isNinja ? "ninja-idle" : "ballerina-idle")
     player.use(sprite(spriteName))
@@ -175,12 +178,12 @@ export default function createPlayer(x: number, y: number) {
     const whipX = player.pos.x + player.facing * (PLAYER.WIDTH / 2 + PLAYER.WHIP_RANGE / 2)
     const whipY = player.pos.y - PLAYER.HEIGHT / 2
     player.whipHitbox = add([
-      rect(PLAYER.WHIP_RANGE, PLAYER.WHIP_WIDTH),
+      rect(PLAYER.WHIP_RANGE * 0.7, PLAYER.WHIP_WIDTH),
       pos(whipX, whipY),
       area(),
       anchor("center"),
       color(...COLORS.whip),
-      opacity(0.7),
+      opacity(0.3),
       "whip-hitbox",
     ])
 
@@ -212,8 +215,54 @@ export default function createPlayer(x: number, y: number) {
     }
   })
 
+  // Animation state — ONLY use scale/angle, NEVER modify pos directly
+  let spinAngleAccum = 0
+
   // Main update loop
   player.onUpdate(() => {
+    const baseScale = 0.11
+
+    if (player.state === "idle") {
+      // Breathing scale pulse — no position changes
+      player.scale = vec2(baseScale + Math.sin(time() * 2) * 0.006)
+      player.angle = 0
+    } else if (player.state === "run") {
+      // Subtle tilt to simulate run motion
+      player.angle = Math.sin(time() * 12) * 3
+      player.scale = vec2(baseScale)
+    } else if (player.state === "spin") {
+      spinAngleAccum += dt() * 540
+      player.angle = spinAngleAccum
+      player.scale = vec2(baseScale)
+    } else if (player.state === "jump" || player.state === "dash") {
+      // Squash-stretch via scale only (no position changes)
+      if (player.vel.y < 0) {
+        player.scale = vec2(
+          lerp(player.scale.x, baseScale * 0.9, 0.1),
+          lerp(player.scale.y, baseScale * 1.1, 0.1)
+        )
+      } else if (player.vel.y > 0) {
+        player.scale = vec2(
+          lerp(player.scale.x, baseScale * 1.1, 0.1),
+          lerp(player.scale.y, baseScale * 0.9, 0.1)
+        )
+      } else {
+        player.scale = vec2(lerp(player.scale.x, baseScale, 0.1), lerp(player.scale.y, baseScale, 0.1))
+      }
+      player.angle = 0
+    } else if (player.state === "float") {
+      player.scale = vec2(baseScale)
+      player.angle = Math.sin(time() * 1) * 5
+    } else {
+      player.scale = vec2(baseScale)
+      player.angle = 0
+      spinAngleAccum = 0
+    }
+
+    // Reset spin accumulator when not spinning
+    if (player.state !== "spin") {
+      spinAngleAccum = 0
+    }
     // Horizontal acceleration/deceleration
     const left = isKeyDown("left") || isKeyDown("a")
     const right = isKeyDown("right") || isKeyDown("d")

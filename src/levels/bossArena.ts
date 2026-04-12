@@ -6,6 +6,7 @@ const FLOOR_H = 48
 
 const bossArena: LevelData = {
   name: "Soggy Waffle's Lair",
+  bgTint: [200, 100, 100],
   width: BOSS.ARENA_WIDTH,
   playerSpawn: { x: 200, y: FLOOR_Y - 10 },
   platforms: [

@@ -1,18 +1,19 @@
 import { BOSS, SCREEN, ENEMY } from "../config"
 import { hitPlayer } from "../components/health"
 import { createButterPat } from "./enemies"
-import { shakeOnBossPhase, screenShake, flashWhite, enemyDefeatPop } from "../components/effects"
+import { shakeOnBossPhase, screenShake, flashWhite, enemyDefeatPop, flashScreen, starburstParticles } from "../components/effects"
 import { playBossHit } from "../components/audio"
+import { fadeOut } from "../components/transition"
 
 export function createSoggyWaffle(x: number, y: number) {
   const boss = add([
     sprite("soggy-waffle"),
-    scale(0.1),
+    scale(0.12),
     pos(x, y),
     area({ shape: new Rect(vec2(0), BOSS.WIDTH, BOSS.HEIGHT) }),
     body(),
     anchor("bot"),
-    color(BOSS.COLOR[0], BOSS.COLOR[1], BOSS.COLOR[2]),
+    rotate(0),
     opacity(1),
     "enemy",
     "boss",
@@ -22,31 +23,24 @@ export function createSoggyWaffle(x: number, y: number) {
       phase: 1,
       isInvincible: false,
       dir: 1,
+      baseScale: 0.12,
       hurt(dmg: number) {
         if (boss.isInvincible) return
         boss.hp -= dmg
         // Flash white on hit
-        boss.color = rgb(255, 255, 255)
+        boss.opacity = 0.3
         wait(0.1, () => {
-          if (boss.exists()) boss.color = rgb(BOSS.COLOR[0], BOSS.COLOR[1], BOSS.COLOR[2])
+          if (boss.exists()) boss.opacity = 1
         })
       },
     },
   ])
 
-  // Headband stripe (visual child positioned relative to boss)
-  const headband = add([
-    rect(BOSS.WIDTH, 10),
-    pos(x, y - BOSS.HEIGHT + 8),
-    anchor("bot"),
-    color(BOSS.HEADBAND_COLOR[0], BOSS.HEADBAND_COLOR[1], BOSS.HEADBAND_COLOR[2]),
-    z(1),
-  ])
-
-  headband.onUpdate(() => {
-    if (!boss.exists()) { destroy(headband); return }
-    headband.pos.x = boss.pos.x
-    headband.pos.y = boss.pos.y - BOSS.HEIGHT + 8
+  // Idle menace animation
+  boss.onUpdate(() => {
+    const breathe = Math.sin(time() * 1.5) * 0.03
+    boss.scale = vec2(boss.baseScale * (1 + breathe))
+    boss.angle = Math.sin(time() * 1) * 2
   })
 
   return boss
@@ -69,19 +63,66 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
   let floodOverlay: any = null
   let tauntLabel: any = null
 
-  // Boss health bar UI
+  // Boss health bar UI — polished with border, name backdrop, end-caps
+  const barW = 400
+  const barH = 20
+  const barX = SCREEN.WIDTH / 2
+  const barY = 30
+
+  // Dark backdrop behind boss name
+  add([
+    rect(barW + 40, 22),
+    pos(barX, barY - 18),
+    anchor("center"),
+    color(0, 0, 0),
+    opacity(0.5),
+    fixed(),
+    z(99),
+  ])
+
+  // Outer border
+  add([
+    rect(barW + 6, barH + 6),
+    pos(barX, barY),
+    anchor("center"),
+    color(20, 20, 20),
+    fixed(),
+    z(99),
+  ])
+
+  // Background
   const barBg = add([
-    rect(400, 20),
-    pos(SCREEN.WIDTH / 2, 30),
+    rect(barW, barH),
+    pos(barX, barY),
     anchor("center"),
     color(60, 60, 60),
     fixed(),
     z(100),
   ])
 
+  // Left end-cap
+  add([
+    rect(4, barH + 6),
+    pos(barX - barW / 2 - 3, barY),
+    anchor("center"),
+    color(40, 40, 40),
+    fixed(),
+    z(101),
+  ])
+
+  // Right end-cap
+  add([
+    rect(4, barH + 6),
+    pos(barX + barW / 2 + 3, barY),
+    anchor("center"),
+    color(40, 40, 40),
+    fixed(),
+    z(101),
+  ])
+
   const barFill = add([
-    rect(400, 20),
-    pos(SCREEN.WIDTH / 2 - 200, 20),
+    rect(barW, barH),
+    pos(barX - barW / 2, barY - barH / 2),
     anchor("topleft"),
     color(220, 40, 40),
     fixed(),
@@ -89,8 +130,8 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
   ])
 
   const bossLabel = add([
-    text("Soggy Waffle", { size: 18 }),
-    pos(SCREEN.WIDTH / 2, 14),
+    text("Soggy Waffle", { size: 18, font: "Bangers" }),
+    pos(barX, barY - 18),
     anchor("center"),
     color(255, 255, 255),
     fixed(),
@@ -98,8 +139,8 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
   ])
 
   const phaseLabel = add([
-    text("Phase 1", { size: 14 }),
-    pos(SCREEN.WIDTH / 2, 52),
+    text("Phase 1", { size: 14, font: "Bangers" }),
+    pos(barX, barY + barH / 2 + 8),
     anchor("center"),
     color(200, 200, 200),
     fixed(),
@@ -108,7 +149,7 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
 
   function updateHealthBar() {
     const ratio = Math.max(0, boss.hp / BOSS.TOTAL_HP)
-    barFill.width = 400 * ratio
+    barFill.width = barW * ratio
   }
 
   // Platform positions for Phase 2 teleportation
@@ -121,7 +162,7 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
 
   function showPhaseText(txt: string) {
     const label = add([
-      text(txt, { size: 48 }),
+      text(txt, { size: 48, font: "Bangers" }),
       pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2),
       anchor("center"),
       color(255, 255, 100),
@@ -131,16 +172,40 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
     wait(1.5, () => { if (label.exists()) destroy(label) })
   }
 
+  let tauntBubble: any = null
+
   function showTaunt(msg: string) {
     if (tauntLabel && tauntLabel.exists()) destroy(tauntLabel)
+    if (tauntBubble && tauntBubble.exists()) destroy(tauntBubble)
+
+    const tx = boss.pos.x
+    const ty = boss.pos.y - BOSS.HEIGHT - 30
+    const padX = 12
+    const padY = 6
+    const approxW = msg.length * 8 + padX * 2
+    const approxH = 20 + padY * 2
+
+    tauntBubble = add([
+      rect(approxW, approxH),
+      pos(tx, ty),
+      anchor("center"),
+      color(0, 0, 0),
+      opacity(0.7),
+      z(49),
+    ])
+
     tauntLabel = add([
-      text(msg, { size: 16 }),
-      pos(boss.pos.x, boss.pos.y - BOSS.HEIGHT - 20),
+      text(msg, { size: 16, font: "Bangers" }),
+      pos(tx, ty),
       anchor("center"),
       color(255, 200, 100),
       z(50),
     ])
-    wait(2, () => { if (tauntLabel && tauntLabel.exists()) destroy(tauntLabel) })
+
+    wait(2, () => {
+      if (tauntLabel && tauntLabel.exists()) destroy(tauntLabel)
+      if (tauntBubble && tauntBubble.exists()) destroy(tauntBubble)
+    })
   }
 
   function transitionToPhase(newPhase: number) {
@@ -162,6 +227,7 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
     })
 
     shakeOnBossPhase()
+    flashScreen(0.6, 0.5)
     showPhaseText(`Phase ${newPhase}!`)
     phaseLabel.text = `Phase ${newPhase}`
 
@@ -207,6 +273,25 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
     for (const e of summonedEnemies) {
       if (e.exists()) destroy(e)
     }
+
+    // Red pulsing aura
+    const aura = add([
+      rect(BOSS.WIDTH + 16, BOSS.HEIGHT + 16),
+      pos(boss.pos.x, boss.pos.y),
+      anchor("bot"),
+      color(255, 30, 30),
+      opacity(0.2),
+      z(-1),
+    ])
+    aura.onUpdate(() => {
+      if (!boss.exists()) { destroy(aura); return }
+      aura.pos.x = boss.pos.x
+      aura.pos.y = boss.pos.y
+      aura.opacity = 0.1 + 0.2 * (0.5 + 0.5 * Math.sin(time() * 4))
+    })
+
+    // Enrage scale bump
+    boss.baseScale *= 1.1
   }
 
   function throwSyrupBomb() {
@@ -328,7 +413,16 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
     defeated = true
     boss.isInvincible = true
     screenShake(12, 0.5)
+    flashScreen(0.8, 0.6)
+    starburstParticles(boss.pos.x, boss.pos.y - BOSS.HEIGHT / 2, 16)
     enemyDefeatPop(boss.pos.x, boss.pos.y - BOSS.HEIGHT / 2)
+
+    // Delayed second burst for extra drama
+    wait(0.3, () => {
+      if (boss.exists()) {
+        starburstParticles(boss.pos.x, boss.pos.y - BOSS.HEIGHT / 2, 12)
+      }
+    })
 
     // Shrink and fade
     let shrinkTimer = 0
@@ -340,25 +434,31 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
       boss.height = BOSS.HEIGHT * s
     })
 
-    const victoryText = add([
-      text("Golden Ballet Slippers Recovered!", { size: 32 }),
-      pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2),
-      anchor("center"),
-      color(255, 215, 0),
-      fixed(),
-      z(200),
-    ])
+    // Brief pause before showing victory text
+    wait(0.5, () => {
+      const victoryText = add([
+        text("Golden Ballet Slippers Recovered!", { size: 32, font: "Bangers" }),
+        pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2),
+        anchor("center"),
+        color(255, 215, 0),
+        fixed(),
+        z(200),
+      ])
 
-    wait(3, () => {
+      wait(3, () => {
+        if (victoryText.exists()) destroy(victoryText)
+      })
+    })
+
+    wait(3.5, () => {
       // Clean up UI
       if (barBg.exists()) destroy(barBg)
       if (barFill.exists()) destroy(barFill)
       if (bossLabel.exists()) destroy(bossLabel)
       if (phaseLabel.exists()) destroy(phaseLabel)
-      if (victoryText.exists()) destroy(victoryText)
       if (boss.exists()) destroy(boss)
       if (floodOverlay && floodOverlay.exists()) destroy(floodOverlay)
-      go("victory")
+      fadeOut(0.3, () => go("victory"))
     })
   }
 

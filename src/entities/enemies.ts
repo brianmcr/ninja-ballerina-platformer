@@ -1,5 +1,5 @@
 import { ENEMY } from "../config"
-import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText } from "../components/effects"
+import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText, enemyHitFlash } from "../components/effects"
 import { playCoin, playHit } from "../components/audio"
 
 export function createButterPat(x: number, y: number, patrolRange = 100) {
@@ -10,12 +10,12 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
 
   const enemy = add([
     sprite("butter-pat"),
-    scale(0.06),
+    scale(0.08),
     pos(x, y),
     area({ shape: new Rect(vec2(0), e.WIDTH, e.HEIGHT) }),
     body(),
     anchor("bot"),
-    color(e.COLOR[0], e.COLOR[1], e.COLOR[2]),
+    rotate(0),
     "enemy",
     "butterPat",
     {
@@ -33,10 +33,44 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
     },
   ])
 
+
+
+  let warnCooldown = 0
   enemy.onUpdate(() => {
     enemy.move(e.SPEED * dir, 0)
     if (enemy.pos.x > spawnX + patrolRange) dir = -1
     if (enemy.pos.x < spawnX - patrolRange) dir = 1
+    // Wobble animation
+    enemy.angle = Math.sin(time() * 5) * 8
+    enemy.scale = vec2(0.08 * (1 + Math.abs(Math.sin(time() * 5)) * 0.05))
+
+    // Proximity warning
+    warnCooldown -= dt()
+    if (warnCooldown <= 0) {
+      const players = get("player")
+      if (players.length > 0) {
+        const dist = enemy.pos.dist(players[0].pos)
+        if (dist < 150) {
+          warnCooldown = 2
+          const warn = add([
+            text("!", { size: 16, font: "Bangers" }),
+            pos(enemy.pos.x, enemy.pos.y - e.HEIGHT - 10),
+            anchor("center"),
+            color(255, 50, 50),
+            opacity(1),
+            z(51),
+          ])
+          let wt = 0
+          warn.onUpdate(() => {
+            wt += dt()
+            warn.pos.x = enemy.pos.x
+            warn.pos.y = enemy.pos.y - e.HEIGHT - 10
+            warn.opacity = Math.max(0, 1 - wt * 2)
+            if (wt >= 0.5) destroy(warn)
+          })
+        }
+      }
+    }
   })
 
   return enemy
@@ -63,12 +97,12 @@ export function createGlutenBlob(x: number, y: number) {
 
   const enemy = add([
     sprite("gluten-blob"),
-    scale(0.06),
+    scale(0.08),
     pos(x, y),
     area({ shape: new Rect(vec2(0), e.SIZE, e.SIZE) }),
     body(),
     anchor("bot"),
-    color(e.COLOR[0], e.COLOR[1], e.COLOR[2]),
+    opacity(1),
     "enemy",
     "glutenBlob",
     {
@@ -82,16 +116,26 @@ export function createGlutenBlob(x: number, y: number) {
           wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
         } else {
           playHit()
-          enemy.color = rgb(e.HIT_COLOR[0], e.HIT_COLOR[1], e.HIT_COLOR[2])
+          enemy.opacity = 0.5
+          wait(0.1, () => { if (enemy.exists()) enemy.opacity = 1 })
         }
       },
     },
   ])
 
+
+
+  const glutenBaseScale = 0.08
   let hopTimer = 2.5
   let telegraphing = false
   let telegraphTimer = 0
+  let telegraphOutline: any = null
   enemy.onUpdate(() => {
+    // Breathing animation (only when not telegraphing)
+    if (!telegraphing) {
+      const breathe = Math.sin(time() * 3) * 0.08
+      enemy.scale = vec2(glutenBaseScale * (1 + breathe), glutenBaseScale * (1 - breathe))
+    }
     if (telegraphing) {
       telegraphTimer -= dt()
       const t = 1 - Math.max(0, telegraphTimer / 0.3)
@@ -101,6 +145,7 @@ export function createGlutenBlob(x: number, y: number) {
         telegraphing = false
         enemy.width = e.SIZE
         enemy.height = e.SIZE
+        if (telegraphOutline) { telegraphOutline.destroy(); telegraphOutline = null }
         const players = get("player")
         if (players.length > 0) {
           const dir = players[0].pos.x > enemy.pos.x ? 1 : -1
@@ -114,7 +159,21 @@ export function createGlutenBlob(x: number, y: number) {
     if (hopTimer <= 0 && enemy.isGrounded()) {
       hopTimer = 2 + Math.random()
       telegraphing = true
-      telegraphTimer = 0.3
+      telegraphTimer = 0.5
+      telegraphOutline = add([
+        rect(e.SIZE + 8, e.SIZE + 8),
+        pos(enemy.pos.x, enemy.pos.y),
+        anchor("bot"),
+        color(255, 0, 0),
+        opacity(0.5),
+        z(-1),
+      ])
+      telegraphOutline.onUpdate(() => {
+        if (!enemy.exists()) { telegraphOutline.destroy(); telegraphOutline = null; return }
+        telegraphOutline.pos.x = enemy.pos.x
+        telegraphOutline.pos.y = enemy.pos.y
+        telegraphOutline.opacity = 0.4 + 0.3 * Math.sin(time() * 8 * Math.PI * 2)
+      })
     }
   })
 
@@ -136,11 +195,11 @@ export function createSyrupDripper(x: number, y: number) {
 
   const enemy = add([
     sprite("syrup-dripper"),
-    scale(0.06),
+    scale(0.08),
     pos(x, y),
     area({ shape: new Rect(vec2(0), e.SIZE, e.SIZE) }),
     anchor("center"),
-    color(e.COLOR[0], e.COLOR[1], e.COLOR[2]),
+    opacity(1),
     "enemy",
     "syrupDripper",
     {
@@ -166,29 +225,49 @@ export function createSyrupDripper(x: number, y: number) {
   ])
 
   let telegraphing = false
+  let growingDrip: any = null
   enemy.onUpdate(() => {
+    // Dripping animation — scale only, no position drift
+    enemy.scale = vec2(0.08 * (1 + Math.sin(time() * 2) * 0.05))
+
     dropTimer -= dt()
     if (dropTimer <= 0.5 && !telegraphing) {
       telegraphing = true
-      const origR = e.COLOR[0]
-      const origG = e.COLOR[1]
-      const origB = e.COLOR[2]
       let flashT = 0
       const flashEv = onUpdate(() => {
         flashT += dt()
         const pulse = Math.sin(flashT * 20) > 0
         if (enemy.exists()) {
-          enemy.color = pulse ? rgb(255, 100, 100) : rgb(origR, origG, origB)
+          enemy.opacity = pulse ? 0.4 : 1
         }
         if (flashT >= 0.5 || !enemy.exists()) {
-          if (enemy.exists()) enemy.color = rgb(origR, origG, origB)
+          if (enemy.exists()) enemy.opacity = 1
           flashEv.cancel()
         }
+      })
+      // Growing drip visual
+      growingDrip = add([
+        rect(4, 2),
+        pos(enemy.pos.x, enemy.pos.y + e.SIZE / 2),
+        anchor("top"),
+        color(200, 140, 50),
+        opacity(0.8),
+        z(49),
+      ])
+      const dripStart = time()
+      growingDrip.onUpdate(() => {
+        if (!enemy.exists()) { growingDrip.destroy(); growingDrip = null; return }
+        const elapsed = time() - dripStart
+        const progress = Math.min(1, elapsed / 0.5)
+        growingDrip.height = 2 + 18 * progress
+        growingDrip.pos.x = enemy.pos.x
+        growingDrip.pos.y = enemy.pos.y + e.SIZE / 2
       })
     }
     if (dropTimer <= 0) {
       dropTimer = e.DROP_INTERVAL
       telegraphing = false
+      if (growingDrip) { growingDrip.destroy(); growingDrip = null }
       dropSyrup(enemy.pos.x, enemy.pos.y + e.SIZE / 2)
     }
   })
@@ -233,23 +312,36 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
 
   const enemy = add([
     sprite("milk-carton"),
-    scale(0.06),
+    scale(0.08),
     pos(x, y),
     area({ shape: new Rect(vec2(0), e.WIDTH, e.HEIGHT) }),
     body(),
     anchor("bot"),
-    color(e.COLOR[0], e.COLOR[1], e.COLOR[2]),
+    opacity(1),
     "enemy",
     "milkCarton",
     {
       get facing() { return facing },
       hurt(dmg: number, fromDir?: number) {
         if (fromDir !== undefined && fromDir === facing) {
-          enemy.color = rgb(e.SHIELD_COLOR[0], e.SHIELD_COLOR[1], e.SHIELD_COLOR[2])
+          enemy.opacity = 0.5
           wait(0.15, () => {
-            if (enemy.exists()) {
-              enemy.color = rgb(e.COLOR[0], e.COLOR[1], e.COLOR[2])
-            }
+            if (enemy.exists()) enemy.opacity = 1
+          })
+          // Shield flash on block
+          const shield = add([
+            rect(e.WIDTH, e.HEIGHT),
+            pos(enemy.pos.x, enemy.pos.y),
+            anchor("bot"),
+            color(255, 255, 255),
+            opacity(0.7),
+            z(51),
+          ])
+          let st = 0
+          shield.onUpdate(() => {
+            st += dt()
+            shield.opacity = Math.max(0, 0.7 * (1 - st / 0.2))
+            if (st >= 0.2) destroy(shield)
           })
           return
         }
@@ -270,6 +362,8 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
     facing = dir
     if (enemy.pos.x > spawnX + patrolRange) dir = -1
     if (enemy.pos.x < spawnX - patrolRange) dir = 1
+    // Stiff marching animation — scale only, no position drift
+    enemy.scale = vec2(0.08 * (1 + Math.abs(Math.sin(time() * 8)) * 0.06))
   })
 
   return enemy

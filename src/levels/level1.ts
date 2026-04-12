@@ -38,6 +38,7 @@ export interface LevelData {
   enemies?: EnemySpawn[]
   pickups?: PickupSpawn[]
   destructibles?: DestructibleData[]
+  bgTint?: [number, number, number]
 }
 
 const FLOOR_Y = SCREEN.HEIGHT - 48
@@ -45,6 +46,7 @@ const FLOOR_H = 48
 
 const level1: LevelData = {
   name: "Welcome to the Studio",
+  bgTint: [255, 200, 200],
   width: 3200,
   playerSpawn: { x: 200, y: FLOOR_Y - 10 },
   platforms: [
@@ -76,12 +78,9 @@ const level1: LevelData = {
     { type: "one-way", x: 2940, y: FLOOR_Y - 260, width: 120, height: 12 },
   ],
   enemies: [
-    // Butter Pats only — level 1 is easy
-    { type: "butterPat", x: 450, y: FLOOR_Y, patrolRange: 120 },
-    { type: "butterPat", x: 1200, y: FLOOR_Y, patrolRange: 100 },
-    { type: "butterPat", x: 1600, y: FLOOR_Y, patrolRange: 80 },
-    { type: "butterPat", x: 2000, y: FLOOR_Y, patrolRange: 100 },
-    { type: "butterPat", x: 2700, y: FLOOR_Y, patrolRange: 80 },
+    // Tutorial: only 2 butter pats, wide patrol so they're easy to avoid
+    { type: "butterPat", x: 1200, y: FLOOR_Y, patrolRange: 80 },
+    { type: "butterPat", x: 2200, y: FLOOR_Y, patrolRange: 80 },
   ],
   pickups: [
     // Ninja powerups — one early, one mid-level

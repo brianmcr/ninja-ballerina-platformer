@@ -6,6 +6,7 @@ const FLOOR_H = 48
 
 const level3: LevelData = {
   name: "The Training Grounds",
+  bgTint: [150, 220, 150],
   width: 3800,
   playerSpawn: { x: 160, y: FLOOR_Y - 10 },
   platforms: [

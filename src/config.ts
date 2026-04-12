@@ -7,7 +7,7 @@ export const GRAVITY = 1600
 
 export const PLAYER = {
   RUN_SPEED: 300,
-  JUMP_FORCE: 600,
+  JUMP_FORCE: 750,
   DASH_SPEED: 500,
   DASH_DURATION: 0.3,
   FLOAT_GRAVITY: 400,
@@ -16,7 +16,7 @@ export const PLAYER = {
   WHIP_DURATION: 0.3,
   WHIP_RANGE: 80,
   WHIP_WIDTH: 16,
-  INVINCIBILITY_DURATION: 2,
+  INVINCIBILITY_DURATION: 3,
   STARTING_LIVES: 3,
   SEQUINS_FOR_EXTRA_LIFE: 100,
   WIDTH: 32,
@@ -30,7 +30,7 @@ export const PLATFORM = {
 } as const
 
 export const CAMERA = {
-  LERP_SPEED: 0.1,
+  LERP_SPEED: 0.15,
   VERTICAL_LERP: 0.05,
   VERTICAL_OFFSET: -100,
 } as const
@@ -42,14 +42,14 @@ export const ENEMY = {
     SLIPPERY_DURATION: 3, SLIPPERY_SPEED_MULT: 1.8,
   },
   GLUTEN_BLOB: {
-    SIZE: 24, HP: 2, STICKY_DURATION: 0.5, STICKY_SPEED_MULT: 0.4,
+    SIZE: 24, HP: 2, STICKY_DURATION: 0.5, STICKY_SPEED_MULT: 0.6,
     COLOR: [210, 180, 140] as const,
     HIT_COLOR: [235, 215, 180] as const,
   },
   SYRUP_DRIPPER: {
     SIZE: 20, DROP_INTERVAL: 3,
     COLOR: [139, 69, 19] as const,
-    PUDDLE_SIZE: 16, PUDDLE_DURATION: 5, PUDDLE_SPEED_MULT: 0.3,
+    PUDDLE_SIZE: 16, PUDDLE_DURATION: 3, PUDDLE_SPEED_MULT: 0.55,
     PUDDLE_COLOR: [100, 50, 10] as const,
   },
   MILK_CARTON: {
@@ -145,8 +145,8 @@ export const BOSS = {
 } as const
 
 export const FEEL = {
-  COYOTE_TIME: 0.12,
-  JUMP_BUFFER: 0.1,
+  COYOTE_TIME: 0.25,
+  JUMP_BUFFER: 0.20,
   JUMP_CUT_MULTIPLIER: 0.5,
   FALL_GRAVITY_MULT: 1.5,
   SHAKE_HIT: { intensity: 4, duration: 0.15 },

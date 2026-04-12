@@ -1,4 +1,5 @@
 import { SCREEN } from "../config"
+import { fadeIn, fadeOut } from "../components/transition"
 
 interface CutsceneFrame {
   text: string
@@ -24,16 +25,20 @@ export const level1Intro: CutsceneData = {
 }
 
 export default function cutscene(data: CutsceneData) {
+  fadeIn(0.3)
+
+  add([sprite("bg-far"), pos(0, 0), scale(720 / 1024), fixed(), z(-100), opacity(0.4)])
+
   const bg = add([
     rect(SCREEN.WIDTH, SCREEN.HEIGHT),
     pos(0, 0),
     color(30, 30, 50),
     fixed(),
-    z(0),
+    z(-150),
   ])
 
   const label = add([
-    text("", { size: 28, width: SCREEN.WIDTH - 120 }),
+    text("", { size: 28, width: SCREEN.WIDTH - 120, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2),
     anchor("center"),
     color(255, 255, 255),
@@ -42,7 +47,7 @@ export default function cutscene(data: CutsceneData) {
   ])
 
   const skipHint = add([
-    text("Press SPACE or ENTER to skip", { size: 14 }),
+    text("Press SPACE or ENTER to skip", { size: 14, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 40),
     anchor("center"),
     color(150, 150, 150),
@@ -59,7 +64,7 @@ export default function cutscene(data: CutsceneData) {
 
   function startFrame() {
     if (frameIndex >= data.frames.length) {
-      go(data.nextScene)
+      fadeOut(0.3, () => go(data.nextScene))
       return
     }
     const f = data.frames[frameIndex]

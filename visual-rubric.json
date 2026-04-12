@@ -1,0 +1,81 @@
+{
+  "domain": "2d_platformer_visual_quality",
+  "domain_description": "Evaluates the graphics and art quality of a 2D side-scrolling platformer targeting ages 8-12, benchmarked against the visual standard of an average modern mobile scroller (e.g., Alto's Odyssey, Rayman Adventures, Geometry Dash). Assesses whether the game looks like a finished product rather than a programmer-art prototype.",
+  "dimensions": [
+    {
+      "name": "sprite_art_quality",
+      "weight": 0.20,
+      "description": "Clarity, resolution, and consistency of character and enemy sprites at gameplay scale. Includes clean edges (no background bleed), appropriate resolution for display size, consistent line weight and color saturation across all sprites, and whether sprites read clearly against the game world.",
+      "anchors": {
+        "1-3": "Sprites have visible white or light backgrounds bleeding through edges. Resolution mismatch — source images scaled down so aggressively (e.g., 1024px to 60px) that detail is lost or aliasing is visible. Style inconsistency between sprites (some look photorealistic, others cartoony). Characters are hard to distinguish from enemies at gameplay speed. Sprites feel pasted on top of the game world rather than part of it.",
+        "4-6": "Sprites have clean edges with no background bleed. Scale is appropriate for hitbox size. Style is recognizably related across all characters and enemies (same illustration approach, similar line weight). Minor inconsistencies in color saturation or detail level between sprites. Characters and enemies are distinguishable at a glance. Sprites look intentional, not placeholder.",
+        "7-8": "All sprites share a unified art direction — consistent palette, line weight, shading approach, and level of detail. Characters read clearly at gameplay scale with personality visible even when small. Enemy silhouettes are instantly recognizable. Sprite quality is comparable to mid-tier mobile games. No artifacts, fringing, or scaling issues.",
+        "9-10": "Sprites have the polish of a professional mobile title — subtle details visible at gameplay scale, expressive poses that convey character personality, consistent art direction that could anchor a brand. Every sprite looks like it was drawn specifically for its role in this game at this display size."
+      }
+    },
+    {
+      "name": "animation_and_motion",
+      "weight": 0.20,
+      "description": "Whether characters and enemies have visible frame-based or procedural animation that creates the illusion of life. Includes idle breathing/bobbing, run cycles, jump/fall pose transitions, attack anticipation-action-recovery, enemy idle movement, and squash-and-stretch on impacts.",
+      "anchors": {
+        "1-3": "No frame animation — characters are static images that slide across the screen. State changes swap to a different static image with no transition. Movement feels like dragging a paper cutout. No idle animation — characters freeze when not moving. Enemies are motionless until they act. The game feels like an animated PowerPoint.",
+        "4-6": "Basic procedural animation exists — idle bob, rotation during spin, scale pulse on actions. At least 2-3 frame animation for the primary run cycle. State transitions have some visual bridging (fade, scale, or tween). Enemies have at least idle movement (bobbing, wobbling). Landing has visible squash. The game feels alive but motion is limited and repetitive.",
+        "7-8": "Smooth multi-frame animations for core player actions (idle, run, jump, attack) with at least 3-4 frames per cycle. Attack animations have visible anticipation and follow-through. Enemies have distinct movement animations. Squash-and-stretch on landing and impacts. State transitions feel fluid, not abrupt. Animation quality matches casual mobile games.",
+        "9-10": "Animations have secondary motion (hair, tutu, ribbons reacting to movement). Run cycles have personality (dancer-like grace vs. ninja aggression). Every entity has idle animation. Transitions between states blend smoothly. Frame count and timing create the illusion of weight and momentum. Animation quality rivals polished indie titles like Hollow Knight or Celeste."
+      }
+    },
+    {
+      "name": "background_and_environment",
+      "weight": 0.20,
+      "description": "Quality of the game world beyond the play field — parallax background layers, platform textures or tilesets, environmental props, atmospheric effects, and whether each level has a distinct visual identity. Includes whether platforms look like objects in a world or colored rectangles on a flat canvas.",
+      "anchors": {
+        "1-3": "Solid color background (single flat fill). Platforms are untextured colored rectangles with no visual treatment. No parallax scrolling. No environmental props or decoration. The game looks like a debug visualization or level editor view. Every level looks identical except for platform layout.",
+        "4-6": "Background has a gradient, pattern, or at least one parallax layer. Platforms have color variation, borders, or basic texture suggesting a material (wood, stone). Some environmental props exist (lanterns, signs, decorations). At least 2 levels have visually distinct backgrounds. The game looks intentionally designed, not like a prototype.",
+        "7-8": "Multi-layer parallax background (2-3 layers) with distinct art creating depth. Platforms use a tileset with edge pieces and surface variation. Environmental details reinforce the theme (dojo/studio setting). Each level has a unique visual identity. Foreground atmospheric elements (particles, mist, light rays). The environment feels like a place, not a grid.",
+        "9-10": "Rich, layered environments with 3-4 parallax layers including animated elements (floating petals, flickering lanterns, drifting clouds). Platform tilesets integrate seamlessly with backgrounds. Environmental storytelling — the world shows the villain's corruption spreading. Lighting and mood shift across levels. Comparable to polished mobile platformers like Alto's Odyssey or Oddmar."
+      }
+    },
+    {
+      "name": "particle_effects_and_feedback",
+      "weight": 0.15,
+      "description": "Quality of visual feedback systems — particle effects on collection, impact, dash, and defeat. Includes whether particles use varied shapes and colors, whether screen effects (shake, flash) are well-calibrated, whether collectibles have visual presence (glow, sparkle), and whether every player action has satisfying visual confirmation.",
+      "anchors": {
+        "1-3": "Particles are solid-color rectangles with no shape variety. Few effects exist — maybe a basic burst on collection. No glow, sparkle, or additive effects on collectibles or powerups. Screen shake exists but feels disconnected from action intensity. Effects are functional but visually flat — they confirm what happened without making it feel good.",
+        "4-6": "Particles use varied shapes (circles, triangles, stars, not just rectangles). Collection bursts have color appropriate to the collected item. Dash trails are visible and directional. Enemy defeat has a pop or burst effect. Screen shake intensity matches action severity. Collectibles have a subtle glow or pulse. Effects make actions feel confirmed and mildly satisfying.",
+        "7-8": "Particle systems have color gradients over lifetime (bright to fade). Collection effects are multi-stage (burst + floating text + sparkle decay). Dash trails use the character's color palette. Impact effects differ by weapon type. Collectibles sparkle or pulse with an aura. Boss phase transitions have dramatic visual punctuation. Effects make gameplay feel juicy and responsive.",
+        "9-10": "Particle effects rival mobile game quality — additive glow, multi-layered bursts, complex color palettes per effect. Every action has layered feedback (visual + shake + particle). Idle sparkles on important objects draw the eye. Boss attacks have anticipation particles before impact. The game feels satisfying to interact with purely through visual feedback. Effects reinforce the ninja-ballerina theme (sparkles, ribbons, energy trails)."
+      }
+    },
+    {
+      "name": "ui_and_hud_polish",
+      "weight": 0.15,
+      "description": "Quality of non-gameplay visual elements — HUD indicators, health display, boss health bar, menu/title screen design, level select layout, screen transitions, and whether UI uses custom art or default text with emoji. Includes readability, layout hierarchy, and thematic integration.",
+      "anchors": {
+        "1-3": "HUD is plain text with emoji symbols for icons (heart emoji for health, star emoji for score). Menus are text lists on solid-color backgrounds. Boss health bar is a plain colored rectangle. No screen transitions — scenes swap instantly. Level select is a text list. Font is the browser/engine default. UI feels like a debug overlay, not part of the game.",
+        "4-6": "HUD uses basic custom elements — colored bars instead of text for health, simple geometric icons. Boss health bar has a border and fill gradient. Menu screens have some layout structure and a non-default font. Level select has visual structure (grid or cards). Scene transitions exist (fade or slide). UI is functional and readable but not themed to the game.",
+        "7-8": "HUD uses custom sprite icons (drawn hearts, weapon icons, score counters). Boss health bar has decorative elements (themed end-caps, label). Title screen has composed layout with logo, background art, and styled prompt. Level select uses visual cards with status indicators. Scene transitions are smooth and themed. UI elements share the game's color palette and feel integrated.",
+        "9-10": "UI is professionally designed and fully themed — every element reinforces the ninja-ballerina aesthetic. Health indicators animate (pulse when low, sparkle when full). Boss bar has phase markers and dramatic styling. Menu screens have parallax backgrounds and animated elements. Level select shows thumbnail previews or themed illustrations. Transitions use custom animations. UI quality matches published mobile games."
+      }
+    },
+    {
+      "name": "visual_cohesion_and_aesthetic",
+      "weight": 0.10,
+      "description": "Whether all visual elements feel like they belong in the same game — consistent color palette, uniform art style across sprites/backgrounds/UI/effects, and whether the game has a distinctive, recognizable visual identity rather than a patchwork of mismatched styles.",
+      "anchors": {
+        "1-3": "Mixed-media feel — illustrated sprites sit on top of solid-color rectangles. Color palette is inconsistent (AI-generated warm pinks next to code-defined arbitrary RGB values). Platform colors, particle colors, and sprite palettes are unrelated. The game looks like assets from different projects were combined. No unifying visual theme.",
+        "4-6": "Color palette is mostly consistent — platforms, particles, and UI use colors that don't clash with sprites. Art style has one dominant approach (illustration) even if not all elements match. The game has a recognizable look, though some elements (rect platforms, text HUD) break the illusion. A player would identify screenshots as being from the same game.",
+        "7-8": "All visual elements share a unified palette and style. Platform colors use the game's defined palette (oak/bamboo for dojo, corruption colors for later levels). Particle colors match their source (pink for ballerina, amber for syrup). UI elements are themed. The game has a distinctive look — 'ninja-ballerina' is visually communicated through every element.",
+        "9-10": "The game has a memorable, professional visual identity. Every pixel reinforces the theme — from the warm pink-and-gold palette of the heroine to the amber-and-brown corruption of the villain's influence. A single screenshot is enough to identify the game. Visual cohesion is so strong it could support merchandise or marketing materials. Comparable to the visual identity of games like Hollow Knight or Cuphead in terms of consistency (though not necessarily in raw quality)."
+      }
+    }
+  ],
+  "overall_scoring": "weighted_average",
+  "critical_failures": [
+    "Sprites render at wildly wrong scale — characters are invisible dots or fill the entire screen, making the game unplayable",
+    "White or colored backgrounds visibly bleed through sprite edges during normal gameplay, breaking the illusion that characters exist in the game world",
+    "Game canvas is black, empty, or shows only a solid color with no visible game content",
+    "UI text overlaps other UI text or extends off-screen, making critical information (health, score) unreadable",
+    "Z-ordering errors hide the player character behind platforms or background elements during normal gameplay",
+    "Visual glitches (flickering sprites, persistent artifacts, broken tiling) are present in more than one scene"
+  ]
+}
