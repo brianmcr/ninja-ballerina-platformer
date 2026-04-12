@@ -68,12 +68,6 @@ const level3: LevelData = {
     { type: "glutenBlob", x: 1200, y: FLOOR_Y - 160 },
     { type: "glutenBlob", x: 2500, y: FLOOR_Y - 300 },
 
-    // Syrup Drippers — new enemy
-    { type: "syrupDripper", x: 780, y: 80 },
-    { type: "syrupDripper", x: 1500, y: 80 },
-    { type: "syrupDripper", x: 2600, y: 80 },
-    { type: "syrupDripper", x: 3300, y: 80 },
-
     // More butter pats in end section
     { type: "butterPat", x: 3050, y: FLOOR_Y, patrolRange: 80 },
     { type: "butterPat", x: 3550, y: FLOOR_Y, patrolRange: 60 },

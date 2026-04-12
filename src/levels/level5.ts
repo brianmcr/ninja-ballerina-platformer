@@ -15,13 +15,17 @@ const level5: LevelData = {
     { type: "solid", x: 650, y: FLOOR_Y, width: 300, height: FLOOR_H },
     { type: "solid", x: 1200, y: FLOOR_Y, width: 350, height: FLOOR_H },
     { type: "solid", x: 1850, y: FLOOR_Y, width: 300, height: FLOOR_H },
+    // Stepping stone for 350px gap (2150-2500)
+    { type: "one-way", x: 2320, y: FLOOR_Y - 40, width: 100, height: 12 },
     { type: "solid", x: 2500, y: FLOOR_Y, width: 300, height: FLOOR_H },
     { type: "solid", x: 3100, y: FLOOR_Y, width: 300, height: FLOOR_H },
+    // Stepping stone for 300px gap (3400-3700)
+    { type: "one-way", x: 3530, y: FLOOR_Y - 40, width: 100, height: 12 },
     { type: "solid", x: 3700, y: FLOOR_Y, width: 300, height: FLOOR_H },
     { type: "solid", x: 4100, y: FLOOR_Y, width: 300, height: FLOOR_H },
 
     // Rafter platforms — lots of vertical play
-    { type: "solid", x: 150, y: FLOOR_Y - 180, width: 140, height: 16 },
+    { type: "solid", x: 150, y: FLOOR_Y - 160, width: 140, height: 16 },
     { type: "one-way", x: 350, y: FLOOR_Y - 300, width: 120, height: 12 },
     { type: "solid", x: 500, y: FLOOR_Y - 420, width: 140, height: 16 },
 
@@ -77,21 +81,21 @@ const level5: LevelData = {
   enemies: [
     // All enemy types, dense placement
     { type: "butterPat", x: 250, y: FLOOR_Y, patrolRange: 80 },
-    { type: "butterPat", x: 750, y: FLOOR_Y, patrolRange: 60 },
-    { type: "butterPat", x: 1300, y: FLOOR_Y, patrolRange: 80 },
+    { type: "butterPat", x: 700, y: FLOOR_Y, patrolRange: 60 },
+    { type: "butterPat", x: 1450, y: FLOOR_Y, patrolRange: 80 },
     { type: "butterPat", x: 2600, y: FLOOR_Y, patrolRange: 60 },
 
-    { type: "glutenBlob", x: 850, y: FLOOR_Y - 240 },
-    { type: "glutenBlob", x: 1400, y: FLOOR_Y - 140 },
+    { type: "glutenBlob", x: 1050, y: FLOOR_Y - 160 },
+    { type: "glutenBlob", x: 1900, y: FLOOR_Y - 140 },
     { type: "glutenBlob", x: 2600, y: FLOOR_Y - 180 },
-    { type: "glutenBlob", x: 3250, y: FLOOR_Y - 260 },
+    { type: "glutenBlob", x: 3650, y: FLOOR_Y - 200 },
 
     { type: "syrupDripper", x: 500, y: 60 },
-    { type: "syrupDripper", x: 1100, y: 60 },
+    { type: "syrupDripper", x: 1250, y: 60 },
     { type: "syrupDripper", x: 1700, y: 60 },
-    { type: "syrupDripper", x: 2400, y: 60 },
+    { type: "syrupDripper", x: 2200, y: 60 },
     { type: "syrupDripper", x: 3000, y: 60 },
-    { type: "syrupDripper", x: 3600, y: 60 },
+    { type: "syrupDripper", x: 4100, y: 60 },
 
     { type: "milkCarton", x: 1950, y: FLOOR_Y, patrolRange: 60 },
     { type: "milkCarton", x: 3200, y: FLOOR_Y, patrolRange: 80 },
@@ -110,18 +114,18 @@ const level5: LevelData = {
     { type: "sequin", x: 270, y: FLOOR_Y - 20 },
     { type: "sequin", x: 340, y: FLOOR_Y - 20 },
 
-    // Rafter sequins
-    { type: "sequin", x: 200, y: FLOOR_Y - 205 },
+    // Rafter sequins (fewer on platforms, more on floor)
     { type: "sequin", x: 400, y: FLOOR_Y - 325 },
-    { type: "sequin", x: 550, y: FLOOR_Y - 445 },
 
-    // Gap crossing sequins
-    { type: "sequin", x: 520, y: FLOOR_Y - 145 },
-    { type: "sequin", x: 610, y: FLOOR_Y - 225 },
+    // Floor path sequins
+    { type: "sequin", x: 680, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 750, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 820, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 890, y: FLOOR_Y - 20 },
 
-    // Floor 2 + platforms
-    { type: "sequin", x: 710, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 780, y: FLOOR_Y - 20 },
+    // Floor 2 sequins
+    { type: "sequin", x: 1910, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1980, y: FLOOR_Y - 20 },
     { type: "sequin", x: 850, y: FLOOR_Y - 265 },
     { type: "sequin", x: 1050, y: FLOOR_Y - 185 },
 
@@ -156,15 +160,15 @@ const level5: LevelData = {
     { type: "sequin", x: 2800, y: FLOOR_Y - 325 },
     { type: "sequin", x: 2950, y: FLOOR_Y - 405 },
 
-    // End gauntlet
+    // End gauntlet — mix of floor and platform
     { type: "sequin", x: 3160, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 3250, y: FLOOR_Y - 285 },
+    { type: "sequin", x: 3230, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 3300, y: FLOOR_Y - 20 },
     { type: "sequin", x: 3450, y: FLOOR_Y - 165 },
-    { type: "sequin", x: 3550, y: FLOOR_Y - 265 },
     { type: "sequin", x: 3760, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 3850, y: FLOOR_Y - 325 },
-    { type: "sequin", x: 4000, y: FLOOR_Y - 205 },
-    { type: "sequin", x: 4200, y: FLOOR_Y - 285 },
+    { type: "sequin", x: 3830, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 4160, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 4230, y: FLOOR_Y - 20 },
 
     // Ribbons (hard-to-reach collectibles)
     { type: "ribbon", x: 550, y: FLOOR_Y - 500 },

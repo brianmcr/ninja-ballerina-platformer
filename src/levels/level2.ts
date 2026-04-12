@@ -12,6 +12,8 @@ const level2: LevelData = {
   platforms: [
     // Floor segments — gaps require floating
     { type: "solid", x: 0, y: FLOOR_Y, width: 600, height: FLOOR_H },
+    // Stepping stone for 280px gap
+    { type: "one-way", x: 700, y: FLOOR_Y - 40, width: 100, height: 12 },
     { type: "solid", x: 880, y: FLOOR_Y, width: 400, height: FLOOR_H },
     { type: "solid", x: 1600, y: FLOOR_Y, width: 500, height: FLOOR_H },
     { type: "solid", x: 2400, y: FLOOR_Y, width: 400, height: FLOOR_H },
@@ -46,6 +48,9 @@ const level2: LevelData = {
 
     // Bouncy for fun
     { type: "bouncy", x: 2500, y: FLOOR_Y - 16, width: 80, height: 16 },
+
+    // Stepping stone for 300px gap (2800-3100)
+    { type: "one-way", x: 2920, y: FLOOR_Y - 40, width: 100, height: 12 },
 
     // End section platforms
     { type: "one-way", x: 2800, y: FLOOR_Y - 140, width: 140, height: 12 },

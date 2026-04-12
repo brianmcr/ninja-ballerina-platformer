@@ -19,19 +19,19 @@ const bossArena: LevelData = {
     { type: "solid", x: BOSS.ARENA_WIDTH - 32, y: 200, width: 32, height: FLOOR_Y - 200 },
 
     // Elevated platforms for Phase 2 (3 at different heights)
-    // Left platform
-    { type: "solid", x: 300, y: FLOOR_Y - 200, width: 200, height: 16 },
-    // Center platform (highest)
-    { type: "solid", x: 700, y: FLOOR_Y - 320, width: 200, height: 16 },
-    // Right platform
-    { type: "solid", x: 1100, y: FLOOR_Y - 200, width: 200, height: 16 },
+    // Left platform (reachable with normal jump)
+    { type: "solid", x: 300, y: FLOOR_Y - 160, width: 200, height: 16 },
+    // Center platform (reachable from side platforms)
+    { type: "solid", x: 700, y: FLOOR_Y - 300, width: 200, height: 16 },
+    // Right platform (reachable with normal jump)
+    { type: "solid", x: 1100, y: FLOOR_Y - 160, width: 200, height: 16 },
   ],
   pickups: [
     // Ninja powerup at the start
     { type: "ninjaPowerup", x: 100, y: FLOOR_Y - 40 },
     // Weapon pickups spread around
-    { type: "katana", x: 500, y: FLOOR_Y - 240 },
-    { type: "sais", x: 1000, y: FLOOR_Y - 240 },
+    { type: "katana", x: 500, y: FLOOR_Y - 200 },
+    { type: "sais", x: 1000, y: FLOOR_Y - 200 },
   ],
 }
 

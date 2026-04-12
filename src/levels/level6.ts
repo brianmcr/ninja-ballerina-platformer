@@ -15,6 +15,9 @@ const level6: LevelData = {
     { type: "solid", x: 600, y: FLOOR_Y, width: 300, height: FLOOR_H },
     { type: "solid", x: 1150, y: FLOOR_Y, width: 300, height: FLOOR_H },
     { type: "solid", x: 1700, y: FLOOR_Y, width: 250, height: FLOOR_H },
+    // Stepping stones for 400px gap (1800-2200)
+    { type: "one-way", x: 1920, y: FLOOR_Y - 40, width: 100, height: 12 },
+    { type: "one-way", x: 2060, y: FLOOR_Y - 40, width: 100, height: 12 },
     { type: "solid", x: 2200, y: FLOOR_Y, width: 300, height: FLOOR_H },
     { type: "solid", x: 2750, y: FLOOR_Y, width: 250, height: FLOOR_H },
     { type: "solid", x: 3250, y: FLOOR_Y, width: 300, height: FLOOR_H },
@@ -26,7 +29,7 @@ const level6: LevelData = {
     // Section 1: Opening gauntlet
     { type: "solid", x: 150, y: FLOOR_Y - 160, width: 120, height: 16 },
     { type: "one-way", x: 350, y: FLOOR_Y - 280, width: 100, height: 12 },
-    { type: "solid", x: 500, y: FLOOR_Y - 180, width: 100, height: 16 },
+    { type: "solid", x: 500, y: FLOOR_Y - 160, width: 100, height: 16 },
     { type: "one-way", x: 420, y: FLOOR_Y - 400, width: 100, height: 12 },
 
     // Section 2: Swing chain
@@ -85,28 +88,23 @@ const level6: LevelData = {
     { type: "butterPat", x: 2300, y: FLOOR_Y, patrolRange: 60 },
     { type: "butterPat", x: 3350, y: FLOOR_Y, patrolRange: 60 },
 
-    // Gluten Blobs on platforms
-    { type: "glutenBlob", x: 550, y: FLOOR_Y - 180 },
-    { type: "glutenBlob", x: 1350, y: FLOOR_Y - 260 },
+    // Gluten Blobs on platforms — spaced from other enemies
+    { type: "glutenBlob", x: 2550, y: FLOOR_Y - 160 },
     { type: "glutenBlob", x: 1950, y: FLOOR_Y - 200 },
-    { type: "glutenBlob", x: 2600, y: FLOOR_Y - 160 },
     { type: "glutenBlob", x: 3700, y: FLOOR_Y - 180 },
+    { type: "glutenBlob", x: 4200, y: FLOOR_Y - 160 },
 
-    // Syrup Drippers everywhere
-    { type: "syrupDripper", x: 400, y: 60 },
-    { type: "syrupDripper", x: 900, y: 60 },
-    { type: "syrupDripper", x: 1400, y: 60 },
-    { type: "syrupDripper", x: 1900, y: 60 },
-    { type: "syrupDripper", x: 2500, y: 60 },
-    { type: "syrupDripper", x: 3100, y: 60 },
-    { type: "syrupDripper", x: 3700, y: 60 },
-    { type: "syrupDripper", x: 4200, y: 60 },
+    // Syrup Drippers — spaced to avoid crowding other enemies
+    { type: "syrupDripper", x: 500, y: 60 },
+    { type: "syrupDripper", x: 1050, y: 60 },
+    { type: "syrupDripper", x: 1800, y: 60 },
+    { type: "syrupDripper", x: 2900, y: 60 },
+    { type: "syrupDripper", x: 3900, y: 60 },
+    { type: "syrupDripper", x: 4700, y: 60 },
 
-    // Multiple Milk Carton Guards — the real challenge
-    { type: "milkCarton", x: 1800, y: FLOOR_Y, patrolRange: 60 },
-    { type: "milkCarton", x: 2500, y: FLOOR_Y, patrolRange: 60 },
-    { type: "milkCarton", x: 2850, y: FLOOR_Y, patrolRange: 60 },
-    { type: "milkCarton", x: 3500, y: FLOOR_Y, patrolRange: 60 },
+    // Milk Carton Guards — spaced from other enemies
+    { type: "milkCarton", x: 1500, y: FLOOR_Y, patrolRange: 60 },
+    { type: "milkCarton", x: 3200, y: FLOOR_Y, patrolRange: 60 },
     { type: "milkCarton", x: 4400, y: FLOOR_Y, patrolRange: 60 },
   ],
   pickups: [
@@ -117,43 +115,42 @@ const level6: LevelData = {
     // Sais pickup
     { type: "sais", x: 1950, y: FLOOR_Y - 230 },
 
-    // Section 1 sequins
-    { type: "sequin", x: 180, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 250, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 200, y: FLOOR_Y - 185 },
+    // Section 1 sequins — floor-heavy
+    { type: "sequin", x: 140, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 210, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 280, y: FLOOR_Y - 20 },
     { type: "sequin", x: 400, y: FLOOR_Y - 305 },
-    { type: "sequin", x: 470, y: FLOOR_Y - 425 },
 
     // Section 2 sequins
     { type: "sequin", x: 660, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 750, y: FLOOR_Y - 225 },
+    { type: "sequin", x: 730, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 800, y: FLOOR_Y - 20 },
     { type: "sequin", x: 1000, y: FLOOR_Y - 325 },
-    { type: "sequin", x: 1100, y: FLOOR_Y - 205 },
 
     // Section 3 sequins
     { type: "sequin", x: 1210, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 1250, y: FLOOR_Y - 165 },
-    { type: "sequin", x: 1350, y: FLOOR_Y - 285 },
-    { type: "sequin", x: 1450, y: FLOOR_Y - 405 },
+    { type: "sequin", x: 1280, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1350, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 1420, y: FLOOR_Y - 20 },
 
     // Relief zone 1 sequins
     { type: "sequin", x: 1560, y: FLOOR_Y - 20 },
     { type: "sequin", x: 1630, y: FLOOR_Y - 20 },
     { type: "sequin", x: 1700, y: FLOOR_Y - 20 },
 
-    // Section 4 sequins
+    // Section 4 sequins — floor-heavy
     { type: "sequin", x: 1760, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 1800, y: FLOOR_Y - 345 },
+    { type: "sequin", x: 1830, y: FLOOR_Y - 20 },
 
     // Section 5 sequins
     { type: "sequin", x: 2260, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 2300, y: FLOOR_Y - 165 },
+    { type: "sequin", x: 2330, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 2400, y: FLOOR_Y - 20 },
     { type: "sequin", x: 2450, y: FLOOR_Y - 245 },
-    { type: "sequin", x: 2400, y: FLOOR_Y - 385 },
 
     // Section 6 sequins
     { type: "sequin", x: 2810, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 2900, y: FLOOR_Y - 225 },
+    { type: "sequin", x: 2880, y: FLOOR_Y - 20 },
     { type: "sequin", x: 3100, y: FLOOR_Y - 325 },
     { type: "sequin", x: 3300, y: FLOOR_Y - 225 },
 
@@ -162,17 +159,17 @@ const level6: LevelData = {
     { type: "sequin", x: 3180, y: FLOOR_Y - 20 },
     { type: "sequin", x: 3250, y: FLOOR_Y - 20 },
 
-    // Section 7 sequins
+    // Section 7 sequins — floor-heavy
     { type: "sequin", x: 3310, y: FLOOR_Y - 20 },
-    { type: "sequin", x: 3400, y: FLOOR_Y - 185 },
-    { type: "sequin", x: 3550, y: FLOOR_Y - 305 },
+    { type: "sequin", x: 3380, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 3450, y: FLOOR_Y - 20 },
     { type: "sequin", x: 3700, y: FLOOR_Y - 205 },
-    { type: "sequin", x: 3850, y: FLOOR_Y - 345 },
+    { type: "sequin", x: 3850, y: FLOOR_Y - 20 },
 
     // Section 8 sequins
-    { type: "sequin", x: 4000, y: FLOOR_Y - 225 },
-    { type: "sequin", x: 4250, y: FLOOR_Y - 305 },
-    { type: "sequin", x: 4400, y: FLOOR_Y - 185 },
+    { type: "sequin", x: 3920, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 4360, y: FLOOR_Y - 20 },
+    { type: "sequin", x: 4430, y: FLOOR_Y - 20 },
     { type: "sequin", x: 4550, y: FLOOR_Y - 265 },
 
     // Ribbons (hard-to-reach collectibles)

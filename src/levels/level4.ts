@@ -62,9 +62,9 @@ const level4: LevelData = {
     { type: "butterPat", x: 850, y: FLOOR_Y, patrolRange: 80 },
     { type: "butterPat", x: 2050, y: FLOOR_Y, patrolRange: 80 },
 
-    // Gluten Blobs
-    { type: "glutenBlob", x: 260, y: FLOOR_Y - 160 },
-    { type: "glutenBlob", x: 850, y: FLOOR_Y - 180 },
+    // Gluten Blobs — spaced from other enemies
+    { type: "glutenBlob", x: 1150, y: FLOOR_Y - 240 },
+    { type: "glutenBlob", x: 1800, y: FLOOR_Y - 180 },
     { type: "glutenBlob", x: 2050, y: FLOOR_Y - 200 },
 
     // Syrup Drippers — more of them in the kitchen
