@@ -10,7 +10,7 @@ export function createSoggyWaffle(x: number, y: number) {
     sprite("soggy-waffle"),
     scale(0.12),
     pos(x, y),
-    area({ shape: new Rect(vec2(0), BOSS.WIDTH, BOSS.HEIGHT) }),
+    area({ shape: new Rect(vec2(-BOSS.WIDTH / 2, -BOSS.HEIGHT), BOSS.WIDTH, BOSS.HEIGHT) }),
     body(),
     anchor("bot"),
     rotate(0),

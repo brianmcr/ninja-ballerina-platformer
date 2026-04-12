@@ -14,7 +14,7 @@ export default function createPlayer(x: number, y: number) {
     sprite("ballerina-idle"),
     scale(0.11),
     pos(x, y),
-    area({ shape: new Rect(vec2(0), PLAYER.WIDTH, PLAYER.HEIGHT) }),
+    area({ shape: new Rect(vec2(-PLAYER.WIDTH / 2, -PLAYER.HEIGHT), PLAYER.WIDTH, PLAYER.HEIGHT) }),
     body(),
     anchor("bot"),
     rotate(0),

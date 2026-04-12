@@ -21,10 +21,11 @@ export function createNinjaPowerup(x: number, y: number) {
   ])
 
   const ninjaScale = PICKUP.NINJA_SIZE / 1024 * 2.4
+  const hitSize = PICKUP.NINJA_SIZE * 3
   const pickup = add([
     sprite("ninja-powerup-sprite"),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(-hitSize / 2, -hitSize / 2), hitSize, hitSize) }),
     anchor("center"),
     opacity(1),
     scale(ninjaScale),
@@ -94,10 +95,11 @@ export function createSequin(x: number, y: number) {
   ])
 
   const spriteScale = sz / 1024 * 2.4
+  const hitSize = sz * 4
   const seq = add([
     sprite("sequin-sprite"),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(-hitSize / 2, -hitSize / 2), hitSize, hitSize) }),
     anchor("center"),
     scale(spriteScale),
     "pickup",
@@ -159,10 +161,11 @@ export function createRibbon(x: number, y: number) {
   ])
 
   const ribbonScale = sz / 1024 * 2.4
+  const rHit = sz * 3
   const ribbon = add([
     sprite("ribbon-sprite"),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(-rHit / 2, -rHit / 2), rHit, rHit) }),
     anchor("center"),
     scale(ribbonScale),
     rotate(0),
@@ -226,10 +229,11 @@ export function createWeaponPickup(x: number, y: number, weaponType: "katana" | 
     z(-1),
   ])
 
+  const wHit = sz * 3
   const pickup = add([
     sprite(weaponSprite),
     pos(x, y),
-    area(),
+    area({ shape: new Rect(vec2(-wHit / 2, -wHit / 2), wHit, wHit) }),
     anchor("center"),
     scale(weaponScale),
     opacity(1),

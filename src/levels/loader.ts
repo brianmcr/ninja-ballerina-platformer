@@ -191,12 +191,13 @@ export default function loadLevel(levelData: LevelData) {
 
   const player = createPlayer(levelData.playerSpawn.x, levelData.playerSpawn.y)
 
-  // One-way platform logic: disable collision when player is below
+  // One-way platform logic: disable collision when player is clearly below
   player.onBeforePhysicsResolve((col: any) => {
     if (col.target.is("one-way")) {
-      // Only collide if player bottom was above platform top before collision
-      // player anchor is "bot", so player.pos.y is the bottom
-      if (player.pos.y > col.target.pos.y + 2) {
+      // Only collide from above: player must be moving down and feet above/near platform top
+      // player anchor is "bot", so player.pos.y is the bottom (feet)
+      // Use velocity check + generous tolerance to prevent tunneling and false passes
+      if (player.vel.y < 0 || player.pos.y > col.target.pos.y + 10) {
         col.preventResolution()
       }
     }
