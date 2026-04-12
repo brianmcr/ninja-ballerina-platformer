@@ -61,6 +61,11 @@ loadSprite("title-logo", "sprites/title-logo.png")
 
 scene("title", () => title())
 scene("cutscene", () => {
+  const progress = loadProgress()
+  if (progress.firstPlayDone) {
+    go("game")
+    return
+  }
   cutscene({
     ...level1Intro,
     nextScene: "game",

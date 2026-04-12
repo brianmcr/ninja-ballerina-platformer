@@ -195,7 +195,6 @@ export function createRibbon(x: number, y: number) {
     sequinCollectPop(ribbon.pos.x, ribbon.pos.y)
     collectRibbon(p)
     playPowerup()
-    debug.log("Ribbon collected!")
     destroy(trail1)
     destroy(trail2)
     destroy(trail3)
@@ -271,13 +270,9 @@ export function createWeaponPickup(x: number, y: number, weaponType: "katana" | 
 
   pickup.onCollide("player", (p: any) => {
     const h = p.health as PlayerHealth
-    if (!h.isNinja) {
-      debug.log("Need ninja form!")
-      return
-    }
+    if (!h.isNinja) return
     p.currentWeapon = weaponType
     playPowerup()
-    debug.log(`${weaponType} equipped!`)
     destroy(pedestal)
     destroy(pickup)
   })

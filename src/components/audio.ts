@@ -105,6 +105,10 @@ export function playDefeat() {
   tone(280, 280, 0.16, "sine", 0.12, 0.24)
 }
 
+export function playDamage() {
+  tone(150, 100, 0.1, "sawtooth", 0.15)
+}
+
 export function playBossHit() {
   noise(0.2, 0.15)
   tone(80, 50, 0.2, "sine", 0.12)
