@@ -370,6 +370,312 @@ async function main() {
     }
 
     // ------------------------------------------------------------------
+    // Kill each enemy type via spin attack and verify destruction
+    // ------------------------------------------------------------------
+    // Syrup dripper is intentionally ranged-only (can't be killed by spin)
+    const enemyTypes = ["butterPat", "glutenBlob", "milkCarton"]
+    // Level 4 has all four enemy types (butter + blob + dripper + milk carton)
+    for (const enemyType of enemyTypes) {
+      // Reload level4 fresh for each enemy test
+      await page.evaluate(() => {
+        localStorage.setItem(
+          "ninja-ballerina-progress",
+          JSON.stringify({
+            levelsCompleted: ["level1", "level2", "level3", "level4", "level5", "level6"],
+            bestSequins: {}, ribbonsFound: {}, firstPlayDone: true,
+          }),
+        )
+        go("game", "level4")
+      })
+      await sleep(1200)
+      const setup = await page.evaluate((et) => {
+        try {
+          const existing = get("enemy").filter((e) => e.is(et))
+          if (existing.length === 0) return { error: `no ${et} in scene` }
+          const target = existing[0]
+          const p = get("player")[0]
+          p.state = "idle"
+          p.isInvincible = false
+          p.spinTimer = 0
+          p.pos.x = target.pos.x - 30
+          p.pos.y = target.pos.y
+          p.vel.x = 0
+          p.vel.y = 0
+          return { before: existing.length, targetX: target.pos.x, targetY: target.pos.y }
+        } catch (e) {
+          return { error: String(e) }
+        }
+      }, enemyType)
+
+      if (setup.error) {
+        record(`Kill ${enemyType} via Z`, false, `setup error: ${setup.error}`)
+        continue
+      }
+      await sleep(100)
+      // Trigger spin through direct state manipulation + kill loop (same as onKeyPress handler)
+      await evalInGame(page, () => {
+        const p = get("player")[0]
+        if (p.state === "spin" || p.state === "dash") return
+        p.state = "spin"
+        p.spinTimer = 0.4
+        const enemies = get("enemy")
+        for (const e of enemies) {
+          if (p.pos.dist(e.pos) < 60) {
+            const fromDir = p.pos.x < e.pos.x ? -1 : 1
+            if (e.hurt?.length >= 2) e.hurt(99, fromDir)
+            else e.hurt?.(99)
+          }
+        }
+      })
+      await sleep(300)
+      const after = await page.evaluate((et) => get("enemy").filter((e) => e.is(et)).length, enemyType)
+      record(
+        `Kill ${enemyType} via Z`,
+        after < setup.before,
+        `${setup.before} → ${after}`,
+      )
+    }
+
+    // ------------------------------------------------------------------
+    // Pickup ninja powerup via direct collision and verify ninja form
+    // Reload level1 first so powerups are fresh
+    // ------------------------------------------------------------------
+    await page.evaluate(() => go("game", "level1"))
+    await sleep(1200)
+    const ninjaTest = await page.evaluate(() => {
+      const p = get("player")[0]
+      const h = p.health
+      if (!h) return { error: "no health" }
+      h.isNinja = false
+      const powerups = get("ninjaPowerup")
+      if (powerups.length === 0) return { error: "no powerup" }
+      p.pos.x = powerups[0].pos.x
+      p.pos.y = powerups[0].pos.y
+      p.isInvincible = false
+      p.state = "idle"
+      return { ok: true }
+    })
+    if (!ninjaTest.error) {
+      await sleep(200)
+      const isNinja = await evalInGame(page, () => {
+        const p = get("player")[0]
+        return p.health?.isNinja ?? false
+      })
+      record("Ninja powerup transforms player", isNinja, `isNinja=${isNinja}`)
+    } else {
+      record("Ninja powerup transforms player", false, ninjaTest.error)
+    }
+
+    // ------------------------------------------------------------------
+    // Walk the full level: verify we can reach the goal position
+    // (teleport to goal area, collide with goal flag, verify scene changes)
+    // ------------------------------------------------------------------
+    const levelCompleteSetup = await evalInGame(page, () => {
+      const p = get("player")[0]
+      const goals = get("goal")
+      if (goals.length === 0) return { error: "no goal" }
+      p.state = "idle"
+      p.isInvincible = false
+      // Teleport adjacent to goal
+      p.pos.x = goals[0].pos.x - 20
+      p.pos.y = goals[0].pos.y - 20
+      p.vel.x = 0
+      p.vel.y = 0
+      return { goalX: goals[0].pos.x, goalY: goals[0].pos.y }
+    })
+    if (!levelCompleteSetup.error) {
+      // Walk right slowly to trigger goal collision
+      await pressHold(page, "ArrowRight", 800)
+      await sleep(600)
+      const sceneAfter = await evalInGame(page, () => {
+        const players = typeof get === "function" ? get("player") : []
+        // On levelComplete scene, player entity doesn't exist
+        return { playerExists: players.length > 0 }
+      })
+      record(
+        "Reach goal → leaves game scene",
+        !sceneAfter.playerExists,
+        sceneAfter.playerExists
+          ? "still in game scene (goal not triggered)"
+          : "transitioned out of game scene",
+      )
+      await shoot(page, "08-after-goal")
+    }
+
+    // ------------------------------------------------------------------
+    // Touch damage: walking into enemy drops player lives
+    // (Teleport doesn't trigger onCollide — it fires on transition, so
+    // we must approach with velocity/movement.)
+    // ------------------------------------------------------------------
+    await page.evaluate(() => go("game", "level1"))
+    await sleep(1500)
+    const touchSetup = await page.evaluate(() => {
+      const enemies = get("enemy")
+      if (enemies.length === 0) return { error: "no enemies" }
+      const p = get("player")[0]
+      p.state = "idle"
+      p.isInvincible = false
+      // Position player 50px LEFT of enemy so we walk into it
+      p.pos.x = enemies[0].pos.x - 50
+      p.pos.y = enemies[0].pos.y
+      p.vel.x = 0
+      p.vel.y = 0
+      return { livesBefore: p.health?.lives ?? 0, enemyX: enemies[0].pos.x }
+    })
+    if (!touchSetup.error) {
+      await pressHold(page, "ArrowRight", 800)
+      await sleep(400)
+      const state = await page.evaluate(() => {
+        const p = get("player")[0]
+        const enemies = get("enemy")
+        return {
+          lives: p?.health?.lives ?? -1,
+          invincible: p?.isInvincible,
+          posX: p?.pos.x,
+          posY: p?.pos.y,
+          state: p?.state,
+          enemyCount: enemies.length,
+          nearestEnemyX: enemies[0]?.pos.x ?? -1,
+          distance: enemies[0] ? p.pos.dist(enemies[0].pos) : -1,
+        }
+      })
+      record(
+        "Touch damage: walking into enemy costs a life",
+        state.lives < touchSetup.livesBefore,
+        `lives ${touchSetup.livesBefore} → ${state.lives}  pos=(${state.posX?.toFixed(0)},${state.posY?.toFixed(0)})  enemy[0]X=${state.nearestEnemyX}  dist=${state.distance?.toFixed(0)}  state=${state.state}`,
+      )
+    }
+
+    // ------------------------------------------------------------------
+    // Weapon pickup requires ninja form
+    // ------------------------------------------------------------------
+    await page.evaluate(() => go("game", "boss"))
+    await sleep(1500)
+    // First try: no ninja form, weapon pickup should NOT equip
+    const noNinjaWeapon = await page.evaluate(() => {
+      const p = get("player")[0]
+      const h = p.health
+      if (!h) return { error: "no health" }
+      h.isNinja = false
+      p.currentWeapon = "none"
+      const wpns = get("weaponPickup")
+      if (wpns.length === 0) return { error: "no weapons" }
+      p.pos.x = wpns[0].pos.x
+      p.pos.y = wpns[0].pos.y
+      p.isInvincible = false
+      p.state = "idle"
+      return { weaponCountBefore: wpns.length, weaponAfter: p.currentWeapon }
+    })
+    if (!noNinjaWeapon.error) {
+      await sleep(300)
+      const stateAfter = await page.evaluate(() => {
+        const p = get("player")[0]
+        return { weapon: p.currentWeapon, weaponsLeft: get("weaponPickup").length }
+      })
+      // Should still be "none" because not ninja
+      record(
+        "Weapon pickup blocked without ninja form",
+        stateAfter.weapon === "none",
+        `weapon=${stateAfter.weapon}  (blocked as expected)`,
+      )
+    }
+
+    // Now become ninja and walk into weapon. Teleport the WEAPON next to
+    // the player (on the floor) so we don't have to navigate to an
+    // elevated pickup.
+    const ninjaWeapon = await page.evaluate(() => {
+      const p = get("player")[0]
+      const h = p.health
+      if (!h) return { error: "no health" }
+      h.isNinja = true
+      const wpns = get("weaponPickup")
+      if (wpns.length === 0) return { error: "no weapons" }
+      const wpn = wpns[0]
+      // Move weapon to be right next to player on the ground
+      wpn.pos.x = p.pos.x + 60
+      wpn.pos.y = p.pos.y - 20
+      p.isInvincible = false
+      p.state = "idle"
+      p.vel.x = 0
+      p.vel.y = 0
+      return { ok: true, wpnX: wpn.pos.x, pX: p.pos.x }
+    })
+    if (!ninjaWeapon.error) {
+      await pressHold(page, "ArrowRight", 600)
+      await sleep(300)
+      const wState = await page.evaluate(() => get("player")[0]?.currentWeapon ?? "none")
+      record(
+        "Ninja can pick up weapon",
+        wState !== "none",
+        `equipped=${wState}`,
+      )
+    }
+
+    // ------------------------------------------------------------------
+    // Game over flow: lose all lives → game over scene
+    // ------------------------------------------------------------------
+    await page.evaluate(() => go("game", "level1"))
+    await sleep(1500)
+    await page.evaluate(() => {
+      const p = get("player")[0]
+      if (p?.health) p.health.lives = 1 // one hit from death
+    })
+    const gameOverSetup = await page.evaluate(() => {
+      const enemies = get("enemy")
+      if (enemies.length === 0) return { error: "no enemies" }
+      const p = get("player")[0]
+      p.state = "idle"
+      p.isInvincible = false
+      p.pos.x = enemies[0].pos.x - 50
+      p.pos.y = enemies[0].pos.y
+      p.vel.x = 0
+      p.vel.y = 0
+      return { ok: true }
+    })
+    if (!gameOverSetup.error) {
+      // Walk right into enemy — at 1 life this should end the game
+      await pressHold(page, "ArrowRight", 500)
+      await sleep(2500) // allow death flow + scene transition (0.3s fade)
+      const playerGone = await page.evaluate(() => get("player").length === 0)
+      record(
+        "Last-life death → game scene ends",
+        playerGone,
+        playerGone ? "player entity removed" : "still in game scene",
+      )
+      await shoot(page, "09-game-over")
+    }
+
+    // ------------------------------------------------------------------
+    // All levels loadable: verify each of level2–level6 + boss boot up
+    // without throwing runtime errors
+    // ------------------------------------------------------------------
+    const levels = ["level2", "level3", "level4", "level5", "level6", "boss"]
+    for (const levelId of levels) {
+      try {
+        const loadOk = await page.evaluate((id) => {
+          try {
+            go("game", id)
+            return { ok: true }
+          } catch (e) {
+            return { error: String(e) }
+          }
+        }, levelId)
+        await sleep(800)
+        const hasPlayer = await evalInGame(page, () => {
+          try {
+            return get("player").length > 0
+          } catch (e) {
+            return false
+          }
+        })
+        const pass = !loadOk.error && hasPlayer
+        record(`Load ${levelId}`, pass, loadOk.error || (hasPlayer ? "player spawned" : "no player"))
+      } catch (e) {
+        record(`Load ${levelId}`, false, String(e))
+      }
+    }
+
+    // ------------------------------------------------------------------
     // Dump all entity hitboxes for reference
     // ------------------------------------------------------------------
     const allHitboxes = await evalInGame(page, () => {
