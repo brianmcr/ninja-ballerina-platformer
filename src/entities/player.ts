@@ -9,12 +9,17 @@ import type { WeaponType } from "../components/weapons"
 
 type PlayerState = "idle" | "run" | "jump" | "float" | "spin" | "dash" | "whip"
 
+const PLAYER_SCALE = 0.11
+
 export default function createPlayer(x: number, y: number) {
   const player = add([
     sprite("ballerina-idle"),
-    scale(0.11),
+    scale(PLAYER_SCALE),
     pos(x, y),
-    area({ shape: new Rect(vec2(-PLAYER.WIDTH / 2, -PLAYER.HEIGHT), PLAYER.WIDTH, PLAYER.HEIGHT) }),
+    // Shape is in pre-scale local coords. Divide by entity scale so the
+    // world-space hitbox comes out to PLAYER.WIDTH x PLAYER.HEIGHT pixels.
+    // Kaplay applies the anchor translation automatically — no manual offset.
+    area({ shape: new Rect(vec2(0), PLAYER.WIDTH / PLAYER_SCALE, PLAYER.HEIGHT / PLAYER_SCALE) }),
     body(),
     anchor("bot"),
     rotate(0),
@@ -220,7 +225,7 @@ export default function createPlayer(x: number, y: number) {
 
   // Main update loop
   player.onUpdate(() => {
-    const baseScale = 0.11
+    const baseScale = PLAYER_SCALE
 
     if (player.state === "idle") {
       // Breathing scale pulse — no position changes

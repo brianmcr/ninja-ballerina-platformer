@@ -5,12 +5,14 @@ import { shakeOnBossPhase, screenShake, flashWhite, enemyDefeatPop, flashScreen,
 import { playBossHit } from "../components/audio"
 import { fadeOut } from "../components/transition"
 
+const BOSS_SCALE = 0.12
+
 export function createSoggyWaffle(x: number, y: number) {
   const boss = add([
     sprite("soggy-waffle"),
-    scale(0.12),
+    scale(BOSS_SCALE),
     pos(x, y),
-    area({ shape: new Rect(vec2(-BOSS.WIDTH / 2, -BOSS.HEIGHT), BOSS.WIDTH, BOSS.HEIGHT) }),
+    area({ shape: new Rect(vec2(0), BOSS.WIDTH / BOSS_SCALE, BOSS.HEIGHT / BOSS_SCALE) }),
     body(),
     anchor("bot"),
     rotate(0),
@@ -23,7 +25,7 @@ export function createSoggyWaffle(x: number, y: number) {
       phase: 1,
       isInvincible: false,
       dir: 1,
-      baseScale: 0.12,
+      baseScale: BOSS_SCALE,
       hurt(dmg: number) {
         if (boss.isInvincible) return
         boss.hp -= dmg

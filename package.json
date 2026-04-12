@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "openai": "^6.34.0",
+    "playwright": "^1.59.1",
     "sharp": "^0.34.5",
     "typescript": "^6.0.2",
     "vite": "^8.0.8"

@@ -21,11 +21,12 @@ export function createNinjaPowerup(x: number, y: number) {
   ])
 
   const ninjaScale = PICKUP.NINJA_SIZE / 1024 * 2.4
-  const hitSize = PICKUP.NINJA_SIZE * 3
+  // Desired world-space hit area, divided by entity scale so post-scale size matches
+  const hitSize = (PICKUP.NINJA_SIZE * 3) / ninjaScale
   const pickup = add([
     sprite("ninja-powerup-sprite"),
     pos(x, y),
-    area({ shape: new Rect(vec2(-hitSize / 2, -hitSize / 2), hitSize, hitSize) }),
+    area({ shape: new Rect(vec2(0), hitSize, hitSize) }),
     anchor("center"),
     opacity(1),
     scale(ninjaScale),
@@ -95,11 +96,12 @@ export function createSequin(x: number, y: number) {
   ])
 
   const spriteScale = sz / 1024 * 2.4
-  const hitSize = sz * 4
+  // Very generous hit area in world space (4x visual), compensated for scale
+  const hitSize = (sz * 4) / spriteScale
   const seq = add([
     sprite("sequin-sprite"),
     pos(x, y),
-    area({ shape: new Rect(vec2(-hitSize / 2, -hitSize / 2), hitSize, hitSize) }),
+    area({ shape: new Rect(vec2(0), hitSize, hitSize) }),
     anchor("center"),
     scale(spriteScale),
     "pickup",
@@ -161,11 +163,11 @@ export function createRibbon(x: number, y: number) {
   ])
 
   const ribbonScale = sz / 1024 * 2.4
-  const rHit = sz * 3
+  const rHit = (sz * 3) / ribbonScale
   const ribbon = add([
     sprite("ribbon-sprite"),
     pos(x, y),
-    area({ shape: new Rect(vec2(-rHit / 2, -rHit / 2), rHit, rHit) }),
+    area({ shape: new Rect(vec2(0), rHit, rHit) }),
     anchor("center"),
     scale(ribbonScale),
     rotate(0),
@@ -229,11 +231,11 @@ export function createWeaponPickup(x: number, y: number, weaponType: "katana" | 
     z(-1),
   ])
 
-  const wHit = sz * 3
+  const wHit = (sz * 3) / weaponScale
   const pickup = add([
     sprite(weaponSprite),
     pos(x, y),
-    area({ shape: new Rect(vec2(-wHit / 2, -wHit / 2), wHit, wHit) }),
+    area({ shape: new Rect(vec2(0), wHit, wHit) }),
     anchor("center"),
     scale(weaponScale),
     opacity(1),

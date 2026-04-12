@@ -2,6 +2,8 @@ import { ENEMY } from "../config"
 import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText, enemyHitFlash } from "../components/effects"
 import { playCoin, playHit } from "../components/audio"
 
+const ENEMY_SCALE = 0.08
+
 export function createButterPat(x: number, y: number, patrolRange = 100) {
   const e = ENEMY.BUTTER_PAT
   let hp = e.HP
@@ -10,9 +12,9 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
 
   const enemy = add([
     sprite("butter-pat"),
-    scale(0.08),
+    scale(ENEMY_SCALE),
     pos(x, y),
-    area({ shape: new Rect(vec2(-e.WIDTH / 2, -e.HEIGHT), e.WIDTH, e.HEIGHT) }),
+    area({ shape: new Rect(vec2(0), e.WIDTH / ENEMY_SCALE, e.HEIGHT / ENEMY_SCALE) }),
     body(),
     anchor("bot"),
     rotate(0),
@@ -42,7 +44,7 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
     if (enemy.pos.x < spawnX - patrolRange) dir = 1
     // Wobble animation
     enemy.angle = Math.sin(time() * 5) * 8
-    enemy.scale = vec2(0.08 * (1 + Math.abs(Math.sin(time() * 5)) * 0.05))
+    enemy.scale = vec2(ENEMY_SCALE * (1 + Math.abs(Math.sin(time() * 5)) * 0.05))
 
     // Proximity warning
     warnCooldown -= dt()
@@ -97,9 +99,9 @@ export function createGlutenBlob(x: number, y: number) {
 
   const enemy = add([
     sprite("gluten-blob"),
-    scale(0.08),
+    scale(ENEMY_SCALE),
     pos(x, y),
-    area({ shape: new Rect(vec2(-e.SIZE / 2, -e.SIZE), e.SIZE, e.SIZE) }),
+    area({ shape: new Rect(vec2(0), e.SIZE / ENEMY_SCALE, e.SIZE / ENEMY_SCALE) }),
     body(),
     anchor("bot"),
     opacity(1),
@@ -125,7 +127,7 @@ export function createGlutenBlob(x: number, y: number) {
 
 
 
-  const glutenBaseScale = 0.08
+  const glutenBaseScale = ENEMY_SCALE
   let hopTimer = 2.5
   let telegraphing = false
   let telegraphTimer = 0
@@ -195,9 +197,9 @@ export function createSyrupDripper(x: number, y: number) {
 
   const enemy = add([
     sprite("syrup-dripper"),
-    scale(0.08),
+    scale(ENEMY_SCALE),
     pos(x, y),
-    area({ shape: new Rect(vec2(-e.SIZE / 2, -e.SIZE / 2), e.SIZE, e.SIZE) }),
+    area({ shape: new Rect(vec2(0), e.SIZE / ENEMY_SCALE, e.SIZE / ENEMY_SCALE) }),
     anchor("center"),
     opacity(1),
     "enemy",
@@ -228,7 +230,7 @@ export function createSyrupDripper(x: number, y: number) {
   let growingDrip: any = null
   enemy.onUpdate(() => {
     // Dripping animation — scale only, no position drift
-    enemy.scale = vec2(0.08 * (1 + Math.sin(time() * 2) * 0.05))
+    enemy.scale = vec2(ENEMY_SCALE * (1 + Math.sin(time() * 2) * 0.05))
 
     dropTimer -= dt()
     if (dropTimer <= 0.5 && !telegraphing) {
@@ -312,9 +314,9 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
 
   const enemy = add([
     sprite("milk-carton"),
-    scale(0.08),
+    scale(ENEMY_SCALE),
     pos(x, y),
-    area({ shape: new Rect(vec2(-e.WIDTH / 2, -e.HEIGHT), e.WIDTH, e.HEIGHT) }),
+    area({ shape: new Rect(vec2(0), e.WIDTH / ENEMY_SCALE, e.HEIGHT / ENEMY_SCALE) }),
     body(),
     anchor("bot"),
     opacity(1),
@@ -363,7 +365,7 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
     if (enemy.pos.x > spawnX + patrolRange) dir = -1
     if (enemy.pos.x < spawnX - patrolRange) dir = 1
     // Stiff marching animation — scale only, no position drift
-    enemy.scale = vec2(0.08 * (1 + Math.abs(Math.sin(time() * 8)) * 0.06))
+    enemy.scale = vec2(ENEMY_SCALE * (1 + Math.abs(Math.sin(time() * 8)) * 0.06))
   })
 
   return enemy
