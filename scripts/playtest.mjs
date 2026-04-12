@@ -321,6 +321,34 @@ async function main() {
     }
 
     // ------------------------------------------------------------------
+    // Kill zone: falling below the level respawns the player
+    // ------------------------------------------------------------------
+    const fallSetup = await evalInGame(page, () => {
+      const p = get("player")[0]
+      p.isInvincible = false
+      p.state = "idle"
+      p.pos.x = 1000
+      p.pos.y = 1500
+      p.vel.y = 100
+      return { livesBefore: p.health?.lives ?? 0 }
+    })
+    await sleep(400)
+    const fallResult = await evalInGame(page, () => {
+      const p = get("player")[0]
+      return {
+        x: p.pos.x,
+        y: p.pos.y,
+        lives: p.health?.lives ?? 0,
+      }
+    })
+    const respawned = fallResult.x < 300 && fallResult.y < 800
+    record(
+      "Fall below level triggers respawn",
+      respawned,
+      `pos=(${fallResult.x.toFixed(0)}, ${fallResult.y.toFixed(0)}) lives ${fallSetup.livesBefore} → ${fallResult.lives}`,
+    )
+
+    // ------------------------------------------------------------------
     // Ninja overlay check: spawning ninja gear on powerup
     // ------------------------------------------------------------------
     const overlayCheck = await evalInGame(page, () => {

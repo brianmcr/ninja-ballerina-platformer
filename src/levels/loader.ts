@@ -216,15 +216,20 @@ export default function loadLevel(levelData: LevelData) {
     s.pos.x = s.originX + Math.sin(s.elapsed * s.swingSpeed) * s.swingRange
   })
 
-  // Camera follow
+  // Camera follow — clamp both X and Y so the camera never shows empty
+  // void below the level floor
   const halfW = SCREEN.WIDTH / 2
   const halfH = SCREEN.HEIGHT / 2
   const minCamX = halfW
   const maxCamX = levelData.width - halfW
+  const maxCamY = halfH // camera never drops below its default resting y
 
   onUpdate(() => {
     const targetX = Math.max(minCamX, Math.min(maxCamX, player.pos.x))
-    const targetY = Math.max(halfH, player.pos.y + CAMERA.VERTICAL_OFFSET)
+    const targetY = Math.min(
+      maxCamY,
+      Math.max(halfH, player.pos.y + CAMERA.VERTICAL_OFFSET),
+    )
 
     const cp = getCamPos()
     setCamPos(
@@ -233,9 +238,9 @@ export default function loadLevel(levelData: LevelData) {
     )
   })
 
-  // Kill zone: falling off costs a life
+  // Kill zone: fall below the visible playfield → lose a life and respawn
   player.onUpdate(() => {
-    if (player.pos.y > SCREEN.HEIGHT + 500) {
+    if (player.pos.y > SCREEN.HEIGHT + 60) {
       hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
     }
   })
