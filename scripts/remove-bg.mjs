@@ -28,12 +28,12 @@ const CONFIG = {
   'ballerina-jump.png': { bgMode: 'neutralGray' },
   'ballerina-idle.png': { bgMode: 'multi', bgColors: [[113, 204, 136], [118, 205, 136], [108, 199, 131]], bgTolerance: 55 },
   'ballerina-run.png': { bgMode: 'greenScreen' },
-  'sequin.png': { bgMode: 'greenScreen' },
-  'ribbon.png': { bgMode: 'greenScreen' },
-  'ninja-powerup.png': { bgMode: 'greenScreen' },
-  'weapon-katana.png': { bgMode: 'greenScreen' },
-  'weapon-sais.png': { bgMode: 'greenScreen' },
-  'weapon-shuriken.png': { bgMode: 'greenScreen' },
+  'sequin.png': { bgMode: 'greenishBg' },
+  'ribbon.png': { bgMode: 'greenishBg' },
+  'ninja-powerup.png': { bgMode: 'greenishBg' },
+  'weapon-katana.png': { bgMode: 'greenishBg' },
+  'weapon-sais.png': { bgMode: 'greenishBg' },
+  'weapon-shuriken.png': { bgMode: 'greenishBg' },
 };
 
 function colorDist(r1, g1, b1, r2, g2, b2) {
@@ -185,6 +185,28 @@ function makeGreenScreenMatcher() {
   };
 }
 
+// Catches any greenish / teal gradient background (DALL-E radial fills).
+// Accepts pixels where green is dominant over red and blue isn't dominant
+// over green. Blue-dominant flames and warm/neutral subjects are preserved.
+function makeGreenishBgMatcher() {
+  return (r, g, b, a) => {
+    if (a < 10) return 0;
+    const maxC = Math.max(r, g, b);
+    const minC = Math.min(r, g, b);
+    const sat = maxC - minC;
+    // Unsaturated (white/gray/black highlights) → keep
+    if (sat < 18) return 2.0;
+    // Green must dominate red, and blue must not dominate green
+    const gOverR = g - r;
+    const gOverB = g - b;
+    if (gOverR < 6) return 2.0;      // not green enough vs red
+    if (gOverB < -18) return 2.0;    // too blue (preserve blue flame)
+    // Score: strongly green-dominant → 0; marginal → ~0.7
+    const score = 1.0 - Math.min(1, (gOverR + Math.max(0, gOverB)) / 60);
+    return score * 0.9;
+  };
+}
+
 function clearEdgeColumns(data, width, height, edgeWidth) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < edgeWidth; x++) data[(y*width+x)*4+3] = 0;
@@ -229,6 +251,9 @@ async function processSprite(filename) {
   } else if (cfg.bgMode === 'neutralGray') {
     console.log(`  Mode: neutral gray removal`);
     matcher = makeNeutralGrayMatcher();
+  } else if (cfg.bgMode === 'greenishBg') {
+    console.log(`  Mode: greenish gradient removal`);
+    matcher = makeGreenishBgMatcher();
   } else if (cfg.bgMode === 'blueChecker') {
     console.log(`  Mode: blue checker removal`);
     matcher = makeBlueCheckerMatcher();
