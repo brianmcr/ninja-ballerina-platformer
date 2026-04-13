@@ -23,7 +23,10 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
+      # Using npm install (not npm ci) because sharp pulls
+      # platform-specific optional deps that make ci strict-mode fail on
+      # Linux runners when the lockfile was built on Windows.
+      - run: npm install --no-audit --no-fund
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
