@@ -17,14 +17,14 @@ export function initHealth(player: any) {
     isNinja: false,
     sequins: 0,
     ribbons: 0,
-    invincibleTimer: 0.3, // brief spawn grace
+    invincibleTimer: 1.0, // tutorial-length spawn grace: kid has a full second to orient and jump at the first powerup before enemies can touch them
   } as PlayerHealth
   player.isInvincible = true
 }
 
-export function hitPlayer(player: any, spawnX: number, spawnY: number, levelId?: string) {
-  if (player.isInvincible) return
-  if (player.state === "spin" || player.state === "dash" || player.state === "whip") return
+export function hitPlayer(player: any, spawnX: number, spawnY: number, levelId?: string, force: boolean = false) {
+  if (!force && player.isInvincible) return
+  if (!force && (player.state === "spin" || player.state === "dash" || player.state === "whip")) return
 
   const h = player.health as PlayerHealth
 

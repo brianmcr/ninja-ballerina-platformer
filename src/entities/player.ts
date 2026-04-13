@@ -43,6 +43,7 @@ export default function createPlayer(x: number, y: number) {
       lastFallY: 0,
       wasGrounded: true,
       dashTrailTimer: 0,
+      lastAttackPressTime: -1,
     },
   ])
 
@@ -233,13 +234,9 @@ export default function createPlayer(x: number, y: number) {
   })
 
   // Pirouette Spin (Z)
-  onKeyPress("z", () => {
-    if (!canAct()) return
-    setState("spin")
-    playSpin()
-    player.spinTimer = PLAYER.SPIN_DURATION
-
-    // Spin always kills enemies in range — AOE bypasses shields (fromDir=0)
+  // Damages on press AND every update during the spin, so timing is
+  // forgiving — any enemy that enters the radius during the 0.4s spin dies.
+  function spinAOE() {
     const enemies = get("enemy")
     for (const e of enemies) {
       if (player.pos.dist(e.pos) < PLAYER.SPIN_RADIUS) {
@@ -247,10 +244,36 @@ export default function createPlayer(x: number, y: number) {
         else e.hurt?.(99)
       }
     }
+  }
+  onKeyPress("z", () => {
+    player.lastAttackPressTime = time()
+    if (!canAct()) return
+    setState("spin")
+    playSpin()
+    player.spinTimer = PLAYER.SPIN_DURATION
+    // Visible AOE ring so the player can actually see the hit area
+    const ring = add([
+      circle(PLAYER.SPIN_RADIUS),
+      pos(player.pos.x, player.pos.y - PLAYER.HEIGHT / 2),
+      anchor("center"),
+      color(255, 220, 120),
+      opacity(0.35),
+      z(55),
+    ])
+    let rt = 0
+    ring.onUpdate(() => {
+      rt += dt()
+      ring.pos.x = player.pos.x
+      ring.pos.y = player.pos.y - PLAYER.HEIGHT / 2
+      ring.opacity = Math.max(0, 0.35 * (1 - rt / PLAYER.SPIN_DURATION))
+      if (rt >= PLAYER.SPIN_DURATION) destroy(ring)
+    })
+    spinAOE()
   })
 
   // Cartwheel Dash (X)
   onKeyPress("x", () => {
+    player.lastAttackPressTime = time()
     if (!canAct()) return
     setState("dash")
     playDash()
@@ -260,6 +283,7 @@ export default function createPlayer(x: number, y: number) {
 
   // Ribbon Whip (C)
   onKeyPress("c", () => {
+    player.lastAttackPressTime = time()
     if (!canAct()) return
     setState("whip")
     playWhip()
@@ -268,12 +292,13 @@ export default function createPlayer(x: number, y: number) {
     const whipX = player.pos.x + player.facing * (PLAYER.WIDTH / 2 + PLAYER.WHIP_RANGE / 2)
     const whipY = player.pos.y - PLAYER.HEIGHT / 2
     player.whipHitbox = add([
-      rect(PLAYER.WHIP_RANGE * 0.7, PLAYER.WHIP_WIDTH),
+      rect(PLAYER.WHIP_RANGE * 0.7, PLAYER.WHIP_WIDTH * 2),
       pos(whipX, whipY),
       area(),
       anchor("center"),
       color(...COLORS.whip),
-      opacity(0.3),
+      opacity(0.85),
+      z(55),
       "whip-hitbox",
     ])
 
@@ -395,9 +420,11 @@ export default function createPlayer(x: number, y: number) {
       player.vel.y += extraGrav
     }
 
-    // Spin timer
+    // Spin timer — damage every frame so enemies walking into the spin
+    // during its active window still get killed.
     if (player.state === "spin") {
       player.spinTimer -= dt()
+      spinAOE()
       if (player.spinTimer <= 0) {
         setState(player.isGrounded() ? "idle" : "jump")
       }
@@ -416,6 +443,9 @@ export default function createPlayer(x: number, y: number) {
       const active = updateDash(player, player.dashState)
       if (!active) {
         player.dashState = null
+        // Clear dash-granted invincibility so kill zones and damage can
+        // register again. Without this, isInvincible sticks forever.
+        player.isInvincible = false
         setState(player.isGrounded() ? "idle" : "jump")
       }
       return

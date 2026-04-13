@@ -1,0 +1,80 @@
+{
+  "domain": "2d_platformer_gameplay_kid",
+  "domain_description": "Evaluates the gameplay experience of a 2D side-scrolling platformer from the perspective of an 8th-grade kid who plays Mario, Celeste, Hollow Knight, Geometry Dash, and Cuphead. Focuses on fun and game feel, not visual quality. A 5 is an average mobile indie platformer; a 9-10 is on par with Celeste or Hollow Knight for this age group.",
+  "dimensions": [
+    {
+      "name": "controls_and_responsiveness",
+      "weight": 0.25,
+      "description": "How tight, predictable, and lag-free the core moveset (run, jump, attack, dash) feels. Kids notice input lag instantly and will quit over floaty or mushy controls.",
+      "anchors": {
+        "1-3": "Inputs drop or lag noticeably. Jumps feel floaty or arrive a frame late. Character slides past platforms. No coyote time or jump buffering, so the kid blames the game for deaths. Attacks trigger on release instead of press, or double-inputs are common.",
+        "4-6": "Controls work and inputs register, but jumps feel a bit floaty or slippery. Some deaths feel unfair because of edge-grab or landing jank. Coyote time or jump buffer exists but is tuned poorly. The kid adapts but never feels fully in control.",
+        "7-8": "Controls feel crispy and predictable. Jump arc is readable, coyote time and jump buffering are present and well-tuned, attacks come out on the frame you press them. Deaths feel like the player's fault, not the game's. The kid can do precise moves after a few minutes.",
+        "9-10": "Movement feels like an extension of the kid's brain. Celeste-tier jump physics with variable height, wall mechanics, and buffered inputs. The kid is doing tricks and expressive movement within 10 minutes and says out loud that the controls 'just feel good.'"
+      }
+    },
+    {
+      "name": "game_feel_and_juice",
+      "weight": 0.2,
+      "description": "The layer of feedback on top of mechanics: screen shake, hitstop, knockback, particles, sound, squash and stretch. Makes every action feel meaty and rewarding.",
+      "anchors": {
+        "1-3": "Attacks and hits look and sound identical to whiffs. No hitstop, no screen shake, no particles. Landing a jump makes no noise or puff. Enemies die by silently disappearing. The game feels like a tech demo.",
+        "4-6": "Some feedback exists: a hit sound, a small particle, maybe a flash. But it's inconsistent or generic. Big moments (boss hits, long falls) feel the same as small ones. Juice is present but not reinforcing the action.",
+        "7-8": "Every action has layered feedback: hitstop on impact, screen shake scaled to hit weight, particles that match the action, distinct sounds, enemy flash and knockback. The kid grins when they land a combo. Big moments feel bigger than small ones.",
+        "9-10": "Juice is curated and tuned like Cuphead or Hollow Knight. Hitstop freezes at exactly the right frame count, camera punches on big hits, trails follow the dancer, landing puffs scale with fall height, audio layers stack on combos. The kid replays fights just to feel the hits again."
+      }
+    },
+    {
+      "name": "difficulty_curve_and_challenge",
+      "weight": 0.2,
+      "description": "Whether the challenge ramps so the kid is neither bored nor rage-quitting. Early wins, escalating stakes, fair deaths, respawn friction tuned right.",
+      "anchors": {
+        "1-3": "First screen is either trivial (kid is bored in 2 minutes) or immediately punishing (kid dies 10 times to the first jump). Deaths feel cheap - unseen hazards, instant-kill spikes off-screen, enemies that can't be telegraphed. Respawn is slow or sends the kid way back.",
+        "4-6": "Difficulty is uneven: easy stretches then sudden walls. Some encounters are fair, others feel like guess-and-check. Respawns are okay but checkpointing is stingy in spots. The kid finishes sessions but grumbles at specific rooms.",
+        "7-8": "Clear ramp from tutorial moves to combined challenges. Each new mechanic gets a safe intro before being weaponized. Deaths feel fair - the kid sees what killed them and wants another try. Checkpoints are generous, respawn is near-instant.",
+        "9-10": "Celeste-grade curve. Every room teaches something new while remixing old skills. Difficulty spikes map to boss or area transitions with build-up. The kid fails 20 times on a hard section without quitting because each failure teaches something and respawn is sub-second."
+      }
+    },
+    {
+      "name": "clarity_of_objectives_and_feedback",
+      "weight": 0.15,
+      "description": "Whether the kid always knows what to do next and why things are happening. Teaching through design, not walls of text. Readable hazards and enemy tells.",
+      "anchors": {
+        "1-3": "Kid gets stuck within 5 minutes not knowing where to go. Hazards aren't readable - you can't tell what hurts you until it does. Enemies have no wind-up tells. UI is missing or cluttered. Tutorials are wall-of-text popups the kid skips.",
+        "4-6": "Objectives are generally clear but the kid occasionally wanders or backtracks confused. Some hazards and enemy attacks are readable, others surprise you. Teaching happens but leans on text prompts. HUD is functional but noisy.",
+        "7-8": "Level design guides the eye. New mechanics are taught in safe rooms with visual language, not text. Hazards are color-coded or silhouetted so they read instantly. Enemies have clear wind-ups. The kid always knows the next goal without thinking about it.",
+        "9-10": "Mario-tier environmental teaching. Every new verb is introduced, tested, combined, and twisted without a single tutorial popup. The kid explains the mechanics to a friend after one playthrough. Hazards, enemies, and goals are instantly readable even mid-chaos."
+      }
+    },
+    {
+      "name": "variety_and_pacing",
+      "weight": 0.1,
+      "description": "Whether each area, encounter, and mechanic feels fresh, or the kid is fighting the same enemy and jumping the same gap repeatedly. Pacing of combat, platforming, and downtime.",
+      "anchors": {
+        "1-3": "Same enemy type spammed across the whole level. One platforming verb (jump) used over and over. No setpieces, no change of pace. Kid gets bored and repetitive-strain in 10 minutes.",
+        "4-6": "A few enemy types and mechanics, but they recur without remixing. Some level sections blur together. Occasional variety moments (a chase, a mini-boss) but they're isolated.",
+        "7-8": "Each area introduces a new hook - new enemy, new environmental mechanic, new traversal move. Combat and platforming alternate well. Setpieces punctuate longer sections. Kid can't guess what's next.",
+        "9-10": "Every 3-5 minutes the game shows the kid something new or remixed - Hollow Knight or Mario level variety. Bosses, chases, puzzles, stealth bits, gimmick rooms, all slotted into a coherent pace. Kid keeps playing 'just to see what's next.'"
+      }
+    },
+    {
+      "name": "goal_pull_and_one_more_try",
+      "weight": 0.1,
+      "description": "Whether after a death or a session end the kid wants to immediately try again. Visible progress, collectibles, upgrade hooks, narrative curiosity.",
+      "anchors": {
+        "1-3": "Deaths wipe progress or feel pointless. No visible progression - no unlocks, no collectibles, no story beats. Kid puts the game down after one fail and doesn't reopen it.",
+        "4-6": "Some progression exists (collectibles, a score, a map reveal) but it's thin. Kid will retry a section once or twice but loses interest before finishing a level. Session ends without a hook for next time.",
+        "7-8": "Clear short-term and long-term goals. Progress is visible: map fills in, abilities unlock, collectibles tease secrets, story pulls forward. Deaths feel like a setback not a punishment. Kid says 'one more try' and means it.",
+        "9-10": "Geometry-Dash/Celeste loop where the kid restarts in under a second and restarts dozens of times without noticing. Progress, story, and skill growth all pull simultaneously. Kid plays past bedtime and talks about the game at school the next day."
+      }
+    }
+  ],
+  "overall_scoring": "weighted_average",
+  "critical_failures": [
+    "Controls are broken or unresponsive enough that the kid cannot reliably jump, attack, or move within the first 2 minutes.",
+    "Kid cannot figure out where to go or what to do within the first 5 minutes and has no in-game hint or guidance.",
+    "First screen or first encounter is effectively impossible - unavoidable damage, unreachable platforms, or an un-telegraphed instant-kill.",
+    "Game crashes, hard-locks, or drops frames badly enough to make precise platforming impossible.",
+    "Respawn loop is broken - dying sends the kid to a menu, a long reload, or far enough back that retrying feels punishing instead of immediate."
+  ]
+}

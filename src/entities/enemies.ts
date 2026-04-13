@@ -1,5 +1,5 @@
 import { ENEMY } from "../config"
-import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText, enemyHitFlash } from "../components/effects"
+import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText, enemyHitFlash, hitImpact } from "../components/effects"
 import { playCoin, playHit } from "../components/audio"
 
 const ENEMY_SCALE = 0.08
@@ -24,12 +24,12 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
       hurt(dmg: number) {
         hp -= dmg
         if (hp <= 0) {
-          flashWhite(enemy, 0.08)
+          hitImpact(enemy, dir)
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.HEIGHT / 2)
           playCoin()
           spawnSlipperyPatch(enemy.pos.x, enemy.pos.y)
-          wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
+          wait(0.18, () => { if (enemy.exists()) destroy(enemy) })
         }
       },
     },
@@ -111,11 +111,11 @@ export function createGlutenBlob(x: number, y: number) {
       hurt(dmg: number) {
         hp -= dmg
         if (hp <= 0) {
-          flashWhite(enemy, 0.08)
+          hitImpact(enemy, 0)
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.SIZE / 2)
           playCoin()
-          wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
+          wait(0.18, () => { if (enemy.exists()) destroy(enemy) })
         } else {
           playHit()
           enemy.opacity = 0.5
@@ -207,11 +207,11 @@ export function createSyrupDripper(x: number, y: number) {
     {
       hurt(_dmg: number, type?: string | number) {
         if (type === "ranged") {
-          flashWhite(enemy, 0.08)
+          hitImpact(enemy, 0)
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y)
           playCoin()
-          wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
+          wait(0.18, () => { if (enemy.exists()) destroy(enemy) })
         } else {
           playHit()
           floatingText(enemy.pos.x, enemy.pos.y - e.SIZE / 2, "Ranged only!", [255, 100, 100])
@@ -350,11 +350,11 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
         }
         hp -= dmg
         if (hp <= 0) {
-          flashWhite(enemy, 0.08)
+          hitImpact(enemy, fromDir ?? 0)
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.HEIGHT / 2)
           playCoin()
-          wait(0.08, () => { if (enemy.exists()) destroy(enemy) })
+          wait(0.18, () => { if (enemy.exists()) destroy(enemy) })
         }
       },
     },

@@ -279,6 +279,24 @@ export function flashWhite(entity: any, duration = 0.1) {
   })
 }
 
+// Juicy impact combo: longer white flash, scale punch, and knockback tween.
+// Use on enemies the moment they take damage so hits actually feel like
+// something connected.
+export function hitImpact(entity: any, fromDir: number = 0) {
+  flashWhite(entity, 0.18)
+  const baseScale = entity.scale ? entity.scale.clone() : null
+  if (baseScale) {
+    entity.scale = vec2(baseScale.x * 1.25, baseScale.y * 0.8)
+    wait(0.06, () => {
+      if (entity.exists()) entity.scale = baseScale
+    })
+  }
+  if (fromDir !== 0 && entity.pos) {
+    const kbX = fromDir * 6
+    entity.pos.x += kbX
+  }
+}
+
 export function flashScreen(startOpacity = 0.6, fadeDuration = 0.5) {
   const flash = add([
     rect(width(), height()),

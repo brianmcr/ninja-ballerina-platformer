@@ -244,7 +244,15 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
   // off the left or right edge.
   player.onUpdate(() => {
     if (player.pos.y > SCREEN.HEIGHT + 60) {
-      hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y, levelId)
+      // Void fall: teleport out of the kill zone first so this handler
+      // cannot re-fire on subsequent frames while the death animation
+      // plays, then force-respawn bypassing invincibility/state checks so
+      // a dash-clip or lingering invincible flag can't trap the player.
+      player.pos.x = levelData.playerSpawn.x
+      player.pos.y = levelData.playerSpawn.y
+      player.vel.x = 0
+      player.vel.y = 0
+      hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y, levelId, true)
       return
     }
     // Horizontal bounds
@@ -328,11 +336,17 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
     else e.hurt?.(99)
   }
   player.onCollide("enemy", (e: any, col: any) => {
-    // Attacking states always kill on contact
+    // Attacking states always kill on contact. Also honor a 0.25s attack
+    // input buffer so a kid who pressed Z/X/C a frame too late still wins
+    // the race vs. contact damage.
+    const ATTACK_BUFFER = 0.25
+    const recentAttack = player.lastAttackPressTime > 0
+      && time() - player.lastAttackPressTime < ATTACK_BUFFER
     if (
       player.state === "spin" ||
       player.state === "dash" ||
-      player.state === "whip"
+      player.state === "whip" ||
+      recentAttack
     ) {
       const fromDir = player.pos.x < e.pos.x ? -1 : 1
       killEnemy(e, fromDir)

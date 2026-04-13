@@ -78,12 +78,17 @@ const level1: LevelData = {
     { type: "one-way", x: 2940, y: FLOOR_Y - 260, width: 120, height: 12 },
   ],
   enemies: [
-    // Tutorial: only 2 butter pats, wide patrol so they're easy to avoid
+    // Tutorial: first contact within 10 seconds of spawn so the player
+    // gets to feel an attack connect before they've had time to get bored.
+    { type: "butterPat", x: 780, y: FLOOR_Y, patrolRange: 50 },
     { type: "butterPat", x: 1200, y: FLOOR_Y, patrolRange: 80 },
     { type: "butterPat", x: 2200, y: FLOOR_Y, patrolRange: 80 },
   ],
   pickups: [
-    // Ninja powerups — one early, one mid-level
+    // Ninja powerups — first one floats in open air at a height a single
+    // ground jump can reach, so pressing Space once grabs it. No beam
+    // landing required. Subsequent powerups reward exploration.
+    { type: "ninjaPowerup", x: 350, y: FLOOR_Y - 80 },
     { type: "ninjaPowerup", x: 540, y: FLOOR_Y - 270 },
     { type: "ninjaPowerup", x: 1960, y: FLOOR_Y - 230 },
 
