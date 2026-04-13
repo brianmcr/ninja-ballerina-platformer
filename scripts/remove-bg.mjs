@@ -3,7 +3,8 @@ import fs from 'fs';
 import path from 'path';
 
 const SPRITES_DIR = path.resolve('public/sprites');
-const ORIGINALS_DIR = path.join(SPRITES_DIR, 'originals');
+// Source DALL-E images live outside public/ so Vite doesn't ship them.
+const ORIGINALS_DIR = path.resolve('sprite-sources/originals');
 
 const SPRITES = [
   'ballerina-idle.png', 'ballerina-jump.png', 'ballerina-run.png',

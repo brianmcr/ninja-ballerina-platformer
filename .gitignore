@@ -2,3 +2,12 @@ node_modules/
 dist/
 .vite/
 *.local
+
+# DALL-E source images used only by scripts/remove-bg.mjs — not shipped
+sprite-sources/
+
+# Iterative playtest throwaways
+scripts/kid-*.mjs
+playtest_iter*.py
+.playtest/
+.playwright-mcp/
