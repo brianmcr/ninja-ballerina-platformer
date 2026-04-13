@@ -17,8 +17,9 @@ export function initHealth(player: any) {
     isNinja: false,
     sequins: 0,
     ribbons: 0,
-    invincibleTimer: 0,
+    invincibleTimer: 1.5, // spawn grace period
   } as PlayerHealth
+  player.isInvincible = true
 }
 
 export function hitPlayer(player: any, spawnX: number, spawnY: number) {
