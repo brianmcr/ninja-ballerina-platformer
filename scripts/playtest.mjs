@@ -711,6 +711,36 @@ async function main() {
     }
 
     // ------------------------------------------------------------------
+    // Natural gameplay damage: spawn, wait for grace to expire, walk
+    // right naturally until hitting first enemy. Should take damage.
+    // ------------------------------------------------------------------
+    await page.evaluate(() => go("game", "level1"))
+    await sleep(1500)
+    // Wait for spawn grace to expire (0.6s), then walk
+    await sleep(800)
+    const natSetup = await page.evaluate(() => {
+      const p = get("player")?.[0]
+      const enemies = get("enemy")
+      return {
+        livesBefore: p?.health?.lives ?? 0,
+        inv: p?.isInvincible,
+        enemyX: enemies[0]?.pos.x,
+      }
+    })
+    // Walk right continuously, expecting to eventually hit an enemy
+    await pressHold(page, "ArrowRight", 5000)
+    await sleep(600)
+    const natResult = await page.evaluate(() => {
+      const p = get("player")?.[0]
+      return { lives: p?.health?.lives ?? -1, x: p?.pos.x ?? -1 }
+    })
+    record(
+      "Natural walk-right eventually loses a life",
+      natResult.lives < natSetup.livesBefore,
+      `livesBefore=${natSetup.livesBefore}  inv=${natSetup.inv}  enemy0X=${natSetup.enemyX?.toFixed?.(0)}  after=(x=${natResult.x.toFixed(0)}, lives=${natResult.lives})`,
+    )
+
+    // ------------------------------------------------------------------
     // Boss fight basic functionality: boss exists, has hp, can take damage
     // ------------------------------------------------------------------
     await page.evaluate(() => go("game", "boss"))

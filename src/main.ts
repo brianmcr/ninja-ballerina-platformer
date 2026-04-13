@@ -16,6 +16,9 @@ kaplay({
   height: SCREEN.HEIGHT,
   background: [20, 15, 35],
   canvas: document.querySelector("#game") as HTMLCanvasElement ?? undefined,
+  // Linear filtering smooths upscaled sprites (fixes pixel-art look on
+  // parallax backgrounds that render smaller than their display size)
+  texFilter: "linear",
 })
 
 setGravity(GRAVITY)

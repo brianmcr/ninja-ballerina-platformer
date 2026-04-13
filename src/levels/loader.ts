@@ -240,9 +240,20 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
   })
 
   // Kill zone: fall below the visible playfield → lose a life and respawn
+  // Also clamp horizontal position to level bounds so player can't walk
+  // off the left or right edge.
   player.onUpdate(() => {
     if (player.pos.y > SCREEN.HEIGHT + 60) {
       hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y, levelId)
+      return
+    }
+    // Horizontal bounds
+    if (player.pos.x < 16) {
+      player.pos.x = 16
+      if (player.vel.x < 0) player.vel.x = 0
+    } else if (player.pos.x > levelData.width - 16) {
+      player.pos.x = levelData.width - 16
+      if (player.vel.x > 0) player.vel.x = 0
     }
   })
 
