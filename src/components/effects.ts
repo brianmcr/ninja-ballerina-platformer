@@ -101,6 +101,55 @@ export function enemyHitFlash(entity: any) {
   })
 }
 
+// Quick colored screen-edge flash — colored border fade that frames the
+// action without obscuring gameplay. Used for stomp/damage feedback.
+export function edgeFlash(r: number, g: number, b: number) {
+  const w = width()
+  const h = height()
+  const border = 20 // thickness
+  const strips = [
+    { x: 0, y: 0, w, h: border },              // top
+    { x: 0, y: h - border, w, h: border },     // bottom
+    { x: 0, y: 0, w: border, h },              // left
+    { x: w - border, y: 0, w: border, h },     // right
+  ]
+  for (const s of strips) {
+    const el = add([
+      rect(s.w, s.h),
+      pos(s.x, s.y),
+      color(r, g, b),
+      opacity(0.6),
+      fixed(),
+      z(200),
+    ])
+    let t = 0
+    el.onUpdate(() => {
+      t += dt()
+      el.opacity = Math.max(0, 0.6 - t * 3)
+      if (el.opacity <= 0) destroy(el)
+    })
+  }
+}
+
+// Floating feedback text at an entity location — "STOMP!", "OUCH!", etc.
+export function popText(x: number, y: number, text_: string, rgb_: [number, number, number], sizePx = 20) {
+  const label = add([
+    text(text_, { size: sizePx, font: "Bangers" }),
+    pos(x, y),
+    anchor("center"),
+    color(rgb_[0], rgb_[1], rgb_[2]),
+    opacity(1),
+    z(200),
+  ])
+  let t = 0
+  label.onUpdate(() => {
+    t += dt()
+    label.pos.y -= 50 * dt()
+    label.opacity = Math.max(0, 1 - t * 1.5)
+    if (label.opacity <= 0) destroy(label)
+  })
+}
+
 export function sequinCollectPop(x: number, y: number) {
   // Particle burst
   for (let i = 0; i < 10; i++) {

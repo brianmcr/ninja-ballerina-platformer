@@ -3,6 +3,7 @@ import createPlayer from "../entities/player"
 import { createButterPat, createGlutenBlob, createSyrupDripper, createMilkCartonGuard } from "../entities/enemies"
 import { createNinjaPowerup, createSequin, createWeaponPickup, createRibbon } from "../entities/pickups"
 import { hitPlayer } from "../components/health"
+import { edgeFlash, popText } from "../components/effects"
 import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
@@ -328,18 +329,23 @@ export default function loadLevel(levelData: LevelData) {
     }
     // Post-hit invincibility — no damage, no kill
     if (player.isInvincible) return
-    // Stomp detection: either Kaplay reports collision on player's bottom,
-    // OR the player's feet are above the enemy's feet (position fallback).
-    // col.isBottom() is reliable when collision resolves; the position check
-    // catches teleport/edge cases.
+    // Stomp detection: player must be ABOVE the enemy (position-based
+    // check rules out horizontal walk-in), AND either moving downward OR
+    // Kaplay reports the collision on the player's bottom edge.
+    const clearlyAbove = player.pos.y < e.pos.y - 4
+    const fallingVel = player.vel.y > 10
     const stompByCol = col && typeof col.isBottom === "function" && col.isBottom()
-    const stompByPos = player.pos.y <= e.pos.y - 2
-    if (stompByCol || stompByPos) {
+    const stomp = clearlyAbove && (fallingVel || stompByCol)
+    if (stomp) {
       player.jump(PICKUP.STOMP_BOUNCE)
       killEnemy(e, 0) // fromDir=0 signals stomp (bypasses shields)
+      edgeFlash(120, 255, 120) // green = safe kill
+      popText(e.pos.x, e.pos.y - 30, "STOMP!", [120, 255, 120], 24)
       return
     }
     // Otherwise take damage
+    edgeFlash(255, 60, 60) // red = took damage
+    popText(player.pos.x, player.pos.y - 40, "OUCH!", [255, 100, 100], 22)
     hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
   })
 

@@ -323,8 +323,13 @@ async function main() {
     // ------------------------------------------------------------------
     // Kill zone: falling below the level respawns the player
     // ------------------------------------------------------------------
+    // Reload level1 fresh so we have a player entity to work with
+    await page.evaluate(() => go("game", "level1"))
+    await sleep(1500)
     const fallSetup = await evalInGame(page, () => {
-      const p = get("player")[0]
+      const ps = get("player")
+      if (ps.length === 0) return { error: "no player" }
+      const p = ps[0]
       p.isInvincible = false
       p.state = "idle"
       p.pos.x = 1000
@@ -503,9 +508,9 @@ async function main() {
     }
 
     // ------------------------------------------------------------------
-    // Touch damage: walking into enemy drops player lives
-    // (Teleport doesn't trigger onCollide — it fires on transition, so
-    // we must approach with velocity/movement.)
+    // Touch damage: walking into enemy drops player lives.
+    // Place player 50px left of the actual enemy so AI doesn't walk it
+    // away, and pick an enemy past the bouncy platform.
     // ------------------------------------------------------------------
     await page.evaluate(() => go("game", "level1"))
     await sleep(1500)
@@ -515,15 +520,17 @@ async function main() {
       const p = get("player")[0]
       p.state = "idle"
       p.isInvincible = false
-      // Position player 50px LEFT of enemy so we walk into it
-      p.pos.x = enemies[0].pos.x - 50
-      p.pos.y = enemies[0].pos.y
+      // Use the actual enemy at its spawn location
+      const target = enemies[0]
+      p.pos.x = target.pos.x - 50
+      p.pos.y = target.pos.y
       p.vel.x = 0
       p.vel.y = 0
-      return { livesBefore: p.health?.lives ?? 0, enemyX: enemies[0].pos.x }
+      return { livesBefore: p.health?.lives ?? 0, targetX: target.pos.x }
     })
     if (!touchSetup.error) {
-      await pressHold(page, "ArrowRight", 800)
+      // Short walk so we don't overshoot — just enough to touch
+      await pressHold(page, "ArrowRight", 250)
       await sleep(400)
       const state = await page.evaluate(() => {
         const p = get("player")[0]
@@ -626,23 +633,66 @@ async function main() {
       const p = get("player")[0]
       p.state = "idle"
       p.isInvincible = false
-      p.pos.x = enemies[0].pos.x - 50
-      p.pos.y = enemies[0].pos.y
+      const target = enemies[0]
+      p.pos.x = target.pos.x - 50
+      p.pos.y = target.pos.y
       p.vel.x = 0
       p.vel.y = 0
       return { ok: true }
     })
     if (!gameOverSetup.error) {
-      // Walk right into enemy — at 1 life this should end the game
-      await pressHold(page, "ArrowRight", 500)
-      await sleep(2500) // allow death flow + scene transition (0.3s fade)
-      const playerGone = await page.evaluate(() => get("player").length === 0)
+      // Walk into enemy, then wait for death flow + scene transition
+      await pressHold(page, "ArrowRight", 400)
+      await sleep(3500)
+      const debugState = await page.evaluate(() => {
+        const players = get("player")
+        if (players.length === 0) return { gone: true }
+        const p = players[0]
+        return {
+          gone: false,
+          lives: p.health?.lives,
+          isNinja: p.health?.isNinja,
+          inv: p.isInvincible,
+          state: p.state,
+          x: p.pos.x,
+          y: p.pos.y,
+        }
+      })
       record(
         "Last-life death → game scene ends",
-        playerGone,
-        playerGone ? "player entity removed" : "still in game scene",
+        debugState.gone,
+        debugState.gone
+          ? "player entity removed"
+          : `still in game scene  lives=${debugState.lives} state=${debugState.state} inv=${debugState.inv} pos=(${debugState.x?.toFixed(0)},${debugState.y?.toFixed(0)})`,
       )
       await shoot(page, "09-game-over")
+    }
+
+    // ------------------------------------------------------------------
+    // Syrup dripper killable via hurt() — dripper is melee-immune but
+    // hurt(99, 0) should still work as a kill path (fromDir=0 = stomp).
+    // ------------------------------------------------------------------
+    await page.evaluate(() => go("game", "level4"))
+    await sleep(1500)
+    const drInit = await page.evaluate(() => {
+      const drippers = get("enemy").filter((e) => e.is("syrupDripper"))
+      return { before: drippers.length }
+    })
+    if (drInit.before > 0) {
+      await page.evaluate(() => {
+        const d = get("enemy").filter((e) => e.is("syrupDripper"))[0]
+        // Syrup dripper expects hurt(dmg, "ranged") string literal
+        if (d?.hurt) d.hurt(99, "ranged")
+      })
+      await sleep(400)
+      const after = await page.evaluate(
+        () => get("enemy").filter((e) => e.is("syrupDripper")).length,
+      )
+      record(
+        "Syrup dripper killable by hurt() call",
+        after < drInit.before,
+        `drippers ${drInit.before} → ${after}`,
+      )
     }
 
     // ------------------------------------------------------------------

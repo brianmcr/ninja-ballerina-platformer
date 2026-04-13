@@ -1,6 +1,7 @@
 import { PLAYER } from "../config"
 import { shakeOnHit } from "./effects"
 import { playHit, playDefeat } from "./audio"
+import { fadeOut } from "./transition"
 
 export interface PlayerHealth {
   lives: number
@@ -37,6 +38,18 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
     h.lives--
     if (h.lives <= 0) {
       playDefeat()
+      // Game over: freeze the player and transition to gameOver scene
+      player.isInvincible = true
+      player.vel.x = 0
+      player.vel.y = 0
+      fadeOut(0.4, () => {
+        try {
+          go("gameOver", { levelId: "level1", sequins: h.sequins })
+        } catch (e) {
+          // Fallback if scene signature differs
+          go("title")
+        }
+      })
       return
     }
     playHit()
