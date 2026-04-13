@@ -20,7 +20,7 @@ export function createNinjaPowerup(x: number, y: number) {
     z(-1),
   ])
 
-  const ninjaScale = PICKUP.NINJA_SIZE / 1024 * 2.4
+  const ninjaScale = PICKUP.NINJA_SIZE / 1024 * 1.6
   // Desired world-space hit area, divided by entity scale so post-scale size matches
   const hitSize = (PICKUP.NINJA_SIZE * 3) / ninjaScale
   const pickup = add([
@@ -95,7 +95,7 @@ export function createSequin(x: number, y: number) {
     z(-1),
   ])
 
-  const spriteScale = sz / 1024 * 2.4
+  const spriteScale = sz / 1024 * 1.6
   // Very generous hit area in world space (4x visual), compensated for scale
   const hitSize = (sz * 4) / spriteScale
   const seq = add([
@@ -162,7 +162,7 @@ export function createRibbon(x: number, y: number) {
     z(-1),
   ])
 
-  const ribbonScale = sz / 1024 * 2.4
+  const ribbonScale = sz / 1024 * 1.6
   const rHit = (sz * 3) / ribbonScale
   const ribbon = add([
     sprite("ribbon-sprite"),
@@ -215,7 +215,7 @@ export function createWeaponPickup(x: number, y: number, weaponType: "katana" | 
   const c = weaponType === "katana" ? WEAPON.PICKUP_KATANA_COLOR : WEAPON.PICKUP_SAIS_COLOR
   const sz = WEAPON.PICKUP_SIZE
   const weaponSprite = weaponType === "katana" ? "weapon-katana-sprite" : "weapon-sais-sprite"
-  const weaponScale = sz / 1024 * 2.4
+  const weaponScale = sz / 1024 * 1.6
 
   // Glowing pedestal beneath weapon
   const pedestal = add([
