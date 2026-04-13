@@ -711,6 +711,39 @@ async function main() {
     }
 
     // ------------------------------------------------------------------
+    // Boss fight basic functionality: boss exists, has hp, can take damage
+    // ------------------------------------------------------------------
+    await page.evaluate(() => go("game", "boss"))
+    await sleep(2000)
+    const bossInit = await page.evaluate(() => {
+      const bosses = get("boss")
+      if (bosses.length === 0) return { error: "no boss" }
+      return {
+        hpBefore: bosses[0].hp,
+        phase: bosses[0].phase,
+      }
+    })
+    if (!bossInit.error) {
+      // Damage the boss directly
+      await page.evaluate(() => {
+        const b = get("boss")[0]
+        if (b?.hurt) b.hurt(1)
+      })
+      await sleep(500)
+      const bossAfter = await page.evaluate(() => {
+        const bosses = get("boss")
+        return { hp: bosses[0]?.hp ?? -1 }
+      })
+      record(
+        "Boss takes damage",
+        bossAfter.hp < bossInit.hpBefore,
+        `hp ${bossInit.hpBefore} → ${bossAfter.hp}`,
+      )
+    } else {
+      record("Boss takes damage", false, bossInit.error)
+    }
+
+    // ------------------------------------------------------------------
     // All levels loadable: verify each of level2–level6 + boss boot up
     // without throwing runtime errors
     // ------------------------------------------------------------------
