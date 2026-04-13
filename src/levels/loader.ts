@@ -4,7 +4,7 @@ import { createButterPat, createGlutenBlob, createSyrupDripper, createMilkCarton
 import { createNinjaPowerup, createSequin, createWeaponPickup, createRibbon } from "../entities/pickups"
 import { hitPlayer } from "../components/health"
 import { edgeFlash, popText } from "../components/effects"
-import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData } from "./level1"
+import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData, CheckpointData } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
   if (p.type === "swing") {
@@ -192,6 +192,17 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
 
   const player = createPlayer(levelData.playerSpawn.x, levelData.playerSpawn.y)
 
+  // Active respawn point — updated when the player touches a checkpoint.
+  const currentSpawn = { x: levelData.playerSpawn.x, y: levelData.playerSpawn.y }
+
+  // Spawn checkpoint flags. A flag is a tall pole with a banner that turns
+  // gold once activated. Touching it updates currentSpawn and plays a pop.
+  if (levelData.checkpoints) {
+    for (const cp of levelData.checkpoints) {
+      spawnCheckpoint(cp, currentSpawn)
+    }
+  }
+
   // One-way platform logic: disable collision when player is clearly below
   player.onBeforePhysicsResolve((col: any) => {
     if (col.target.is("one-way")) {
@@ -248,11 +259,12 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
       // cannot re-fire on subsequent frames while the death animation
       // plays, then force-respawn bypassing invincibility/state checks so
       // a dash-clip or lingering invincible flag can't trap the player.
-      player.pos.x = levelData.playerSpawn.x
-      player.pos.y = levelData.playerSpawn.y
+      // Respawn at the active checkpoint, not the level start.
+      player.pos.x = currentSpawn.x
+      player.pos.y = currentSpawn.y
       player.vel.x = 0
       player.vel.y = 0
-      hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y, levelId, true)
+      hitPlayer(player, currentSpawn.x, currentSpawn.y, levelId, true)
       return
     }
     // Horizontal bounds
@@ -371,7 +383,7 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
     // Otherwise take damage
     edgeFlash(255, 60, 60) // red = took damage
     popText(player.pos.x, player.pos.y - 40, "OUCH!", [255, 100, 100], 22)
-    hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
+    hitPlayer(player, currentSpawn.x, currentSpawn.y)
   })
 
   // Slippery patch effect: active while overlapping
@@ -432,6 +444,63 @@ function spawnPickup(p: PickupSpawn) {
     case "katana": return createWeaponPickup(p.x, p.y, "katana")
     case "sais": return createWeaponPickup(p.x, p.y, "sais")
   }
+}
+
+function spawnCheckpoint(cp: CheckpointData, currentSpawn: { x: number; y: number }) {
+  // Pole
+  const pole = add([
+    rect(6, 90),
+    pos(cp.x, cp.y),
+    // Generous hitbox: 80 wide x 160 tall, centered on the pole, so a
+    // jumping player mid-arc still intersects even when their feet clear
+    // the pole base.
+    area({ shape: new Rect(vec2(-40, -160), 80, 160) }),
+    anchor("bot"),
+    color(80, 80, 100),
+    "checkpoint",
+    { activated: false },
+  ])
+  // Banner — starts gray, turns gold on activation
+  const banner = pole.add([
+    rect(28, 18, { radius: 2 }),
+    pos(3, -82),
+    color(160, 160, 170),
+    anchor("left"),
+    rotate(0),
+  ])
+  // Gentle wave
+  banner.onUpdate(() => {
+    banner.angle = Math.sin(time() * 2.5) * 6
+  })
+
+  pole.onCollide("player", () => {
+    if (pole.activated) return
+    pole.activated = true
+    banner.color = rgb(255, 215, 0)
+    currentSpawn.x = cp.x
+    currentSpawn.y = cp.y
+    popText(cp.x, cp.y - 110, "CHECKPOINT!", [255, 215, 0], 22)
+    // Sparkle burst
+    for (let i = 0; i < 10; i++) {
+      const angle = (i / 10) * Math.PI * 2
+      const spd = 80 + Math.random() * 40
+      const sp = add([
+        circle(2),
+        pos(cp.x, cp.y - 80),
+        color(255, 215, 0),
+        opacity(1),
+        z(60),
+      ])
+      let age = 0
+      sp.onUpdate(() => {
+        age += dt()
+        sp.pos.x += Math.cos(angle) * spd * dt()
+        sp.pos.y += Math.sin(angle) * spd * dt()
+        sp.opacity = Math.max(0, 1 - age * 2.5)
+        if (sp.opacity <= 0) destroy(sp)
+      })
+    }
+  })
 }
 
 function spawnDestructible(d: DestructibleData) {

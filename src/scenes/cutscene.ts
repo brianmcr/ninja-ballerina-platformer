@@ -47,10 +47,10 @@ export default function cutscene(data: CutsceneData) {
   ])
 
   const skipHint = add([
-    text("Press SPACE or ENTER to skip", { size: 14, font: "Bangers" }),
+    text("SPACE / ENTER: next    ESC: skip intro", { size: 14, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 40),
     anchor("center"),
-    color(150, 150, 150),
+    color(200, 200, 200),
     fixed(),
     z(1),
   ])
@@ -127,6 +127,11 @@ export default function cutscene(data: CutsceneData) {
 
   onKeyPress("space", advance)
   onKeyPress("enter", advance)
+  // Escape jumps straight to the next scene, no more frame-by-frame mash.
+  onKeyPress("escape", () => {
+    frameIndex = data.frames.length
+    fadeOut(0.3, () => go(data.nextScene))
+  })
 
   void skipHint
 }

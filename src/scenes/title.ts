@@ -60,7 +60,7 @@ export default function title() {
   ])
 
   const prompt = add([
-    text("Press SPACE to Start", { size: 20, font: "Bangers" }),
+    text("Press SPACE or ENTER to Start", { size: 24, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT - 100),
     anchor("center"),
     color(255, 255, 255),

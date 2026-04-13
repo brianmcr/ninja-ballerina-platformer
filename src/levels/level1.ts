@@ -30,6 +30,11 @@ export interface DestructibleData {
   height: number
 }
 
+export interface CheckpointData {
+  x: number
+  y: number
+}
+
 export interface LevelData {
   name: string
   width: number
@@ -38,6 +43,7 @@ export interface LevelData {
   enemies?: EnemySpawn[]
   pickups?: PickupSpawn[]
   destructibles?: DestructibleData[]
+  checkpoints?: CheckpointData[]
   bgTint?: [number, number, number]
 }
 
@@ -65,9 +71,9 @@ const level1: LevelData = {
     { type: "one-way", x: 1150, y: FLOOR_Y - 180, width: 180, height: 12 },
     { type: "one-way", x: 1500, y: FLOOR_Y - 240, width: 150, height: 12 },
 
-    // Mid-level solid platforms
-    { type: "solid", x: 1900, y: FLOOR_Y - 200, width: 180, height: 16 },
-    { type: "solid", x: 2200, y: FLOOR_Y - 140, width: 160, height: 16 },
+    // Mid-level solid platforms — widened for forgiveness on the spike
+    { type: "solid", x: 1880, y: FLOOR_Y - 200, width: 240, height: 16 },
+    { type: "solid", x: 2180, y: FLOOR_Y - 140, width: 220, height: 16 },
 
     // Bouncy platform — teach the mechanic
     { type: "bouncy", x: 1400, y: FLOOR_Y - 16, width: 80, height: 16 },
@@ -143,6 +149,15 @@ const level1: LevelData = {
   destructibles: [
     { x: 1550, y: FLOOR_Y - 48, width: 48, height: 48 },
     { x: 2350, y: FLOOR_Y - 48, width: 48, height: 48 },
+  ],
+  checkpoints: [
+    // First checkpoint ~40% through: on the second floor segment, just
+    // before the 1720 floor gap. Saves a retry back to spawn if the kid
+    // dies on the upcoming mid-section.
+    { x: 1600, y: FLOOR_Y - 10 },
+    // Second checkpoint ~65% through: on the third floor segment, past
+    // the first hard gap. Anchors the mid-level spike.
+    { x: 1880, y: FLOOR_Y - 10 },
   ],
 }
 
