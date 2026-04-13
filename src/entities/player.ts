@@ -239,12 +239,11 @@ export default function createPlayer(x: number, y: number) {
     playSpin()
     player.spinTimer = PLAYER.SPIN_DURATION
 
-    // Spin always kills enemies in range
+    // Spin always kills enemies in range — AOE bypasses shields (fromDir=0)
     const enemies = get("enemy")
     for (const e of enemies) {
       if (player.pos.dist(e.pos) < PLAYER.SPIN_RADIUS) {
-        const fromDir = player.pos.x < e.pos.x ? -1 : 1
-        if (e.hurt?.length >= 2) e.hurt(99, fromDir)
+        if (e.hurt?.length >= 2) e.hurt(99, 0)
         else e.hurt?.(99)
       }
     }

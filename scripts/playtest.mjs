@@ -438,8 +438,7 @@ async function main() {
         const enemies = get("enemy")
         for (const e of enemies) {
           if (p.pos.dist(e.pos) < 60) {
-            const fromDir = p.pos.x < e.pos.x ? -1 : 1
-            if (e.hurt?.length >= 2) e.hurt(99, fromDir)
+            if (e.hurt?.length >= 2) e.hurt(99, 0)
             else e.hurt?.(99)
           }
         }
