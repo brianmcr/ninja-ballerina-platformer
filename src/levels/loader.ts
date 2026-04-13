@@ -170,7 +170,7 @@ function addParallaxLayers() {
   }
 }
 
-export default function loadLevel(levelData: LevelData) {
+export default function loadLevel(levelData: LevelData, levelId: string = "level1") {
   addParallaxLayers()
 
   if (levelData.bgTint) {
@@ -242,7 +242,7 @@ export default function loadLevel(levelData: LevelData) {
   // Kill zone: fall below the visible playfield → lose a life and respawn
   player.onUpdate(() => {
     if (player.pos.y > SCREEN.HEIGHT + 60) {
-      hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
+      hitPlayer(player, levelData.playerSpawn.x, levelData.playerSpawn.y, levelId)
     }
   })
 

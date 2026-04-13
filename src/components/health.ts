@@ -22,7 +22,7 @@ export function initHealth(player: any) {
   player.isInvincible = true
 }
 
-export function hitPlayer(player: any, spawnX: number, spawnY: number) {
+export function hitPlayer(player: any, spawnX: number, spawnY: number, levelId?: string) {
   if (player.isInvincible) return
   if (player.state === "spin" || player.state === "dash" || player.state === "whip") return
 
@@ -43,11 +43,11 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number) {
       player.isInvincible = true
       player.vel.x = 0
       player.vel.y = 0
+      const lvl = levelId ?? "level1"
       fadeOut(0.4, () => {
         try {
-          go("gameOver", { levelId: "level1", sequins: h.sequins })
+          go("gameOver", { levelId: lvl, sequins: h.sequins })
         } catch (e) {
-          // Fallback if scene signature differs
           go("title")
         }
       })

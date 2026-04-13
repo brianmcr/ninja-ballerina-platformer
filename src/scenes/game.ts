@@ -36,7 +36,7 @@ export default function game(levelName?: string) {
 
   const isBoss = levelId === "boss"
   const levelData: LevelData = LEVEL_MAP[levelId] ?? level1
-  const { player } = loadLevel(levelData)
+  const { player } = loadLevel(levelData, levelId)
 
   let levelTime = 0
   let showDebug = false
