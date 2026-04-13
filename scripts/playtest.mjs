@@ -54,6 +54,18 @@ async function evalInGame(page, fn) {
   return await page.evaluate(fn)
 }
 
+// Clear all invincibility state so damage-taking tests don't skip
+async function clearInvincibility(page) {
+  await page.evaluate(() => {
+    const p = get("player")?.[0]
+    if (p) {
+      p.isInvincible = false
+      if (p.health) p.health.invincibleTimer = 0
+      p.opacity = 1
+    }
+  })
+}
+
 async function main() {
   console.log(`Launching browser → ${URL}${HEADLESS ? " (headless)" : ""}`)
   const browser = await chromium.launch({ headless: HEADLESS })
@@ -514,6 +526,7 @@ async function main() {
     // ------------------------------------------------------------------
     await page.evaluate(() => go("game", "level1"))
     await sleep(1500)
+    await clearInvincibility(page)
     const touchSetup = await page.evaluate(() => {
       const enemies = get("enemy")
       if (enemies.length === 0) return { error: "no enemies" }
@@ -558,6 +571,7 @@ async function main() {
     // ------------------------------------------------------------------
     await page.evaluate(() => go("game", "boss"))
     await sleep(1500)
+    await clearInvincibility(page)
     // First try: no ninja form, weapon pickup should NOT equip
     const noNinjaWeapon = await page.evaluate(() => {
       const p = get("player")[0]
@@ -623,6 +637,7 @@ async function main() {
     // ------------------------------------------------------------------
     await page.evaluate(() => go("game", "level1"))
     await sleep(1500)
+    await clearInvincibility(page)
     await page.evaluate(() => {
       const p = get("player")[0]
       if (p?.health) p.health.lives = 1 // one hit from death
