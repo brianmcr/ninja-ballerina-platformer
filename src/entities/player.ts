@@ -75,9 +75,39 @@ export default function createPlayer(x: number, y: number) {
   let ninjaHeadband: any = null
   let ninjaRibbonL: any = null
   let ninjaRibbonR: any = null
+
+  function spawnTransformBurst() {
+    // Pink sparkle burst to signal the transformation
+    for (let i = 0; i < 14; i++) {
+      const angle = (i / 14) * Math.PI * 2
+      const spd = 120 + Math.random() * 60
+      const vx = Math.cos(angle) * spd
+      const vy = Math.sin(angle) * spd - 40
+      const p = add([
+        rect(5, 5),
+        pos(player.pos.x, player.pos.y - 50),
+        anchor("center"),
+        rotate(45),
+        color(255, 105, 180),
+        opacity(1),
+        z(60),
+      ])
+      let age = 0
+      p.onUpdate(() => {
+        age += dt()
+        p.pos.x += vx * dt()
+        p.pos.y += vy * dt()
+        p.opacity = Math.max(0, 1 - age * 2)
+        p.angle += dt() * 360
+        if (p.opacity <= 0) destroy(p)
+      })
+    }
+  }
+
   function updateNinjaOverlay() {
     const h = player.health as PlayerHealth
     if (h?.isNinja && !ninjaHeadband) {
+      spawnTransformBurst()
       // Black headband across the top of the head
       ninjaHeadband = add([
         rect(40, 6),
