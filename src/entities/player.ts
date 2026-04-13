@@ -80,8 +80,8 @@ export default function createPlayer(x: number, y: number) {
     if (h?.isNinja && !ninjaHeadband) {
       // Black headband across the top of the head
       ninjaHeadband = add([
-        rect(26, 4),
-        pos(player.pos.x, player.pos.y - 44),
+        rect(40, 6),
+        pos(player.pos.x, player.pos.y - 90),
         anchor("center"),
         color(20, 20, 30),
         z(5),
@@ -89,8 +89,8 @@ export default function createPlayer(x: number, y: number) {
       ])
       // Two pink ribbon tails flowing behind
       ninjaRibbonL = add([
-        rect(14, 3),
-        pos(player.pos.x - 12, player.pos.y - 40),
+        rect(22, 4),
+        pos(player.pos.x - 18, player.pos.y - 86),
         anchor("right"),
         color(255, 20, 147),
         rotate(-10),
@@ -98,8 +98,8 @@ export default function createPlayer(x: number, y: number) {
         "ninja-gear",
       ])
       ninjaRibbonR = add([
-        rect(14, 3),
-        pos(player.pos.x + 12, player.pos.y - 40),
+        rect(22, 4),
+        pos(player.pos.x + 18, player.pos.y - 86),
         anchor("left"),
         color(255, 20, 147),
         rotate(10),
@@ -117,12 +117,12 @@ export default function createPlayer(x: number, y: number) {
     if (ninjaHeadband) {
       const bob = Math.sin(time() * 8) * 1
       ninjaHeadband.pos.x = player.pos.x
-      ninjaHeadband.pos.y = player.pos.y - 44
-      ninjaRibbonL.pos.x = player.pos.x - 12
-      ninjaRibbonL.pos.y = player.pos.y - 40 + bob
+      ninjaHeadband.pos.y = player.pos.y - 90
+      ninjaRibbonL.pos.x = player.pos.x - 18
+      ninjaRibbonL.pos.y = player.pos.y - 86 + bob
       ninjaRibbonL.angle = -10 + Math.sin(time() * 3) * 8
-      ninjaRibbonR.pos.x = player.pos.x + 12
-      ninjaRibbonR.pos.y = player.pos.y - 40 - bob
+      ninjaRibbonR.pos.x = player.pos.x + 18
+      ninjaRibbonR.pos.y = player.pos.y - 86 - bob
       ninjaRibbonR.angle = 10 - Math.sin(time() * 3) * 8
     }
   }
