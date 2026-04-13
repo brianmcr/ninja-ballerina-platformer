@@ -34,9 +34,9 @@ export function fireShuriken(player: any) {
       } else {
         const fromDir = star.pos.x < e.pos.x ? -1 : 1
         if (e.hurt.length >= 2) {
-          e.hurt(1, fromDir)
+          e.hurt(99, fromDir)
         } else {
-          e.hurt(1)
+          e.hurt(99)
         }
       }
     }
