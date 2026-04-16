@@ -284,6 +284,7 @@ export function flashWhite(entity: any, duration = 0.1) {
 // something connected.
 export function hitImpact(entity: any, fromDir: number = 0) {
   flashWhite(entity, 0.18)
+  hitstop(0.05)
   const baseScale = entity.scale ? entity.scale.clone() : null
   if (baseScale) {
     entity.scale = vec2(baseScale.x * 1.25, baseScale.y * 0.8)
@@ -295,6 +296,13 @@ export function hitImpact(entity: any, fromDir: number = 0) {
     const kbX = fromDir * 6
     entity.pos.x += kbX
   }
+}
+
+// Brief time-scale drop on impact. 0.05s at 10% speed = ~3 frames of
+// freeze at 60fps. Makes kills feel weighty without disrupting flow.
+export function hitstop(duration = 0.05) {
+  debug.timeScale = 0.1
+  wait(duration, () => { debug.timeScale = 1 })
 }
 
 export function flashScreen(startOpacity = 0.6, fadeDuration = 0.5) {

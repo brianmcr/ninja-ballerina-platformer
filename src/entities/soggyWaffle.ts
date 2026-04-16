@@ -156,9 +156,9 @@ export function runBossFight(player: any, spawnX: number, spawnY: number) {
 
   // Platform positions for Phase 2 teleportation
   const platformSpots = [
-    { x: 400, y: FLOOR_Y - 200 - 10 },
-    { x: 800, y: FLOOR_Y - 320 - 10 },
-    { x: 1200, y: FLOOR_Y - 200 - 10 },
+    { x: 400, y: FLOOR_Y - 160 - 10 },
+    { x: 800, y: FLOOR_Y - 300 - 10 },
+    { x: 1200, y: FLOOR_Y - 160 - 10 },
   ]
   let currentPlatIndex = 1 // start at center (highest)
 

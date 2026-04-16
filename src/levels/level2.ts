@@ -141,6 +141,10 @@ const level2: LevelData = {
     { x: 1400, y: FLOOR_Y - 48, width: 48, height: 48 },
     { x: 2700, y: FLOOR_Y - 48, width: 48, height: 48 },
   ],
+  checkpoints: [
+    { x: 1650, y: FLOOR_Y - 10 },
+    { x: 2500, y: FLOOR_Y - 10 },
+  ],
 }
 
 export default level2

@@ -11,7 +11,7 @@ const level5: LevelData = {
   playerSpawn: { x: 140, y: FLOOR_Y - 10 },
   platforms: [
     // Sparse floor — long drops, tight corridors
-    { type: "solid", x: 0, y: FLOOR_Y, width: 400, height: FLOOR_H },
+    { type: "solid", x: 0, y: FLOOR_Y, width: 500, height: FLOOR_H },
     { type: "solid", x: 650, y: FLOOR_Y, width: 300, height: FLOOR_H },
     { type: "solid", x: 1200, y: FLOOR_Y, width: 350, height: FLOOR_H },
     { type: "solid", x: 1850, y: FLOOR_Y, width: 300, height: FLOOR_H },
@@ -80,7 +80,7 @@ const level5: LevelData = {
   ],
   enemies: [
     // All enemy types, dense placement
-    { type: "butterPat", x: 250, y: FLOOR_Y, patrolRange: 80 },
+    { type: "butterPat", x: 400, y: FLOOR_Y, patrolRange: 60 },
     { type: "butterPat", x: 700, y: FLOOR_Y, patrolRange: 60 },
     { type: "butterPat", x: 1450, y: FLOOR_Y, patrolRange: 80 },
     { type: "butterPat", x: 2600, y: FLOOR_Y, patrolRange: 60 },
@@ -182,6 +182,10 @@ const level5: LevelData = {
     { x: 2480, y: FLOOR_Y - 48, width: 48, height: 48 },
     { x: 3080, y: FLOOR_Y - 48, width: 48, height: 48 },
     { x: 3680, y: FLOOR_Y - 48, width: 48, height: 48 },
+  ],
+  checkpoints: [
+    { x: 1300, y: FLOOR_Y - 10 },
+    { x: 2900, y: FLOOR_Y - 10 },
   ],
 }
 
