@@ -23,6 +23,12 @@ function spawnPlatform(p: PlatformData) {
         elapsed: 0,
       },
     ])
+    // Gold top edge
+    plat.add([
+      rect(p.width, 3),
+      pos(0, 0),
+      color(255, 220, 100),
+    ])
     // Chain/rope visual above platform
     plat.add([
       rect(4, 40),
@@ -34,25 +40,33 @@ function spawnPlatform(p: PlatformData) {
   }
 
   if (p.type === "one-way") {
+    // Glow behind one-way too
+    add([
+      rect(p.width + 4, 4),
+      pos(p.x - 2, p.y - 2),
+      color(180, 255, 180),
+      opacity(0.3),
+      z(-1),
+    ])
     const plat = add([
       rect(p.width, p.height, { radius: 2 }),
       pos(p.x, p.y),
       area(),
       body({ isStatic: true }),
       color(91, 140, 90),
-      opacity(0.7),
+      opacity(0.85),
       "platform",
       "one-way",
     ])
-    // Dashed line on top to communicate passability
+    // Dashed gold line on top — same visual language as solid platforms
     const dashW = 8
     const gap = 12
     for (let dx = 4; dx < p.width - dashW; dx += gap) {
       plat.add([
-        rect(dashW, 2),
+        rect(dashW, 3),
         pos(dx, 0),
-        color(255, 255, 255),
-        opacity(0.5),
+        color(255, 220, 100),
+        opacity(0.8),
       ])
     }
     // Grain lines
@@ -80,21 +94,36 @@ function spawnPlatform(p: PlatformData) {
       "platform",
       "bouncy",
     ])
+    // Bright gold top edge
+    plat.add([
+      rect(p.width, 3),
+      pos(0, 0),
+      color(255, 220, 100),
+    ])
     // Pulsing glow behind platform
     const glow = plat.add([
-      rect(p.width + 4, p.height + 4),
-      pos(-2, -2),
-      color(232, 134, 58),
-      opacity(0.2),
+      rect(p.width + 6, p.height + 6),
+      pos(-3, -3),
+      color(255, 200, 50),
+      opacity(0.25),
       z(-1),
     ])
     glow.onUpdate(() => {
-      glow.opacity = 0.2 + Math.sin(time() * 4) * 0.1
+      glow.opacity = 0.2 + Math.sin(time() * 4) * 0.15
     })
     return plat
   }
 
-  // solid — wood plank effect
+  // solid — wood plank effect with bright gold top edge so it reads
+  // as "standable" against similarly-colored background elements.
+  // Glow strip behind the platform adds separation from the parallax.
+  add([
+    rect(p.width + 4, 4),
+    pos(p.x - 2, p.y - 2),
+    color(255, 220, 100),
+    opacity(0.35),
+    z(-1),
+  ])
   const plat = add([
     rect(p.width, p.height, { radius: 3 }),
     pos(p.x, p.y),
@@ -104,11 +133,11 @@ function spawnPlatform(p: PlatformData) {
     "platform",
     "solid",
   ])
-  // Highlight strip on top
+  // Bright gold top edge — the universal "you can stand here" signal
   plat.add([
-    rect(p.width, 2),
+    rect(p.width, 3),
     pos(0, 0),
-    color(196, 149, 106),
+    color(255, 220, 100),
   ])
   // Shadow strip on bottom
   plat.add([
@@ -154,7 +183,7 @@ function addParallaxLayers() {
         scale(scaleY),
         z(layer.z),
         fixed(),
-        opacity(layer.name === "bg-near" ? 0.7 : 1),
+        opacity(layer.name.includes("near") ? 0.4 : 1),
       ])
       tiles.push({ posX: (x: number) => { tile.pos.x = x } })
     }
