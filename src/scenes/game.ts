@@ -12,7 +12,7 @@ import { runBossFight } from "../entities/soggyWaffle"
 import { SCREEN } from "../config"
 import { fadeIn, fadeOut } from "../components/transition"
 import { popText, starburstParticles } from "../components/effects"
-import { playPowerup } from "../components/audio"
+import { playPowerup, playBgm, stopBgm } from "../components/audio"
 
 const LEVEL_MAP: Record<string, LevelData> = {
   level1,
@@ -39,6 +39,11 @@ export default function game(levelName?: string) {
   const isBoss = levelId === "boss"
   const levelData: LevelData = LEVEL_MAP[levelId] ?? level1
   const { player } = loadLevel(levelData, levelId)
+
+  // Start background music — boss level gets the darker track
+  playBgm(levelId === "boss" ? "boss" : "level")
+  // Stop music on scene exit
+  onSceneLeave(() => stopBgm())
 
   let levelTime = 0
   let showDebug = false
