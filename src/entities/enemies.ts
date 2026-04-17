@@ -3,6 +3,25 @@ import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText, enemyHitF
 import { playCoin, playHit } from "../components/audio"
 import { createSequin } from "./pickups"
 
+// Ledge-check helper: tests whether there's any "platform" within
+// ~24px below a probe point slightly ahead of the enemy. Returns true
+// if the edge is clear (i.e., enemy would walk off if it kept moving).
+function isAtLedge(entity: any, dir: number, entityBottom: number): boolean {
+  const probeX = entity.pos.x + dir * 26
+  const probeY = entityBottom + 8
+  const platforms = get("platform")
+  for (const p of platforms) {
+    const px = p.pos?.x ?? 0
+    const py = p.pos?.y ?? 0
+    const pw = p.width ?? 0
+    const ph = p.height ?? 0
+    if (probeX >= px && probeX <= px + pw && probeY >= py && probeY <= py + ph) {
+      return false
+    }
+  }
+  return true
+}
+
 // Spawn 1-2 sequins above a defeated enemy — Mario's "kill → coin"
 // feedback. They pop out with a brief upward tween before settling into
 // the usual bob so the drop feels dynamic.
@@ -65,6 +84,10 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
     enemy.move(e.SPEED * dir, 0)
     if (enemy.pos.x > spawnX + patrolRange) dir = -1
     if (enemy.pos.x < spawnX - patrolRange) dir = 1
+    // Ledge-aware: if about to walk off a cliff, flip direction
+    if (enemy.isGrounded?.() && isAtLedge(enemy, dir, enemy.pos.y)) {
+      dir = -dir
+    }
     // Wobble animation
     enemy.angle = Math.sin(time() * 5) * 8
     enemy.scale = vec2(ENEMY_SCALE * (1 + Math.abs(Math.sin(time() * 5)) * 0.05))
@@ -391,6 +414,10 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
     facing = dir
     if (enemy.pos.x > spawnX + patrolRange) dir = -1
     if (enemy.pos.x < spawnX - patrolRange) dir = 1
+    // Ledge-aware: flip direction at cliff edges
+    if (enemy.isGrounded?.() && isAtLedge(enemy, dir, enemy.pos.y)) {
+      dir = -dir
+    }
     // Stiff marching animation — scale only, no position drift
     enemy.scale = vec2(ENEMY_SCALE * (1 + Math.abs(Math.sin(time() * 8)) * 0.06))
   })

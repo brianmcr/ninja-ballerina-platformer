@@ -61,18 +61,52 @@ export function fireShuriken(player: any) {
   const projY = player.pos.y - 24
   const dir = player.facing
 
+  // Rotating star sprite — diamond rotated, plus a second rotated diamond
+  // forming an 8-pointed star. Spinning wheel of ninja justice.
   const star = add([
     rect(WEAPON.SHURIKEN.SIZE, WEAPON.SHURIKEN.SIZE),
     pos(projX, projY),
     area(),
     anchor("center"),
+    rotate(0),
     color(WEAPON.SHURIKEN.COLOR[0], WEAPON.SHURIKEN.COLOR[1], WEAPON.SHURIKEN.COLOR[2]),
     "shuriken-proj",
     { dir },
   ])
-
+  // Second layer: same size diamond at 45deg for an 8-pointed star look
+  const layer2 = star.add([
+    rect(WEAPON.SHURIKEN.SIZE, WEAPON.SHURIKEN.SIZE),
+    pos(0, 0),
+    anchor("center"),
+    rotate(45),
+    color(WEAPON.SHURIKEN.COLOR[0], WEAPON.SHURIKEN.COLOR[1], WEAPON.SHURIKEN.COLOR[2]),
+  ])
+  void layer2
+  // Trailing afterimage
+  let trailTimer = 0
   star.onUpdate(() => {
     star.move(dir * WEAPON.SHURIKEN.SPEED, 0)
+    star.angle += dt() * 900
+    // Trail particle
+    trailTimer -= dt()
+    if (trailTimer <= 0) {
+      trailTimer = 0.04
+      const trail = add([
+        rect(6, 6),
+        pos(star.pos.x, star.pos.y),
+        anchor("center"),
+        rotate(star.angle),
+        color(WEAPON.SHURIKEN.COLOR[0], WEAPON.SHURIKEN.COLOR[1], WEAPON.SHURIKEN.COLOR[2]),
+        opacity(0.5),
+        z(19),
+      ])
+      let tAge = 0
+      trail.onUpdate(() => {
+        tAge += dt()
+        trail.opacity = Math.max(0, 0.5 - tAge * 3)
+        if (trail.opacity <= 0) destroy(trail)
+      })
+    }
     if (Math.abs(star.pos.x - projX) > 800) destroy(star)
   })
 
@@ -93,6 +127,10 @@ export function fireShuriken(player: any) {
   })
 
   star.onCollide("platform", () => destroy(star))
+  star.onCollide("destructible", (d: any) => {
+    breakDestructible(d)
+    destroy(star)
+  })
 }
 
 export function swingKatana(player: any) {
