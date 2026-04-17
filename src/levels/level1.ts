@@ -1,13 +1,19 @@
 import { SCREEN } from "../config"
 
 export interface PlatformData {
-  type: "solid" | "one-way" | "bouncy" | "swing"
+  type: "solid" | "one-way" | "bouncy" | "swing" | "moving"
   x: number
   y: number
   width: number
   height: number
   swingRange?: number
   swingSpeed?: number
+  // For moving platforms: how far to move from origin and how fast.
+  // moveX/moveY are peak displacement (+/- from center), moveSpeed is
+  // oscillation rate in Hz.
+  moveX?: number
+  moveY?: number
+  moveSpeed?: number
 }
 
 export interface EnemySpawn {
@@ -85,6 +91,9 @@ const level1: LevelData = {
 
     // Bouncy platform — teach the mechanic
     { type: "bouncy", x: 1400, y: FLOOR_Y - 16, width: 80, height: 16 },
+
+    // Moving platform over the second floor gap (spans 1720-1840)
+    { type: "moving", x: 1780, y: FLOOR_Y - 80, width: 100, height: 14, moveX: 80, moveSpeed: 1.4 },
 
     // Staircase of one-ways near end
     { type: "one-way", x: 2700, y: FLOOR_Y - 100, width: 120, height: 12 },

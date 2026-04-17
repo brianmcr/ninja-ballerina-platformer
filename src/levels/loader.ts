@@ -9,6 +9,39 @@ import { breakDestructible } from "../components/weapons"
 import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData, CheckpointData, QuestionBlockData } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
+  if (p.type === "moving") {
+    const plat = add([
+      rect(p.width, p.height, { radius: 3 }),
+      pos(p.x, p.y),
+      area(),
+      body({ isStatic: true }),
+      color(120, 150, 200),
+      "platform",
+      "moving",
+      {
+        originX: p.x,
+        originY: p.y,
+        moveX: p.moveX ?? 0,
+        moveY: p.moveY ?? 0,
+        moveSpeed: p.moveSpeed ?? 1,
+        elapsed: Math.random() * Math.PI * 2,
+      },
+    ])
+    // Gold top edge
+    plat.add([
+      rect(p.width, 3),
+      pos(0, 0),
+      color(255, 220, 100),
+    ])
+    // Shadow stripe bottom
+    plat.add([
+      rect(p.width, 2),
+      pos(0, p.height - 2),
+      color(60, 80, 120),
+    ])
+    return plat
+  }
+
   if (p.type === "swing") {
     const plat = add([
       rect(p.width, p.height, { radius: 3 }),
@@ -257,6 +290,13 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
   onUpdate("swing", (s: any) => {
     s.elapsed += dt()
     s.pos.x = s.originX + Math.sin(s.elapsed * s.swingSpeed) * s.swingRange
+  })
+
+  // Moving platforms oscillate on x and/or y around their origin
+  onUpdate("moving", (m: any) => {
+    m.elapsed += dt()
+    m.pos.x = m.originX + Math.sin(m.elapsed * m.moveSpeed) * m.moveX
+    m.pos.y = m.originY + Math.sin(m.elapsed * m.moveSpeed) * m.moveY
   })
 
   // Camera follow — clamp both X and Y so the camera never shows empty
