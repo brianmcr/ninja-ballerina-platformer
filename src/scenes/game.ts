@@ -11,6 +11,8 @@ import type { PlayerHealth } from "../components/health"
 import { runBossFight } from "../entities/soggyWaffle"
 import { SCREEN } from "../config"
 import { fadeIn, fadeOut } from "../components/transition"
+import { popText, starburstParticles } from "../components/effects"
+import { playPowerup } from "../components/audio"
 
 const LEVEL_MAP: Record<string, LevelData> = {
   level1,
@@ -367,14 +369,29 @@ export default function game(levelName?: string) {
   if (isBoss) {
     runBossFight(player, levelData.playerSpawn.x, levelData.playerSpawn.y)
   } else {
-    // Transition to level complete when player touches goal marker
+    // Goal reached: Mario-style flagpole celebration, THEN transition.
     let triggered = false
     player.onCollide("goal", () => {
-      if (!triggered) {
-        triggered = true
-        const h = player.health as PlayerHealth
-        const next = getNextLevel(levelId)
-        fadeOut(0.3, () => go("levelComplete", {
+      if (triggered) return
+      triggered = true
+      const h = player.health as PlayerHealth
+      const next = getNextLevel(levelId)
+      // Freeze player in place, play fanfare, shower particles, show
+      // "COURSE CLEAR!" text, then fade out after the celebration beat.
+      player.isInvincible = true
+      player.vel.x = 0
+      player.vel.y = 0
+      playPowerup()
+      starburstParticles(player.pos.x, player.pos.y - 40, 24)
+      popText(player.pos.x, player.pos.y - 100, "COURSE CLEAR!", [255, 215, 0], 36)
+      wait(0.3, () => {
+        starburstParticles(player.pos.x, player.pos.y - 40, 20)
+      })
+      wait(0.6, () => {
+        starburstParticles(player.pos.x, player.pos.y - 40, 16)
+      })
+      wait(1.2, () => {
+        fadeOut(0.4, () => go("levelComplete", {
           levelId,
           sequins: h.sequins,
           ribbons: h.ribbons,
@@ -382,7 +399,7 @@ export default function game(levelName?: string) {
           time: levelTime,
           nextLevel: next,
         } as any))
-      }
+      })
     })
   }
 }

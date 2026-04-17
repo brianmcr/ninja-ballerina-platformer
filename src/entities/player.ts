@@ -3,7 +3,7 @@ import { applyFloat, startDash, updateDash } from "../components/movement"
 import { initHealth, updateHealth } from "../components/health"
 import { fireShuriken, swingKatana, stabSais, updateWeaponCooldown } from "../components/weapons"
 import { landSquash, shakeOnLand, spawnDashTrail } from "../components/effects"
-import { playJump, playLand, playSpin, playDash, playWhip } from "../components/audio"
+import { playJump, playLand, playSpin, playDash, playWhip, resetStompChain } from "../components/audio"
 import type { PlayerHealth } from "../components/health"
 import type { WeaponType } from "../components/weapons"
 
@@ -490,10 +490,22 @@ export default function createPlayer(x: number, y: number) {
     }
     player.wasGrounded = player.isGrounded()
 
-    // Fall gravity multiplier: snappier falling
-    if (!player.isGrounded() && player.vel.y > 0 && player.state !== "float" && player.state !== "dash") {
-      const extraGrav = GRAVITY * (FEEL.FALL_GRAVITY_MULT - 1) * dt()
-      player.vel.y += extraGrav
+    // Jump-feel gravity shaping:
+    // - Near the apex of the jump (|vy| small) → reduce gravity for
+    //   Mario-style hang time. The player gets a beat of floatiness at
+    //   the top of the arc, which makes jumps feel more controllable.
+    // - While falling → boost gravity for snappier landings.
+    if (!player.isGrounded() && player.state !== "float" && player.state !== "dash") {
+      const absVy = Math.abs(player.vel.y)
+      if (absVy < FEEL.APEX_VEL_THRESHOLD) {
+        // Counter-act part of gravity to simulate hang time
+        const counter = GRAVITY * (1 - FEEL.APEX_GRAVITY_MULT) * dt()
+        player.vel.y -= counter
+      } else if (player.vel.y > 0) {
+        // Falling — heavier gravity for snappy drop
+        const extraGrav = GRAVITY * (FEEL.FALL_GRAVITY_MULT - 1) * dt()
+        player.vel.y += extraGrav
+      }
     }
 
     // Spin timer — damage every frame so enemies walking into the spin
@@ -558,11 +570,18 @@ export default function createPlayer(x: number, y: number) {
 
   // Landing detection with squash and jump buffer
   player.onGround(() => {
-    // Landing squash if fell far enough
+    // Reset stomp chain when feet touch ground — chain is for aerial
+    // consecutive stomps, Mario-style.
+    resetStompChain()
+    // Landing feedback — squash+shake for big falls, subtle land sound
+    // for any jump so every landing has audio confirmation.
     const fallDist = player.pos.y - player.lastFallY
     if (fallDist > FEEL.LAND_SQUASH_THRESHOLD) {
       landSquash(player)
       shakeOnLand()
+      playLand()
+    } else if (fallDist > 20) {
+      // Quiet step-down for small hops
       playLand()
     }
 

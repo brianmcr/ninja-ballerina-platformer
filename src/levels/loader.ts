@@ -4,6 +4,7 @@ import { createButterPat, createGlutenBlob, createSyrupDripper, createMilkCarton
 import { createNinjaPowerup, createSequin, createWeaponPickup, createRibbon } from "../entities/pickups"
 import { hitPlayer } from "../components/health"
 import { edgeFlash, popText } from "../components/effects"
+import { playStomp, getStompChain, resetStompChain } from "../components/audio"
 import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData, CheckpointData } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
@@ -403,10 +404,19 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
     const stompByCol = col && typeof col.isBottom === "function" && col.isBottom()
     const stomp = clearlyAbove && (fallingVel || stompByCol)
     if (stomp) {
-      player.jump(PICKUP.STOMP_BOUNCE)
+      // Scale the bounce up with consecutive aerial stomps — reward
+      // chains the way Mario does.
+      const chain = getStompChain()
+      const bounce = PICKUP.STOMP_BOUNCE * (1 + Math.min(chain, 5) * 0.08)
+      player.jump(bounce)
+      playStomp()
       killEnemy(e, 0) // fromDir=0 signals stomp (bypasses shields)
       edgeFlash(120, 255, 120) // green = safe kill
-      popText(e.pos.x, e.pos.y - 30, "STOMP!", [120, 255, 120], 24)
+      const chainText = chain > 0 ? `STOMP x${chain + 1}!` : "STOMP!"
+      const chainColor: [number, number, number] = chain >= 3
+        ? [255, 215, 0]
+        : chain > 0 ? [255, 180, 80] : [120, 255, 120]
+      popText(e.pos.x, e.pos.y - 30, chainText, chainColor, 22 + Math.min(chain, 5) * 2)
       return
     }
     // Otherwise take damage

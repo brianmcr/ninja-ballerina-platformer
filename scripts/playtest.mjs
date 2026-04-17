@@ -502,7 +502,8 @@ async function main() {
     if (!levelCompleteSetup.error) {
       // Walk right slowly to trigger goal collision
       await pressHold(page, "ArrowRight", 800)
-      await sleep(600)
+      // Mario-style flagpole celebration takes ~1.2s before scene transition
+      await sleep(1800)
       const sceneAfter = await evalInGame(page, () => {
         const players = typeof get === "function" ? get("player") : []
         // On levelComplete scene, player entity doesn't exist

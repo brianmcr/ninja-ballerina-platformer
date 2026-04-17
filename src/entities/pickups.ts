@@ -1,6 +1,6 @@
 import { PICKUP, WEAPON } from "../config"
 import { collectSequin, collectNinjaPowerup, collectRibbon } from "../components/health"
-import { sequinCollectPop } from "../components/effects"
+import { sequinCollectPop, popText } from "../components/effects"
 import { playCoin, playPowerup } from "../components/audio"
 import type { PlayerHealth } from "../components/health"
 import type { WeaponType } from "../components/weapons"
@@ -122,8 +122,12 @@ export function createSequin(x: number, y: number) {
 
   seq.onCollide("player", (p: any) => {
     sequinCollectPop(seq.pos.x, seq.pos.y)
-    collectSequin(p)
+    const gotLife = collectSequin(p)
     playCoin()
+    popText(seq.pos.x, seq.pos.y - 20, "+1", [255, 215, 0], 18)
+    if (gotLife) {
+      popText(p.pos.x, p.pos.y - 80, "1UP!", [120, 255, 120], 32)
+    }
     destroy(glow)
     destroy(seq)
   })

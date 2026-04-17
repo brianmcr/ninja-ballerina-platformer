@@ -66,10 +66,37 @@ export function playLand() {
   noise(0.05, 0.08)
 }
 
+// Coin pitch rises with consecutive pickups (Mario-style).
+// Resets after 1s of no collection.
+let coinCombo = 0
+let lastCoinTime = 0
 export function playCoin() {
-  tone(800, 800, 0.06, "sine", 0.1)
-  tone(1200, 1200, 0.06, "sine", 0.1, 0.06)
+  const now = performance.now() / 1000
+  if (now - lastCoinTime > 1.0) coinCombo = 0
+  else coinCombo++
+  lastCoinTime = now
+  const semitone = Math.min(coinCombo, 12) * 2
+  const basePitch = 800 * Math.pow(2, semitone / 12)
+  const highPitch = 1200 * Math.pow(2, semitone / 12)
+  tone(basePitch, basePitch, 0.06, "sine", 0.1)
+  tone(highPitch, highPitch, 0.06, "sine", 0.1, 0.06)
 }
+
+// Stomp chain: each consecutive air-stomp plays a higher rising tone.
+let stompChain = 0
+let lastStompTime = 0
+export function playStomp() {
+  const now = performance.now() / 1000
+  if (now - lastStompTime > 1.5) stompChain = 0
+  else stompChain++
+  lastStompTime = now
+  const semitone = Math.min(stompChain, 10) * 2
+  const start = 300 * Math.pow(2, semitone / 12)
+  const end = 600 * Math.pow(2, semitone / 12)
+  tone(start, end, 0.15, "triangle", 0.14)
+}
+export function getStompChain() { return stompChain }
+export function resetStompChain() { stompChain = 0; lastStompTime = 0 }
 
 export function playHit() {
   noise(0.15, 0.12)
