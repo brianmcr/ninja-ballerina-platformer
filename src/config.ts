@@ -60,7 +60,7 @@ export const ENEMY = {
 } as const
 
 export const PICKUP = {
-  NINJA_SIZE: 32,
+  NINJA_SIZE: 56,
   NINJA_COLOR: [255, 165, 0] as const,
   NINJA_BOB_SPEED: 2,
   NINJA_BOB_RANGE: 6,
@@ -68,7 +68,7 @@ export const PICKUP = {
   SEQUIN_COLOR: [255, 215, 0] as const,
   SEQUIN_BOB_SPEED: 3,
   SEQUIN_BOB_RANGE: 4,
-  RIBBON_SIZE: 16,
+  RIBBON_SIZE: 24,
   RIBBON_COLOR: [200, 100, 200] as const,
   RIBBON_BOB_SPEED: 1.5,
   RIBBON_BOB_RANGE: 5,
@@ -108,7 +108,7 @@ export const WEAPON = {
   },
   PICKUP_KATANA_COLOR: [100, 140, 255] as const,
   PICKUP_SAIS_COLOR: [255, 80, 80] as const,
-  PICKUP_SIZE: 24,
+  PICKUP_SIZE: 40,
   PICKUP_BOB_SPEED: 2.5,
   PICKUP_BOB_RANGE: 5,
 } as const
@@ -120,8 +120,8 @@ export const DESTRUCTIBLE = {
 } as const
 
 export const BOSS = {
-  WIDTH: 48,
-  HEIGHT: 56,
+  WIDTH: 140,
+  HEIGHT: 180,
   COLOR: [180, 140, 60] as const,
   HEADBAND_COLOR: [100, 70, 30] as const,
   SPEED: 120,

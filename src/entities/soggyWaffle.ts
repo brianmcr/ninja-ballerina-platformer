@@ -5,7 +5,7 @@ import { shakeOnBossPhase, screenShake, flashWhite, enemyDefeatPop, flashScreen,
 import { playBossHit } from "../components/audio"
 import { fadeOut } from "../components/transition"
 
-const BOSS_SCALE = 0.12
+const BOSS_SCALE = 0.22
 
 export function createSoggyWaffle(x: number, y: number) {
   const boss = add([

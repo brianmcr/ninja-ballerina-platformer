@@ -600,20 +600,28 @@ async function main() {
       )
     }
 
-    // Now become ninja and walk into weapon. Teleport the WEAPON next to
-    // the player (on the floor) so we don't have to navigate to an
-    // elevated pickup.
+    // Now become ninja and walk into weapon. Reload the scene first so
+    // the previous no-ninja teleport-into-pickup doesn't leave stale
+    // collision state (Kaplay's onCollide only fires on transition, and
+    // teleporting doesn't cleanly reset that).
+    await page.evaluate(() => go("game", "boss"))
+    await sleep(1500)
+    await clearInvincibility(page)
     const ninjaWeapon = await page.evaluate(() => {
       const p = get("player")[0]
       const h = p.health
       if (!h) return { error: "no health" }
       h.isNinja = true
+      p.currentWeapon = "none"
       const wpns = get("weaponPickup")
       if (wpns.length === 0) return { error: "no weapons" }
       const wpn = wpns[0]
-      // Move weapon to be right next to player on the ground
-      wpn.pos.x = p.pos.x + 60
+      // Move weapon right next to player on the ground
+      wpn.pos.x = p.pos.x + 180
       wpn.pos.y = p.pos.y - 20
+      // Shove the boss away so it can't strip ninja status mid-walk
+      const bosses = get("boss")
+      if (bosses.length > 0) bosses[0].pos.x = 10000
       p.isInvincible = false
       p.state = "idle"
       p.vel.x = 0
@@ -621,13 +629,23 @@ async function main() {
       return { ok: true, wpnX: wpn.pos.x, pX: p.pos.x }
     })
     if (!ninjaWeapon.error) {
-      await pressHold(page, "ArrowRight", 600)
+      await pressHold(page, "ArrowRight", 1000)
       await sleep(300)
-      const wState = await page.evaluate(() => get("player")[0]?.currentWeapon ?? "none")
+      const wState = await page.evaluate(() => {
+        const p = get("player")[0]
+        const wpns = get("weaponPickup")
+        return {
+          weapon: p?.currentWeapon ?? "none",
+          isNinja: p?.health?.isNinja,
+          px: p?.pos?.x?.toFixed(0),
+          wpnLeft: wpns.length,
+          wpnX: wpns[0]?.pos?.x?.toFixed(0),
+        }
+      })
       record(
         "Ninja can pick up weapon",
-        wState !== "none",
-        `equipped=${wState}`,
+        wState.weapon !== "none",
+        `equipped=${wState.weapon} ninja=${wState.isNinja} pX=${wState.px} wpnX=${wState.wpnX} wpnsLeft=${wState.wpnLeft}`,
       )
     }
 

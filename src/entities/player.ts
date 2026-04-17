@@ -76,6 +76,7 @@ export default function createPlayer(x: number, y: number) {
   let ninjaHeadband: any = null
   let ninjaRibbonL: any = null
   let ninjaRibbonR: any = null
+  let ninjaAura: any = null
 
   function spawnTransformBurst() {
     // Pink sparkle burst to signal the transformation
@@ -109,6 +110,17 @@ export default function createPlayer(x: number, y: number) {
     const h = player.health as PlayerHealth
     if (h?.isNinja && !ninjaHeadband) {
       spawnTransformBurst()
+      // Dark power aura — a circle pulsing behind the player that tells
+      // the eye "this character is POWERED UP." Renders behind sprite.
+      ninjaAura = add([
+        circle(60),
+        pos(player.pos.x, player.pos.y - 48),
+        anchor("center"),
+        color(180, 30, 180),
+        opacity(0.25),
+        z(-1),
+        "ninja-gear",
+      ])
       // Black headband across the top of the head
       ninjaHeadband = add([
         rect(40, 6),
@@ -141,9 +153,11 @@ export default function createPlayer(x: number, y: number) {
       destroy(ninjaHeadband)
       destroy(ninjaRibbonL)
       destroy(ninjaRibbonR)
+      if (ninjaAura) destroy(ninjaAura)
       ninjaHeadband = null
       ninjaRibbonL = null
       ninjaRibbonR = null
+      ninjaAura = null
     }
     if (ninjaHeadband) {
       const bob = Math.sin(time() * 8) * 1
@@ -155,6 +169,11 @@ export default function createPlayer(x: number, y: number) {
       ninjaRibbonR.pos.x = player.pos.x + 18
       ninjaRibbonR.pos.y = player.pos.y - 86 - bob
       ninjaRibbonR.angle = 10 - Math.sin(time() * 3) * 8
+      if (ninjaAura) {
+        ninjaAura.pos.x = player.pos.x
+        ninjaAura.pos.y = player.pos.y - 24
+        ninjaAura.opacity = 0.2 + Math.sin(time() * 4) * 0.1
+      }
     }
   }
 
@@ -178,10 +197,18 @@ export default function createPlayer(x: number, y: number) {
 
   function moveSpeed() {
     let s = PLAYER.RUN_SPEED
+    // Ninja form: 25% faster so the transformation actually feels like power
+    if ((player.health as PlayerHealth)?.isNinja) s *= 1.25
     if (player.isSticky) s *= ENEMY.GLUTEN_BLOB.STICKY_SPEED_MULT
     if (player.isSyrupy) s *= ENEMY.SYRUP_DRIPPER.PUDDLE_SPEED_MULT
     if (player.isSlippery) s *= ENEMY.BUTTER_PAT.SLIPPERY_SPEED_MULT
     return s
+  }
+
+  // Jump force — ninja form gets 15% more air
+  function jumpForce() {
+    const base = PLAYER.JUMP_FORCE
+    return (player.health as PlayerHealth)?.isNinja ? base * 1.15 : base
   }
 
   // Movement: track target velocity, lerp in onUpdate
@@ -194,7 +221,7 @@ export default function createPlayer(x: number, y: number) {
     const coyote = time() - player.lastGroundedTime < FEEL.COYOTE_TIME
 
     if (grounded || coyote) {
-      player.jump(PLAYER.JUMP_FORCE)
+      player.jump(jumpForce())
       setState("jump")
       playJump()
       player.lastJumpPressTime = -1
@@ -291,16 +318,65 @@ export default function createPlayer(x: number, y: number) {
 
     const whipX = player.pos.x + player.facing * (PLAYER.WIDTH / 2 + PLAYER.WHIP_RANGE / 2)
     const whipY = player.pos.y - PLAYER.HEIGHT / 2
+    // Invisible collision rectangle — the visual is a layered ribbon streak.
     player.whipHitbox = add([
       rect(PLAYER.WHIP_RANGE * 0.7, PLAYER.WHIP_WIDTH * 2),
       pos(whipX, whipY),
       area(),
       anchor("center"),
-      color(...COLORS.whip),
-      opacity(0.85),
+      opacity(0),
       z(55),
       "whip-hitbox",
     ])
+
+    // Ribbon visual — a curved arc of pink/magenta streaks that fade out.
+    // Not attached to the hitbox, so collision and visual are decoupled.
+    const isNinja = (player.health as PlayerHealth)?.isNinja
+    const palette = isNinja ? NINJA_COLORS.whip : COLORS.whip
+    const ribbons: any[] = []
+    const streakCount = 5
+    for (let i = 0; i < streakCount; i++) {
+      const offY = (i - (streakCount - 1) / 2) * 6
+      const lenMult = 1 - Math.abs(i - (streakCount - 1) / 2) / streakCount
+      const streakLen = PLAYER.WHIP_RANGE * 0.7 * (0.5 + lenMult * 0.5)
+      const streak = add([
+        rect(streakLen, 3, { radius: 1.5 }),
+        pos(whipX - PLAYER.WHIP_RANGE * 0.35, whipY + offY),
+        anchor("left"),
+        color(palette[0], palette[1], palette[2]),
+        opacity(0.9),
+        z(54),
+        rotate(player.facing < 0 ? 180 : 0),
+        "whip-ribbon",
+      ])
+      if (player.facing < 0) {
+        streak.pos.x = whipX + PLAYER.WHIP_RANGE * 0.35
+      }
+      ribbons.push(streak)
+    }
+    // Bright core flash at spawn point for impact
+    const flash = add([
+      circle(12),
+      pos(player.pos.x + player.facing * PLAYER.WIDTH / 2, whipY),
+      anchor("center"),
+      color(255, 240, 200),
+      opacity(0.9),
+      z(56),
+    ])
+    let rAge = 0
+    const rUpdate = onUpdate(() => {
+      rAge += dt()
+      const t = rAge / PLAYER.WHIP_DURATION
+      for (const r of ribbons) {
+        r.opacity = Math.max(0, 0.9 * (1 - t) * (1 - t))
+      }
+      flash.opacity = Math.max(0, 0.9 * (1 - t * 3))
+      if (t >= 1) {
+        for (const r of ribbons) destroy(r)
+        destroy(flash)
+        rUpdate.cancel()
+      }
+    })
 
     // Whip always kills enemies it touches
     player.whipHitbox.onCollide("enemy", (e: any) => {
@@ -493,7 +569,7 @@ export default function createPlayer(x: number, y: number) {
     // Jump buffer: if player pressed jump recently, auto-execute
     if (player.lastJumpPressTime > 0 && time() - player.lastJumpPressTime < FEEL.JUMP_BUFFER) {
       player.lastJumpPressTime = -1
-      player.jump(PLAYER.JUMP_FORCE)
+      player.jump(jumpForce())
       setState("jump")
       playJump()
       return
