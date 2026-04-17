@@ -5,6 +5,7 @@ import { createNinjaPowerup, createSequin, createWeaponPickup, createRibbon } fr
 import { hitPlayer } from "../components/health"
 import { edgeFlash, popText } from "../components/effects"
 import { playStomp, getStompChain, resetStompChain } from "../components/audio"
+import { breakDestructible } from "../components/weapons"
 import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData, CheckpointData } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
@@ -423,6 +424,22 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
     edgeFlash(255, 60, 60) // red = took damage
     popText(player.pos.x, player.pos.y - 40, "OUCH!", [255, 100, 100], 22)
     hitPlayer(player, currentSpawn.x, currentSpawn.y)
+  })
+
+  // Attack states break destructible blocks (Mario-style). Any spin/
+  // dash/whip state OR recent attack press shatters the block on touch.
+  player.onCollide("destructible", (d: any) => {
+    const ATTACK_BUFFER = 0.25
+    const recentAttack = player.lastAttackPressTime > 0
+      && time() - player.lastAttackPressTime < ATTACK_BUFFER
+    if (
+      player.state === "spin" ||
+      player.state === "dash" ||
+      player.state === "whip" ||
+      recentAttack
+    ) {
+      breakDestructible(d)
+    }
   })
 
   // Slippery patch effect: active while overlapping

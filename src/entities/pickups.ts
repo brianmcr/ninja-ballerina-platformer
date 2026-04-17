@@ -214,7 +214,6 @@ export function createRibbon(x: number, y: number) {
 }
 
 export function createWeaponPickup(x: number, y: number, weaponType: "katana" | "sais") {
-  const originY = y
   let elapsed = 0
   const c = weaponType === "katana" ? WEAPON.PICKUP_KATANA_COLOR : WEAPON.PICKUP_SAIS_COLOR
   const sz = WEAPON.PICKUP_SIZE
@@ -245,13 +244,16 @@ export function createWeaponPickup(x: number, y: number, weaponType: "katana" | 
     opacity(1),
     "pickup",
     "weaponPickup",
-    { weaponType: weaponType as WeaponType },
+    // originY is on the entity so repositioning (tests, dynamic moves)
+    // can update both pos AND the bob baseline without the next frame
+    // snapping back to the original spawn height.
+    { weaponType: weaponType as WeaponType, originY: y },
   ])
 
   let wpnSparkleTimer = 0
   pickup.onUpdate(() => {
     elapsed += dt()
-    const floatY = originY + Math.sin(elapsed * WEAPON.PICKUP_BOB_SPEED) * WEAPON.PICKUP_BOB_RANGE
+    const floatY = pickup.originY + Math.sin(elapsed * WEAPON.PICKUP_BOB_SPEED) * WEAPON.PICKUP_BOB_RANGE
     pickup.pos.y = floatY + Math.sin(time() * 2) * 0.5
 
     pedestal.pos.x = pickup.pos.x

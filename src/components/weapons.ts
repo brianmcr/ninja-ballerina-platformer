@@ -1,5 +1,54 @@
 import { WEAPON } from "../config"
-import { playShuriken, playWhip } from "./audio"
+import { playShuriken, playWhip, playCoin } from "./audio"
+import { popText } from "./effects"
+import { createSequin } from "../entities/pickups"
+
+// Break a destructible with fragment particles + dropped sequin,
+// Mario-block style. Used by every attack that can break blocks so the
+// feedback is consistent regardless of weapon.
+export function breakDestructible(d: any) {
+  if (!d.exists()) return
+  const x = d.pos.x + (d.width ?? 24) / 2
+  const y = d.pos.y - (d.height ?? 24) / 2
+  // 4-6 fragment cubes flying outward
+  const count = 5
+  for (let i = 0; i < count; i++) {
+    const angle = -Math.PI / 2 + (i - (count - 1) / 2) * 0.5
+    const spd = 180 + Math.random() * 80
+    const vx = Math.cos(angle) * spd
+    const vy = Math.sin(angle) * spd
+    const frag = add([
+      rect(6, 6),
+      pos(x, y),
+      anchor("center"),
+      color(139, 100, 60),
+      rotate(Math.random() * 360),
+      z(40),
+    ])
+    let age = 0
+    frag.onUpdate(() => {
+      age += dt()
+      frag.pos.x += vx * dt()
+      frag.pos.y += vy * dt() + 800 * age * dt()
+      frag.angle += dt() * 360
+      if (age > 0.6) destroy(frag)
+    })
+  }
+  // Drop a sequin
+  const seq = createSequin(x, y - 20) as any
+  if (seq) {
+    let t = 0
+    const arcUpdate = onUpdate(() => {
+      if (!seq.exists()) { arcUpdate.cancel(); return }
+      t += dt()
+      if (t >= 0.35) { arcUpdate.cancel(); return }
+      seq.pos.y = (y - 20) - Math.sin(t / 0.35 * Math.PI) * 30
+    })
+  }
+  playCoin()
+  popText(x, y - 30, "+1", [255, 215, 0], 16)
+  destroy(d)
+}
 
 export type WeaponType = "none" | "shuriken" | "katana" | "sais"
 
@@ -81,7 +130,7 @@ export function swingKatana(player: any) {
   })
 
   blade.onCollide("destructible", (d: any) => {
-    destroy(d)
+    breakDestructible(d)
   })
 
   blade.onCollide("syrup-drop", (d: any) => {

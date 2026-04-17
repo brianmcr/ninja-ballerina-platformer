@@ -1,6 +1,28 @@
 import { ENEMY } from "../config"
 import { shakeOnEnemyDefeat, enemyDefeatPop, flashWhite, floatingText, enemyHitFlash, hitImpact } from "../components/effects"
 import { playCoin, playHit } from "../components/audio"
+import { createSequin } from "./pickups"
+
+// Spawn 1-2 sequins above a defeated enemy — Mario's "kill → coin"
+// feedback. They pop out with a brief upward tween before settling into
+// the usual bob so the drop feels dynamic.
+function spawnDropSequins(x: number, y: number, count: number = 1) {
+  for (let i = 0; i < count; i++) {
+    const offsetX = (Math.random() - 0.5) * 40
+    const seq = createSequin(x + offsetX, y - 40) as any
+    if (!seq) continue
+    // Brief arc tween: sequin floats up then its bob animation takes over
+    let t = 0
+    const startY = y - 40
+    const arcUpdate = onUpdate(() => {
+      if (!seq.exists()) { arcUpdate.cancel(); return }
+      t += dt()
+      if (t >= 0.35) { arcUpdate.cancel(); return }
+      const arc = -Math.sin(t / 0.35 * Math.PI) * 24
+      seq.pos.y = startY + arc
+    })
+  }
+}
 
 const ENEMY_SCALE = 0.08
 
@@ -28,6 +50,7 @@ export function createButterPat(x: number, y: number, patrolRange = 100) {
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.HEIGHT / 2)
           playCoin()
+          spawnDropSequins(enemy.pos.x, enemy.pos.y, 1)
           spawnSlipperyPatch(enemy.pos.x, enemy.pos.y)
           wait(0.18, () => { if (enemy.exists()) destroy(enemy) })
         }
@@ -115,6 +138,7 @@ export function createGlutenBlob(x: number, y: number) {
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.SIZE / 2)
           playCoin()
+          spawnDropSequins(enemy.pos.x, enemy.pos.y, 2)
           wait(0.18, () => { if (enemy.exists()) destroy(enemy) })
         } else {
           playHit()
@@ -211,6 +235,7 @@ export function createSyrupDripper(x: number, y: number) {
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y)
           playCoin()
+          spawnDropSequins(enemy.pos.x, enemy.pos.y, 1)
           wait(0.18, () => { if (enemy.exists()) destroy(enemy) })
         } else {
           playHit()
@@ -354,6 +379,7 @@ export function createMilkCartonGuard(x: number, y: number, patrolRange = 100) {
           shakeOnEnemyDefeat()
           enemyDefeatPop(enemy.pos.x, enemy.pos.y - e.HEIGHT / 2)
           playCoin()
+          spawnDropSequins(enemy.pos.x, enemy.pos.y, 2)
           wait(0.18, () => { if (enemy.exists()) destroy(enemy) })
         }
       },

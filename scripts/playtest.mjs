@@ -617,9 +617,11 @@ async function main() {
       const wpns = get("weaponPickup")
       if (wpns.length === 0) return { error: "no weapons" }
       const wpn = wpns[0]
-      // Move weapon right next to player on the ground
+      // Move weapon right next to player on the ground. Also update
+      // originY so the pickup's bob animation doesn't snap it back up.
       wpn.pos.x = p.pos.x + 180
       wpn.pos.y = p.pos.y - 20
+      wpn.originY = p.pos.y - 20
       // Shove the boss away so it can't strip ninja status mid-walk
       const bosses = get("boss")
       if (bosses.length > 0) bosses[0].pos.x = 10000
