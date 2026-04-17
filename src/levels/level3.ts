@@ -141,6 +141,9 @@ const level3: LevelData = {
     { type: "ribbon", x: 360, y: FLOOR_Y - 430 },
     { type: "ribbon", x: 1100, y: FLOOR_Y - 430 },
     { type: "ribbon", x: 3600, y: FLOOR_Y - 420 },
+
+    // Rare star power — secret pickup
+    { type: "star", x: 1800, y: FLOOR_Y - 420 },
   ],
   destructibles: [
     // Barriers requiring katana to break through

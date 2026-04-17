@@ -84,8 +84,10 @@ export function fireShuriken(player: any) {
   void layer2
   // Trailing afterimage
   let trailTimer = 0
+  let fallVel = 0
   star.onUpdate(() => {
-    star.move(dir * WEAPON.SHURIKEN.SPEED, 0)
+    star.move(dir * WEAPON.SHURIKEN.SPEED, fallVel)
+    fallVel += 200 * dt()
     star.angle += dt() * 900
     // Trail particle
     trailTimer -= dt()

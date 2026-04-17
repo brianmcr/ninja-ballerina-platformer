@@ -31,6 +31,10 @@ export function collectStar(player: any) {
 }
 
 export function hitPlayer(player: any, spawnX: number, spawnY: number, levelId?: string, force: boolean = false) {
+  // isDying is set during the Mario death animation; prevents re-entry
+  // when the pop-up-then-fall animation pushes the player into the kill
+  // zone and it tries to hit them again.
+  if (player.isDying) return
   if (!force && player.isInvincible) return
   if (!force && (player.state === "spin" || player.state === "dash" || player.state === "whip")) return
 
@@ -71,6 +75,7 @@ function playDeathAnimation(player: any, spawnX: number, spawnY: number) {
   // falls off screen. During the animation player.vel is controlled
   // manually. Isolated from normal physics/collisions via isInvincible.
   player.isInvincible = true
+  player.isDying = true
   // Freeze physics by canceling velocity and temporarily parking the
   // entity outside of the collision resolve loop (kaplay body stays,
   // but we'll override vel each frame of the animation).
@@ -111,6 +116,7 @@ function playDeathAnimation(player: any, spawnX: number, spawnY: number) {
       player.pos.y = spawnY
       player.vel.x = 0
       player.vel.y = 0
+      player.isDying = false
       startInvincibility(player)
     }
   })

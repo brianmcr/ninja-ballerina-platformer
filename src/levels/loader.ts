@@ -326,6 +326,9 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
   // off the left or right edge.
   player.onUpdate(() => {
     if (player.pos.y > SCREEN.HEIGHT + 60) {
+      // Skip if already dying — Mario death animation intentionally
+      // drops the player off-screen, this is not a void fall.
+      if ((player as any).isDying) return
       // Void fall: teleport out of the kill zone first so this handler
       // cannot re-fire on subsequent frames while the death animation
       // plays, then force-respawn bypassing invincibility/state checks so

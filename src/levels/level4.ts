@@ -150,6 +150,9 @@ const level4: LevelData = {
     { type: "ribbon", x: 600, y: FLOOR_Y - 420 },
     { type: "ribbon", x: 1100, y: FLOOR_Y - 430 },
     { type: "ribbon", x: 3800, y: FLOOR_Y - 430 },
+
+    // Rare star power — secret pickup
+    { type: "star", x: 3000, y: FLOOR_Y - 380 },
   ],
   destructibles: [
     { x: 680, y: FLOOR_Y - 48, width: 48, height: 48 },

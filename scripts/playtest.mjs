@@ -194,7 +194,23 @@ async function main() {
     // ------------------------------------------------------------------
     // Physics check 4: Jump works
     // ------------------------------------------------------------------
-    const beforeJumpY = afterWalk.y
+    // Reset player to a known safe spot — prevents butter pat / other
+    // enemies from damaging during the long post-jump sleep. Also clear
+    // invincibility flash and reset velocity to zero.
+    await page.evaluate(() => {
+      const p = get("player")[0]
+      if (!p) return
+      p.pos.x = 250
+      p.pos.y = 672
+      p.vel.x = 0
+      p.vel.y = 0
+      if (p.health) {
+        p.health.invincibleTimer = 5.0
+      }
+      p.isInvincible = true
+    })
+    await sleep(100)
+    const beforeJumpY = (await evalInGame(page, () => get("player")[0].pos.y))
     await page.keyboard.press("Space")
     await sleep(150)
     const midJump = await evalInGame(page, () => {
