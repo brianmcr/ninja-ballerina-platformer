@@ -78,7 +78,27 @@ export default function createPlayer(x: number, y: number) {
   let ninjaRibbonR: any = null
   let ninjaAura: any = null
 
+  // Mario-mushroom-style grow pulse: player briefly scales up then
+  // back to normal when powering up. Tied to `setState` sprite use.
+  function playGrowPulse() {
+    const base = PLAYER_SCALE
+    let t = 0
+    const dur = 0.35
+    const ev = onUpdate(() => {
+      t += dt()
+      const n = t / dur
+      // Ease-out overshoot
+      const pulse = 1 + Math.sin(n * Math.PI) * 0.35
+      player.scale = vec2(base * pulse)
+      if (n >= 1) {
+        player.scale = vec2(base)
+        ev.cancel()
+      }
+    })
+  }
+
   function spawnTransformBurst() {
+    playGrowPulse()
     // Pink sparkle burst to signal the transformation
     for (let i = 0; i < 14; i++) {
       const angle = (i / 14) * Math.PI * 2

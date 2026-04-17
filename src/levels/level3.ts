@@ -154,6 +154,12 @@ const level3: LevelData = {
     { x: 1600, y: FLOOR_Y - 10 },
     { x: 2600, y: FLOOR_Y - 10 },
   ],
+  questionBlocks: [
+    { x: 600, y: FLOOR_Y - 150, contains: "sequin" },
+    { x: 1400, y: FLOOR_Y - 190, contains: "sequin" },
+    { x: 2200, y: FLOOR_Y - 170, contains: "ninjaPowerup" },
+    { x: 3000, y: FLOOR_Y - 210, contains: "sequin" },
+  ],
 }
 
 export default level3

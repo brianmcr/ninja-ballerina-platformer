@@ -162,6 +162,13 @@ const level4: LevelData = {
     { x: 1950, y: FLOOR_Y - 10 },
     { x: 3200, y: FLOOR_Y - 10 },
   ],
+  questionBlocks: [
+    { x: 450, y: FLOOR_Y - 140, contains: "sequin" },
+    { x: 1250, y: FLOOR_Y - 180, contains: "sequin" },
+    { x: 2100, y: FLOOR_Y - 160, contains: "ninjaPowerup" },
+    { x: 2900, y: FLOOR_Y - 200, contains: "sequin" },
+    { x: 3500, y: FLOOR_Y - 170, contains: "sequin" },
+  ],
 }
 
 export default level4

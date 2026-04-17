@@ -208,8 +208,9 @@ async function main() {
       `before=${beforeJumpY.toFixed(0)} midJump y=${midJump.y.toFixed(0)} vy=${midJump.vy.toFixed(0)}`,
     )
 
-    // Wait for landing (apex hang-time adds ~150ms to full jump arc)
-    await sleep(2000)
+    // Wait for landing (apex hang-time adds ~150ms to full jump arc).
+    // Extra buffer so headless frame-timing jitter doesn't flake.
+    await sleep(2500)
     const afterJump = await evalInGame(page, () => {
       const p = get("player")[0]
       return { y: p.pos.y, vy: p.vel.y, grounded: p.isGrounded() }
