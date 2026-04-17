@@ -1,6 +1,6 @@
 import { PICKUP, WEAPON } from "../config"
-import { collectSequin, collectNinjaPowerup, collectRibbon } from "../components/health"
-import { sequinCollectPop, popText } from "../components/effects"
+import { collectSequin, collectNinjaPowerup, collectRibbon, collectStar } from "../components/health"
+import { sequinCollectPop, popText, starburstParticles } from "../components/effects"
 import { playCoin, playPowerup } from "../components/audio"
 import type { PlayerHealth } from "../components/health"
 import type { WeaponType } from "../components/weapons"
@@ -77,6 +77,62 @@ export function createNinjaPowerup(x: number, y: number) {
   })
 
   return pickup
+}
+
+// Mario-style star power — rare pickup that grants ~8s of full
+// invincibility with rainbow flash and enemies auto-die on touch.
+export function createStarPowerup(x: number, y: number) {
+  const sz = 28
+  const originY = y
+  let elapsed = 0
+  const star = add([
+    rect(sz, sz, { radius: 4 }),
+    pos(x, y),
+    area({ shape: new Rect(vec2(-sz * 2, -sz * 2), sz * 4, sz * 4) }),
+    anchor("center"),
+    color(255, 230, 80),
+    rotate(0),
+    z(20),
+    "pickup",
+    "starPowerup",
+  ])
+  // Star points — 5 small triangles arranged as a star
+  for (let i = 0; i < 5; i++) {
+    const ang = i * (Math.PI * 2 / 5) - Math.PI / 2
+    star.add([
+      rect(6, 10),
+      pos(Math.cos(ang) * 8, Math.sin(ang) * 8),
+      anchor("center"),
+      rotate((ang * 180 / Math.PI) + 90),
+      color(255, 255, 200),
+    ])
+  }
+  // Glow
+  const glow = add([
+    rect(sz * 1.8, sz * 1.8, { radius: 6 }),
+    pos(x, y),
+    anchor("center"),
+    color(255, 230, 100),
+    opacity(0.3),
+    z(19),
+  ])
+  star.onUpdate(() => {
+    elapsed += dt()
+    star.pos.y = originY + Math.sin(elapsed * 2) * 6
+    star.angle = elapsed * 80
+    glow.pos.x = star.pos.x
+    glow.pos.y = star.pos.y
+    glow.opacity = 0.2 + Math.sin(elapsed * 5) * 0.15
+  })
+  star.onCollide("player", (p: any) => {
+    collectStar(p)
+    playPowerup()
+    starburstParticles(star.pos.x, star.pos.y, 20)
+    popText(star.pos.x, star.pos.y - 30, "STAR POWER!", [255, 230, 100], 22)
+    destroy(glow)
+    destroy(star)
+  })
+  return star
 }
 
 export function createSequin(x: number, y: number) {

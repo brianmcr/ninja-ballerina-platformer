@@ -42,6 +42,7 @@ export default function game(levelName?: string) {
 
   let levelTime = 0
   let showDebug = false
+  let paused = false
 
   // --- HUD background panels ---
   const hudPanelLeft = add([
@@ -300,6 +301,47 @@ export default function game(levelName?: string) {
     showDebug = !showDebug
     stateLabel.opacity = showDebug ? 1 : 0
   })
+
+  // Pause overlay — P or Escape toggles debug.paused and shows a dim
+  // overlay with "PAUSED" text. Kaplay freezes all onUpdate / timers
+  // when debug.paused is true, so timers & enemies freeze too.
+  const pauseOverlay = add([
+    rect(SCREEN.WIDTH, SCREEN.HEIGHT),
+    pos(0, 0),
+    anchor("topleft"),
+    fixed(),
+    color(0, 0, 0),
+    opacity(0),
+    z(200),
+  ])
+  const pauseText = add([
+    text("PAUSED", { size: 48, font: "Bangers" }),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 - 20),
+    anchor("center"),
+    fixed(),
+    color(255, 255, 255),
+    opacity(0),
+    z(201),
+  ])
+  const pauseHint = add([
+    text("P or ESC to resume", { size: 18, font: "Bangers" }),
+    pos(SCREEN.WIDTH / 2, SCREEN.HEIGHT / 2 + 30),
+    anchor("center"),
+    fixed(),
+    color(200, 200, 200),
+    opacity(0),
+    z(201),
+  ])
+  function togglePause() {
+    paused = !paused
+    ;(debug as any).paused = paused
+    const o = paused ? 1 : 0
+    pauseOverlay.opacity = paused ? 0.6 : 0
+    pauseText.opacity = o
+    pauseHint.opacity = o
+  }
+  onKeyPress("p", togglePause)
+  onKeyPress("escape", togglePause)
 
   // Track time + update Mario-style score/time HUD
   onUpdate(() => {

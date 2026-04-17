@@ -9,6 +9,7 @@ export interface PlayerHealth {
   sequins: number
   ribbons: number
   invincibleTimer: number
+  starTimer: number  // Mario star power — full invincibility + auto-kill
 }
 
 export function initHealth(player: any) {
@@ -18,7 +19,14 @@ export function initHealth(player: any) {
     sequins: 0,
     ribbons: 0,
     invincibleTimer: 1.0, // tutorial-length spawn grace: kid has a full second to orient and jump at the first powerup before enemies can touch them
+    starTimer: 0,
   } as PlayerHealth
+  player.isInvincible = true
+}
+
+export function collectStar(player: any) {
+  const h = player.health as PlayerHealth
+  h.starTimer = 8.0 // 8 seconds of star power
   player.isInvincible = true
 }
 
@@ -59,22 +67,44 @@ export function hitPlayer(player: any, spawnX: number, spawnY: number, levelId?:
 }
 
 function playDeathAnimation(player: any, spawnX: number, spawnY: number) {
+  // Classic Mario death: player pops up in place, briefly hangs, then
+  // falls off screen. During the animation player.vel is controlled
+  // manually. Isolated from normal physics/collisions via isInvincible.
   player.isInvincible = true
-  const origWidth = PLAYER.WIDTH
-  const origHeight = PLAYER.HEIGHT
+  // Freeze physics by canceling velocity and temporarily parking the
+  // entity outside of the collision resolve loop (kaplay body stays,
+  // but we'll override vel each frame of the animation).
+  const startX = player.pos.x
+  const startY = player.pos.y
   let elapsed = 0
-  const duration = 0.3
+  const totalDur = 1.4
+  const popUpDur = 0.45 // reaches apex by this time
+  const popUpHeight = 120
   const ev = onUpdate(() => {
     elapsed += dt()
-    const t = Math.min(1, elapsed / duration)
-    player.width = origWidth * (1 - t * 0.8)
-    player.height = origHeight * (1 - t * 0.8)
-    player.opacity = 1 - t
-    player.angle += dt() * 720
-    if (t >= 1) {
+    // Ignore normal physics by zeroing horizontal motion + overriding y
+    player.vel.x = 0
+    player.angle += dt() * 540
+    if (elapsed < popUpDur) {
+      // Parabolic pop up: smooth arc from 0 to popUpHeight
+      const n = elapsed / popUpDur
+      const h = Math.sin(n * Math.PI / 2) * popUpHeight
+      player.pos.x = startX
+      player.pos.y = startY - h
+      player.vel.y = 0
+    } else {
+      // Fall phase — real gravity + accel until either duration elapses
+      // or player goes off the bottom of the screen
+      const fallT = elapsed - popUpDur
+      player.pos.y = startY - popUpHeight + (1600 * fallT * fallT) / 2
+      player.vel.y = 1600 * fallT
+    }
+    // Fade out in the back half of the animation
+    if (elapsed > totalDur * 0.6) {
+      player.opacity = Math.max(0, 1 - (elapsed - totalDur * 0.6) / (totalDur * 0.4))
+    }
+    if (elapsed >= totalDur) {
       ev.cancel()
-      player.width = origWidth
-      player.height = origHeight
       player.opacity = 1
       player.angle = 0
       player.pos.x = spawnX
@@ -94,6 +124,30 @@ function startInvincibility(player: any) {
 
 export function updateHealth(player: any) {
   const h = player.health as PlayerHealth
+  // Star power trumps regular invincibility flash — rainbow cycle
+  if (h.starTimer > 0) {
+    h.starTimer -= dt()
+    player.isInvincible = true
+    // Rainbow hue cycle by tinting the sprite
+    const hue = (h.starTimer * 8) % 1
+    const r = Math.abs(Math.sin(hue * Math.PI * 2)) * 255
+    const g = Math.abs(Math.sin(hue * Math.PI * 2 + Math.PI * 2 / 3)) * 255
+    const b = Math.abs(Math.sin(hue * Math.PI * 2 + Math.PI * 4 / 3)) * 255
+    player.color = rgb(Math.floor(r), Math.floor(g), Math.floor(b))
+    player.opacity = 1
+    // Warning flash in last second
+    if (h.starTimer < 1.0) {
+      const warn = Math.floor(h.starTimer / 0.1) % 2 === 0
+      player.opacity = warn ? 0.5 : 1.0
+    }
+    if (h.starTimer <= 0) {
+      h.starTimer = 0
+      player.color = rgb(255, 255, 255)
+      player.opacity = 1
+      player.isInvincible = false
+    }
+    return
+  }
   if (h.invincibleTimer > 0) {
     h.invincibleTimer -= dt()
     const flash = Math.floor(h.invincibleTimer / 0.1) % 2 === 0

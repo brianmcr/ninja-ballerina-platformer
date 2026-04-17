@@ -153,8 +153,8 @@ export const FEEL = {
   // vertical velocity is near zero, giving the player a moment of
   // weightlessness at the top of the arc. Kept tight so jump arc
   // stays predictable.
-  APEX_GRAVITY_MULT: 0.65,
-  APEX_VEL_THRESHOLD: 80,
+  APEX_GRAVITY_MULT: 0.75,
+  APEX_VEL_THRESHOLD: 60,
   SHAKE_HIT: { intensity: 4, duration: 0.15 },
   SHAKE_ENEMY_DEFEAT: { intensity: 2, duration: 0.08 },
   SHAKE_BOSS_PHASE: { intensity: 8, duration: 0.3 },

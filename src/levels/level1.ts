@@ -18,7 +18,7 @@ export interface EnemySpawn {
 }
 
 export interface PickupSpawn {
-  type: "ninjaPowerup" | "sequin" | "katana" | "sais" | "ribbon"
+  type: "ninjaPowerup" | "sequin" | "katana" | "sais" | "ribbon" | "star"
   x: number
   y: number
 }
@@ -153,6 +153,9 @@ const level1: LevelData = {
     { type: "ribbon", x: 800, y: FLOOR_Y - 350 },
     { type: "ribbon", x: 1540, y: FLOOR_Y - 380 },
     { type: "ribbon", x: 3050, y: FLOOR_Y - 350 },
+
+    // Rare star power — hidden on the high one-way staircase near the end
+    { type: "star", x: 2990, y: FLOOR_Y - 320 },
   ],
   destructibles: [
     { x: 1550, y: FLOOR_Y - 48, width: 48, height: 48 },

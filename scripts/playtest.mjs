@@ -24,7 +24,7 @@ const SHOTS_DIR = path.resolve(__dirname, "..", ".playtest")
 
 const URL =
   process.argv.find((a) => a.startsWith("--url="))?.split("=")[1] ||
-  "http://localhost:5186"
+  "http://localhost:5186/ninja-ballerina-platformer/"
 const HEADLESS = process.argv.includes("--headless")
 
 const results = []

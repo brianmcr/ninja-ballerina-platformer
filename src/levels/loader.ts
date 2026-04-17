@@ -1,7 +1,7 @@
 import { SCREEN, PLATFORM, CAMERA, ENEMY, PICKUP, DESTRUCTIBLE } from "../config"
 import createPlayer from "../entities/player"
 import { createButterPat, createGlutenBlob, createSyrupDripper, createMilkCartonGuard } from "../entities/enemies"
-import { createNinjaPowerup, createSequin, createWeaponPickup, createRibbon } from "../entities/pickups"
+import { createNinjaPowerup, createSequin, createWeaponPickup, createRibbon, createStarPowerup } from "../entities/pickups"
 import { hitPlayer } from "../components/health"
 import { edgeFlash, popText } from "../components/effects"
 import { playStomp, getStompChain, resetStompChain } from "../components/audio"
@@ -400,6 +400,13 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
     else e.hurt?.(99)
   }
   player.onCollide("enemy", (e: any, col: any) => {
+    // Star power — every enemy touch is an insta-kill.
+    const h = player.health as any
+    if (h && h.starTimer > 0) {
+      const fromDir = player.pos.x < e.pos.x ? -1 : 1
+      killEnemy(e, fromDir)
+      return
+    }
     // Attacking states always kill on contact. Also honor a 0.25s attack
     // input buffer so a kid who pressed Z/X/C a frame too late still wins
     // the race vs. contact damage.
@@ -520,6 +527,7 @@ function spawnPickup(p: PickupSpawn) {
     case "ribbon": return createRibbon(p.x, p.y)
     case "katana": return createWeaponPickup(p.x, p.y, "katana")
     case "sais": return createWeaponPickup(p.x, p.y, "sais")
+    case "star": return createStarPowerup(p.x, p.y)
   }
 }
 
