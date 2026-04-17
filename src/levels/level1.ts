@@ -35,6 +35,13 @@ export interface CheckpointData {
   y: number
 }
 
+export interface QuestionBlockData {
+  x: number
+  y: number
+  // "sequin" drops a sequin, "ninjaPowerup" drops a powerup
+  contains?: "sequin" | "ninjaPowerup"
+}
+
 export interface LevelData {
   name: string
   width: number
@@ -44,6 +51,7 @@ export interface LevelData {
   pickups?: PickupSpawn[]
   destructibles?: DestructibleData[]
   checkpoints?: CheckpointData[]
+  questionBlocks?: QuestionBlockData[]
   bgTint?: [number, number, number]
 }
 
@@ -158,6 +166,13 @@ const level1: LevelData = {
     // Second checkpoint ~65% through: on the third floor segment, past
     // the first hard gap. Anchors the mid-level spike.
     { x: 1880, y: FLOOR_Y - 10 },
+  ],
+  questionBlocks: [
+    // Jump-hit-from-below tutorial: floating golden ? block between the
+    // first two floor segments, at a reachable height.
+    { x: 900, y: FLOOR_Y - 130, contains: "sequin" },
+    { x: 1100, y: FLOOR_Y - 130, contains: "sequin" },
+    { x: 1400, y: FLOOR_Y - 200, contains: "ninjaPowerup" },
   ],
 }
 

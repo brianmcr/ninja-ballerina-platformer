@@ -163,6 +163,34 @@ export default function game(levelName?: string) {
     z(101),
   ])
 
+  // --- HUD: Mario-style top-center score & time banner ---
+  const scorePanel = add([
+    rect(260, 32, { radius: 4 }),
+    pos(width() / 2, 4),
+    anchor("top"),
+    fixed(),
+    color(0, 0, 0),
+    opacity(0.45),
+    z(99),
+  ])
+  const scoreLabel = add([
+    text("SCORE 0", { size: 18, font: "Bangers" }),
+    pos(width() / 2 - 60, 12),
+    anchor("top"),
+    fixed(),
+    color(255, 255, 255),
+    z(101),
+  ])
+  const timeLabel = add([
+    text("TIME 000", { size: 18, font: "Bangers" }),
+    pos(width() / 2 + 60, 12),
+    anchor("top"),
+    fixed(),
+    color(255, 255, 255),
+    z(101),
+  ])
+  void scorePanel
+
   // Debug state label (toggled with F1)
   const stateLabel = add([
     text("", { size: 14, font: "Bangers" }),
@@ -273,9 +301,18 @@ export default function game(levelName?: string) {
     stateLabel.opacity = showDebug ? 1 : 0
   })
 
-  // Track time
+  // Track time + update Mario-style score/time HUD
   onUpdate(() => {
     levelTime += dt()
+    const h = player.health as PlayerHealth | null
+    if (h) {
+      // Score = sequins*100 + ribbons*500
+      const score = (h.sequins ?? 0) * 100 + (h.ribbons ?? 0) * 500
+      scoreLabel.text = `SCORE ${score.toString().padStart(6, "0")}`
+    }
+    // Count-up timer in seconds, zero-padded
+    const t = Math.floor(levelTime)
+    timeLabel.text = `TIME ${t.toString().padStart(3, "0")}`
   })
 
   player.onUpdate(() => {

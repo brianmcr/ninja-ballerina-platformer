@@ -6,7 +6,7 @@ import { hitPlayer } from "../components/health"
 import { edgeFlash, popText } from "../components/effects"
 import { playStomp, getStompChain, resetStompChain } from "../components/audio"
 import { breakDestructible } from "../components/weapons"
-import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData, CheckpointData } from "./level1"
+import type { LevelData, PlatformData, EnemySpawn, PickupSpawn, DestructibleData, CheckpointData, QuestionBlockData } from "./level1"
 
 function spawnPlatform(p: PlatformData) {
   if (p.type === "swing") {
@@ -330,6 +330,13 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
     }
   }
 
+  // Spawn Mario-style ? blocks
+  if (levelData.questionBlocks) {
+    for (const qb of levelData.questionBlocks) {
+      spawnQuestionBlock(qb, player)
+    }
+  }
+
   // Goal marker at end of level — pole + waving flag + sparkles
   const goalX = levelData.width - 200
   const goalY = SCREEN.HEIGHT - 48
@@ -570,6 +577,84 @@ function spawnCheckpoint(cp: CheckpointData, currentSpawn: { x: number; y: numbe
         if (sp.opacity <= 0) destroy(sp)
       })
     }
+  })
+}
+
+function spawnQuestionBlock(qb: QuestionBlockData, player: any) {
+  const W = 32
+  const H = 32
+  const block = add([
+    rect(W, H, { radius: 2 }),
+    pos(qb.x, qb.y),
+    area(),
+    body({ isStatic: true }),
+    anchor("center"),
+    color(255, 180, 40),
+    z(5),
+    "question-block",
+    { used: false, bumpT: 0, originY: qb.y },
+  ])
+  // Decorative "?" marker (a simple rect with color contrast)
+  const marker = block.add([
+    text("?", { size: 22, font: "Bangers" }),
+    pos(0, 0),
+    anchor("center"),
+    color(255, 255, 255),
+  ])
+  // Gold shine on top edge
+  block.add([
+    rect(W - 4, 2),
+    pos(-(W / 2) + 2, -(H / 2)),
+    color(255, 230, 130),
+  ])
+
+  // Idle pulse — subtle glow
+  let pulseT = 0
+  block.onUpdate(() => {
+    pulseT += dt()
+    if (!block.used) {
+      const flash = 0.9 + Math.sin(pulseT * 4) * 0.1
+      block.color = rgb(Math.floor(255 * flash), Math.floor(180 * flash), Math.floor(40 * flash))
+    }
+    // Bump animation — short pop-up and return
+    if (block.bumpT > 0) {
+      block.bumpT -= dt()
+      const b = Math.sin((1 - block.bumpT / 0.25) * Math.PI) * 12
+      block.pos.y = block.originY - b
+    } else {
+      block.pos.y = block.originY
+    }
+  })
+
+  player.onCollide("question-block", (b: any, col: any) => {
+    if (b !== block || block.used) return
+    // Only bump from below — player moving upward AND hit the block's bottom
+    const hittingFromBelow = (col && typeof col.isTop === "function" && col.isTop())
+      || (player.vel.y < 0 && player.pos.y > block.pos.y)
+    if (!hittingFromBelow) return
+
+    block.used = true
+    block.color = rgb(130, 100, 60)
+    marker.text = ""
+    block.bumpT = 0.25
+
+    // Spawn the reward popping up from the block top
+    const spawnX = block.pos.x
+    const spawnY = block.pos.y - H / 2 - 10
+    if (qb.contains === "ninjaPowerup") {
+      createNinjaPowerup(spawnX, spawnY - 10)
+    } else {
+      // Default: sequin that arcs up and out
+      const seq = createSequin(spawnX, spawnY) as any
+      let t = 0
+      const arcUpdate = onUpdate(() => {
+        if (!seq || !seq.exists()) { arcUpdate.cancel(); return }
+        t += dt()
+        if (t >= 0.4) { arcUpdate.cancel(); return }
+        seq.pos.y = spawnY - Math.sin(t / 0.4 * Math.PI) * 40
+      })
+    }
+    popText(block.pos.x, block.pos.y - 40, "!", [255, 220, 100], 20)
   })
 }
 
