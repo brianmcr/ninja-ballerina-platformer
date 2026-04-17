@@ -41,14 +41,39 @@ export default function title() {
     z(2),
   ])
 
-  // Show the actual character next to the title
-  add([
+  // Show the actual character next to the title — animated bob + gentle spin
+  const ballerina = add([
     sprite("ballerina-idle"),
     pos(SCREEN.WIDTH / 2 + 320, SCREEN.HEIGHT / 2 + 40),
     scale(0.18),
+    rotate(0),
     anchor("center"),
     z(2),
   ])
+  const ballerinaBaseY = SCREEN.HEIGHT / 2 + 40
+  ballerina.onUpdate(() => {
+    ballerina.pos.y = ballerinaBaseY + Math.sin(time() * 2) * 8
+    ballerina.angle = Math.sin(time() * 1.3) * 4
+    ballerina.scale = vec2(0.18 * (1 + Math.sin(time() * 3) * 0.025))
+  })
+
+  // Floating sequins around the logo
+  for (let i = 0; i < 8; i++) {
+    const seq = add([
+      rect(10, 10, { radius: 1 }),
+      pos(SCREEN.WIDTH / 2 + (i - 3.5) * 90, SCREEN.HEIGHT / 2 - 210),
+      anchor("center"),
+      rotate(45),
+      color(255, 215, 0),
+      z(2),
+    ])
+    const baseY = SCREEN.HEIGHT / 2 - 210
+    const phase = i * 0.4
+    seq.onUpdate(() => {
+      seq.pos.y = baseY + Math.sin(time() * 2 + phase) * 10
+      seq.angle = 45 + Math.sin(time() * 3 + phase) * 15
+    })
+  }
 
   // Subtitle
   add([
