@@ -333,24 +333,38 @@ export default function loadLevel(levelData: LevelData, levelId: string = "level
   // Goal marker at end of level — pole + waving flag + sparkles
   const goalX = levelData.width - 200
   const goalY = SCREEN.HEIGHT - 48
+  const POLE_H = 120
   const pole = add([
-    rect(6, 80),
+    rect(6, POLE_H),
     pos(goalX, goalY),
     anchor("bot"),
     color(90, 61, 40),
     area(),
     "goal",
+    { reached: false, slideT: 0 },
   ])
-  // Flag at top of pole
+  // Flag at top of pole — slides down when the player touches the goal
   const flag = pole.add([
     rect(30, 20),
-    pos(3, -80),
+    pos(3, -POLE_H),
     color(255, 215, 0),
     anchor("left"),
     rotate(0),
   ])
   flag.onUpdate(() => {
-    flag.angle = Math.sin(time() * 3) * 10
+    if (pole.reached) {
+      // Slide flag down along the pole over 0.8s
+      pole.slideT = Math.min(1, pole.slideT + dt() / 0.8)
+      const startY = -POLE_H
+      const endY = -20
+      flag.pos.y = startY + (endY - startY) * pole.slideT
+      flag.angle = 0
+    } else {
+      flag.angle = Math.sin(time() * 3) * 10
+    }
+  })
+  pole.onCollide("player", () => {
+    if (!pole.reached) pole.reached = true
   })
   // Sparkle particles
   let sparkleTimer = 0

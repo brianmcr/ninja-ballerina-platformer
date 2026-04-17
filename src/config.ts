@@ -151,9 +151,10 @@ export const FEEL = {
   FALL_GRAVITY_MULT: 1.5,
   // Mario-style "hang time" at jump apex — gravity reduced when
   // vertical velocity is near zero, giving the player a moment of
-  // weightlessness at the top of the arc.
-  APEX_GRAVITY_MULT: 0.55,
-  APEX_VEL_THRESHOLD: 120,
+  // weightlessness at the top of the arc. Kept tight so jump arc
+  // stays predictable.
+  APEX_GRAVITY_MULT: 0.65,
+  APEX_VEL_THRESHOLD: 80,
   SHAKE_HIT: { intensity: 4, duration: 0.15 },
   SHAKE_ENEMY_DEFEAT: { intensity: 2, duration: 0.08 },
   SHAKE_BOSS_PHASE: { intensity: 8, duration: 0.3 },

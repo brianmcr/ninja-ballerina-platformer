@@ -195,10 +195,19 @@ export default function createPlayer(x: number, y: number) {
     return player.state !== "spin" && player.state !== "dash"
   }
 
+  // Sprint ramp: running in one direction for >0.4s builds speed up to
+  // 1.35x over another ~0.8s. Mario-style "run button" feel without
+  // needing a separate sprint key.
+  let sprintHoldTime = 0
   function moveSpeed() {
     let s = PLAYER.RUN_SPEED
     // Ninja form: 25% faster so the transformation actually feels like power
     if ((player.health as PlayerHealth)?.isNinja) s *= 1.25
+    // Sprint ramp
+    if (sprintHoldTime > 0.4) {
+      const rampT = Math.min(1, (sprintHoldTime - 0.4) / 0.8)
+      s *= 1 + rampT * 0.35
+    }
     if (player.isSticky) s *= ENEMY.GLUTEN_BLOB.STICKY_SPEED_MULT
     if (player.isSyrupy) s *= ENEMY.SYRUP_DRIPPER.PUDDLE_SPEED_MULT
     if (player.isSlippery) s *= ENEMY.BUTTER_PAT.SLIPPERY_SPEED_MULT
@@ -456,6 +465,13 @@ export default function createPlayer(x: number, y: number) {
     // Horizontal acceleration/deceleration
     const left = isKeyDown("left") || isKeyDown("a")
     const right = isKeyDown("right") || isKeyDown("d")
+    // Sprint hold time: grows when holding a direction on ground, resets
+    // when direction released or changed.
+    if (canAct() && player.isGrounded() && (left !== right)) {
+      sprintHoldTime += dt()
+    } else {
+      sprintHoldTime = 0
+    }
     if (canAct()) {
       if (left && !right) {
         targetVelX = -moveSpeed()
