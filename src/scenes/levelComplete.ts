@@ -1,6 +1,7 @@
 import { SCREEN } from "../config"
 import { markLevelComplete } from "../components/progress"
 import { fadeIn, fadeOut } from "../components/transition"
+import { playCoin } from "../components/audio"
 
 export interface LevelCompleteData {
   levelId: string
@@ -43,26 +44,56 @@ export default function levelComplete(data: LevelCompleteData) {
     color(200, 200, 200),
   ])
 
-  add([
-    text(`Sequins: ${data.sequins}`, { size: 28, font: "Bangers" }),
+  // Mario-style tally: score ticks up from zero, playing coin chime
+  // every ~50 points so the payoff feels earned.
+  const targetScore = data.sequins * 100 + (data.ribbons ?? 0) * 500
+  const sequinsLine = add([
+    text(`Sequins: 0`, { size: 28, font: "Bangers" }),
     pos(SCREEN.WIDTH / 2, 290),
     anchor("center"),
     color(255, 215, 0),
   ])
+  const scoreLine = add([
+    text(`Score: 0`, { size: 28, font: "Bangers" }),
+    pos(SCREEN.WIDTH / 2, 340),
+    anchor("center"),
+    color(255, 255, 255),
+  ])
 
   add([
     text(`Ribbons: ${data.ribbons ?? 0}/3`, { size: 28, font: "Bangers" }),
-    pos(SCREEN.WIDTH / 2, 340),
+    pos(SCREEN.WIDTH / 2, 390),
     anchor("center"),
     color(200, 100, 200),
   ])
 
   add([
-    text(`Lives Remaining: ${data.lives}`, { size: 28, font: "Bangers" }),
-    pos(SCREEN.WIDTH / 2, 390),
+    text(`Lives: ${data.lives}`, { size: 24, font: "Bangers" }),
+    pos(SCREEN.WIDTH / 2, 440),
     anchor("center"),
     color(255, 105, 180),
   ])
+
+  // Animate the tally
+  let tallyT = 0
+  let tallySequins = 0
+  let tallyScore = 0
+  let coinTick = 0
+  onUpdate(() => {
+    tallyT += dt()
+    const tallyDur = 1.5
+    const n = Math.min(1, tallyT / tallyDur)
+    const newSequins = Math.floor(data.sequins * n)
+    const newScore = Math.floor(targetScore * n)
+    if (newSequins !== tallySequins || newScore !== tallyScore) {
+      tallySequins = newSequins
+      tallyScore = newScore
+      sequinsLine.text = `Sequins: ${tallySequins}`
+      scoreLine.text = `Score: ${tallyScore}`
+      coinTick++
+      if (coinTick % 3 === 0 && tallyT < tallyDur) playCoin()
+    }
+  })
 
   const nextLabel = data.nextLevel
     ? "Press SPACE for next level  |  ESC for level select"
